@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo/ui": "~57.0.7",
     "@expo/vector-icons": "^15.0.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.110.9",
     "expo": "~57.0.8",
     "expo-constants": "~57.0.7",
@@ -15,6 +16,7 @@
     "expo-linking": "~57.0.4",
     "expo-router": "~57.0.8",
     "expo-splash-screen": "~57.0.5",
+    "expo-sqlite": "~57.0.1",
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.1",
     "expo-system-ui": "~57.0.1",
@@ -26,6 +28,7 @@
     "react-native-reanimated": "4.5.0",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
+    "react-native-url-polyfill": "^4.0.0",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.0",
     "zustand": "^5.0.14"

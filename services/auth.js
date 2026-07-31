@@ -1,19 +1,38 @@
+// This file should only communicate with Supabase. like create user profiel rows
+
 import { supabase } from "../lib/supabase";
 
+const DEFAUL_AVATOR = "https://xaccpurglkrikrymzikk.supabase.co/storage/v1/object/public/avatars/person.png";
 
 //Sign Up
-export const signUp = async (email, password) => {
+export const signUp = async (name, email, password, role = "customer") => {
     const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) throw error;
 
-    return data.user;
+    const user = data.user;
+
+    const { error: profileError } = await supabase.from("profiles")
+        .insert({
+            id: user.id,
+            name,
+            role,
+            email,
+            avatar_url: DEFAUL_AVATOR
+        });
+
+    if (profileError)
+        throw profileError;
+
+
+
+    return user;
 }
 
 
 
 //Login
-export const login = async (email, password) => {
+export const loginUser = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) throw error;
@@ -22,7 +41,7 @@ export const login = async (email, password) => {
 }
 
 //Logout
-export const logOut = async () => {
+export const logoutUser = async () => {
     const { error } = await supabase.auth.signOut()
 
     if (error) throw error;
