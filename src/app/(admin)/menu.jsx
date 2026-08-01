@@ -1,11 +1,11 @@
 import { Text, View } from 'react-native'
 
-const Orders = () => {
+const Menu = () => {
     return (
         <View>
-            <Text>Orders</Text>
+            <Text>menu</Text>
         </View>
     )
 }
 
-export default Orders
+export default Menu

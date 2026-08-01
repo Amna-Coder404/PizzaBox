@@ -1,10 +1,14 @@
-import { Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context';
+import AppButton from '../../../components/AppButton';
+import useAuthStore from '../../../store/authStore';
 
 const Profile = () => {
+    const { logout } = useAuthStore();
+
     return (
-        <View>
-            <Text>Profile</Text>
-        </View>
+        <SafeAreaView>
+            <AppButton title={"Logout"} onPress={logout} />
+        </SafeAreaView>
     )
 }
 

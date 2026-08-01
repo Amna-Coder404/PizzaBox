@@ -9,7 +9,7 @@ export const signUp = async (name, email, password, role = "customer") => {
     const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) throw error;
-
+    console.log("SIGNUP RESPONSE:", data);
     const user = data.user;
 
     const { error: profileError } = await supabase.from("profiles")

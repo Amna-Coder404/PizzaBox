@@ -12,13 +12,13 @@ const useAuthStore = create((set) => ({
     profile: null,
     loading: true,
 
+    // Login
     login: async (email, password) => {
         set({ loading: true });
 
         try {
             const session = await loginUser(email, password);
             set({
-                loading: false,
                 session,
                 user: session.user
             });
@@ -27,39 +27,42 @@ const useAuthStore = create((set) => ({
         } catch (error) {
             throw error;
         } finally {
-            set({ loading: true });
+            set({ loading: false });
         }
     },
 
+    // Signup
 
     signup: async (name, email, password, role) => {
         set({ loading: true });
 
         try {
             const user = await signUp(name, email, password, role);
-            set({ loading: false });
-
             return user;
+
         } catch (error) {
 
             throw error;
         } finally {
-            set({ loading: true });
+            set({ loading: false });
         }
     },
 
+    // Logout 
     logout: async () => {
         await logoutUser();
 
         set({ session: null, user: null, profile: null });
     },
 
+    // Set session
     setSession: (session) => set({
         session,
         user: session?.user ?? null,
     }),
 
 
+    // profile
     setProfile: (profile) => set({
         profile,
     }),

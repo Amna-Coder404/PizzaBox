@@ -11,7 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import styles from "../../../styles/auth.style";
 
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import AppButton from "../../../components/AppButton";
 import COLORS from "../../../constants/color";
 import useAuthStore from "../../../store/authStore";
@@ -22,7 +22,6 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    const router = useRouter()
     const { login } = useAuthStore();
 
 
@@ -34,7 +33,6 @@ const Login = () => {
 
         try {
             await login(email, password);
-            router.replace("/");
 
         } catch (error) {
             Alert.alert("Login Failed", error.message);

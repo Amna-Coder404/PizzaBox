@@ -1,11 +1,11 @@
 import { Text, View } from 'react-native'
 
-const Menu = () => {
+const Order = () => {
     return (
         <View>
-            <Text>Menu</Text>
+            <Text>order kro gi</Text>
         </View>
     )
 }
 
-export default Menu
+export default Order
