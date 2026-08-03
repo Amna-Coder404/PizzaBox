@@ -1,12 +1,12 @@
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { default as Loading, default as SafeScreen } from "../../components/Loading";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { default as Loading } from "../../components/Loading";
 import { supabase } from "../../lib/supabase";
 import { checkSession } from "../../services/auth";
 import { getProfile } from "../../services/profile";
 
-
+import { PaperProvider } from "react-native-paper";
 const RootLayout = () => {
   const router = useRouter();
   const segments = useSegments();
@@ -65,20 +65,22 @@ const RootLayout = () => {
 
 
   return (
-    <SafeAreaProvider>
-      <SafeScreen>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(customer)" />
-          <Stack.Screen name="(admin)" />
-          {/* <Stack.Screen name="pizza" /> */}
-        </Stack>
-      </SafeScreen>
-    </SafeAreaProvider>
+    <PaperProvider>
+      <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1 }}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(customer)" />
+            <Stack.Screen name="(admin)" />
+            {/* <Stack.Screen name="pizza" /> */}
+          </Stack>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </PaperProvider>
   );
 };
 

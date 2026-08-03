@@ -126,8 +126,10 @@ const Login = () => {
 
                     <AppButton
                         title="Login"
+                        icon="login"
                         onPress={handleLogin}
-                        style={styles.loginButton}
+
+                    // style={styles.loginButton}
                     />
                 </View>
 

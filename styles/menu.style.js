@@ -13,9 +13,9 @@ export default StyleSheet.create({
         paddingTop: 18,
     },
 
-    /* ===========================
+    /*
           Header
-    =========================== */
+ */
 
     header: {
         flexDirection: "row",
@@ -25,8 +25,8 @@ export default StyleSheet.create({
     },
 
     logo: {
-        width: 150,
-        height: 45,
+        width: 200,
+        height: 100,
         resizeMode: "contain",
     },
 
@@ -46,9 +46,9 @@ export default StyleSheet.create({
         marginLeft: 8,
     },
 
-    /* ===========================
+    /*
           Categories
-    =========================== */
+ */
 
     categoryContainer: {
         marginBottom: 22,
@@ -92,9 +92,9 @@ export default StyleSheet.create({
         color: COLORS.primary,
     },
 
-    /* ===========================
+    /*
           Pizza List
-    =========================== */
+ */
 
     listContent: {
         paddingBottom: 30,
@@ -122,9 +122,9 @@ export default StyleSheet.create({
         justifyContent: "space-between",
     },
 
-    /* ===========================
+    /*
           Pizza Details
-    =========================== */
+ */
 
     pizzaName: {
         color: COLORS.white,
@@ -171,9 +171,7 @@ export default StyleSheet.create({
         fontWeight: "700",
     },
 
-    /* ===========================
-          Add Button
-    =========================== */
+    /*  Add Button*/
 
     rightContainer: {
         justifyContent: "center",
@@ -181,7 +179,7 @@ export default StyleSheet.create({
         marginLeft: 10,
     },
 
-    addIconButton: {
+    actionButton: {
         width: 52,
         height: 52,
         borderRadius: 26,
@@ -196,9 +194,9 @@ export default StyleSheet.create({
         opacity: 0.45,
     },
 
-    /* ===========================
+    /*
           Empty State
-    =========================== */
+ */
 
     emptyContainer: {
         flex: 1,

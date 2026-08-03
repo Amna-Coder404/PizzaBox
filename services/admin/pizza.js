@@ -13,8 +13,8 @@ export const createPizza = async (pizza) => {
             name: pizza.name,
             description: pizza.description,
             image_url: pizza.image_url,
-            category: pizza.category,
 
+            category_id: pizza.category,
             small_price: pizza.small_price,
             medium_price: pizza.medium_price,
             large_price: pizza.large_price,

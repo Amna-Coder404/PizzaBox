@@ -113,6 +113,7 @@ const Signup = () => {
 
                     <AppButton
                         title="Create Account"
+                        icon="account-plus"
                         onPress={handleSignup}
                         style={styles.loginButton}
                     />

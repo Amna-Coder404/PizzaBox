@@ -39,7 +39,7 @@ export const usePizzaStore = create((set) => ({
 
 
     // EDIT PIZZA 
-    addPizza: async (id, pizza) => {
+    editPizza: async (id, pizza) => {
         const data = await updatePizza(id, pizza);
 
         set(state => ({
