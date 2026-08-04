@@ -1,35 +1,42 @@
+
+import { router } from "expo-router";
+import { useEffect } from "react";
 import {
     FlatList,
     Image,
     View
 } from "react-native";
 
-import { router } from "expo-router";
-import { useEffect } from "react";
-
-import styles from "../../../styles/menu.style";
-
 import AppButton from "../../../components/AppButton";
+import Loader from "../../../components/Loading";
 import renderPizzaMenu from "../../../components/pizza/renderPizzaMenu";
+import styles from "../../../styles/menu.style";
 
 import NotFound from "../../../components/NotFound";
 import { usePizzaStore } from "../../../store/admin/pizzaStore";
 
 
 const Menu = () => {
-    const { pizzas, fetchPizzas } = usePizzaStore();
-
+    const { pizzas, fetchPizzas, removePizza, loading } = usePizzaStore();
 
 
     useEffect(() => {
         fetchPizzas();
     }, []);
 
-    const handleAddPizza = () => {
-        router.push("/(admin)/addPizza");
+
+    const handleDelete = async (id) => {
+        await removePizza(id);
+    }
+
+    const handleEdit = (pizza) => {
+        console.log("EDIT PIZZA:", pizza);
+        // later navigate to edit screen
     };
 
-
+    if (loading) {
+        return <Loader />;
+    }
     return (
         <View style={styles.container}>
             <View style={styles.content}>
@@ -39,7 +46,7 @@ const Menu = () => {
                 <View style={styles.header}>
 
                     <Image
-                        source={require("../../../assets/images/app-images/logo.png")}
+                        source={require("../../../assets/images/app-images/logo-header.png")}
                         style={styles.logo}
                     />
 
@@ -47,7 +54,7 @@ const Menu = () => {
                     <AppButton
                         title="Add Pizza"
                         icon="pizza"
-                        onPress={handleAddPizza}
+                        onPress={() => router.push("/(admin)/addPizza")}
                     />
 
                 </View>
@@ -59,7 +66,13 @@ const Menu = () => {
                 <FlatList
                     data={pizzas}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={renderPizzaMenu}
+                    renderItem={({ item }) =>
+                        renderPizzaMenu({
+                            item,
+                            onDelete: handleDelete,
+                            onEdit: handleEdit
+                        })
+                    }
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.listContent}
                     ListEmptyComponent={

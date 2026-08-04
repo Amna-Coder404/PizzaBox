@@ -2,6 +2,8 @@ import { useState } from "react";
 import {
     Alert,
     Image,
+    KeyboardAvoidingView,
+    Platform,
     Text,
     TextInput,
     TouchableOpacity,
@@ -42,111 +44,114 @@ const Login = () => {
 
     return (
 
-        <View style={styles.container}>
-            <View style={styles.content}>
-                {/* Logo Section */}
-                <View style={styles.logoContainer}>
-                    <View style={styles.logoWrapper}>
-                        <Image
-                            source={require("../../../assets/images/app-images/logo.png")}
-                            style={styles.logo}
-                        />
-                    </View>
-                    <Text style={styles.title}>
-                        PizzaBox
-                    </Text>
-                    <Text style={styles.subtitle}>
-                        Fresh Pizza, Fast Delivery 🍕
-                    </Text>
-                </View>
-
-
-                {/* Login Card */}
-                <View style={styles.card}>
-                    <Text style={styles.heading}>
-                        Welcome Back 👋
-                    </Text>
-                    <Text style={styles.description}>
-                        Login to order your favorite pizza
-                    </Text>
-
-
-                    {/* Email */}
-                    <View style={styles.inputBox}>
-                        <Ionicons
-                            name="mail-outline"
-                            size={22}
-                            color={COLORS.primary}
-                        />
-
-                        <TextInput
-                            placeholder="Email Address"
-                            placeholderTextColor={COLORS.placeholderTextColor}
-                            value={email}
-                            onChangeText={setEmail}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            style={styles.input}
-                        />
-
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"
+        }>
+            <View style={styles.container}>
+                <View style={styles.content}>
+                    {/* Logo Section */}
+                    <View style={styles.logoContainer}>
+                        <View style={styles.logoWrapper}>
+                            <Image
+                                source={require("../../../assets/images/app-images/logo.png")}
+                                style={styles.logo}
+                            />
+                        </View>
+                        <Text style={styles.title}>
+                            PizzaBox
+                        </Text>
+                        <Text style={styles.subtitle}>
+                            Fresh Pizza, Fast Delivery 🍕
+                        </Text>
                     </View>
 
-                    {/* Password */}
-                    <View style={styles.inputBox}>
 
-                        <Ionicons
-                            name="lock-closed-outline"
-                            size={22}
-                            color={COLORS.primary}
-                        />
+                    {/* Login Card */}
+                    <View style={styles.card}>
+                        <Text style={styles.heading}>
+                            Welcome Back 👋
+                        </Text>
+                        <Text style={styles.description}>
+                            Login to order your favorite pizza
+                        </Text>
 
-                        <TextInput
-                            placeholder="Password"
-                            placeholderTextColor={COLORS.placeholderTextColor}
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry={!showPassword}
-                            style={styles.input}
-                        />
 
-                        <TouchableOpacity
-                            onPress={() => setShowPassword(!showPassword)}
-                        >
-                            <Ionicons name={
-                                showPassword
-                                    ? "eye-outline"
-                                    : "eye-off-outline"
-                            }
+                        {/* Email */}
+                        <View style={styles.inputBox}>
+                            <Ionicons
+                                name="mail-outline"
                                 size={22}
-                                color={COLORS.textSecondary}
+                                color={COLORS.primary}
                             />
 
-                        </TouchableOpacity>
+                            <TextInput
+                                placeholder="Email Address"
+                                placeholderTextColor={COLORS.placeholderTextColor}
+                                value={email}
+                                onChangeText={setEmail}
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                style={styles.input}
+                            />
+
+                        </View>
+
+                        {/* Password */}
+                        <View style={styles.inputBox}>
+
+                            <Ionicons
+                                name="lock-closed-outline"
+                                size={22}
+                                color={COLORS.primary}
+                            />
+
+                            <TextInput
+                                placeholder="Password"
+                                placeholderTextColor={COLORS.placeholderTextColor}
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                                style={styles.input}
+                            />
+
+                            <TouchableOpacity
+                                onPress={() => setShowPassword(!showPassword)}
+                            >
+                                <Ionicons name={
+                                    showPassword
+                                        ? "eye-outline"
+                                        : "eye-off-outline"
+                                }
+                                    size={22}
+                                    color={COLORS.textSecondary}
+                                />
+
+                            </TouchableOpacity>
+                        </View>
+
+                        <AppButton
+                            title="Login"
+                            icon="login"
+                            onPress={handleLogin}
+
+                        // style={styles.loginButton}
+                        />
                     </View>
 
-                    <AppButton
-                        title="Login"
-                        icon="login"
-                        onPress={handleLogin}
+                    {/* Signup */}
+                    <View style={styles.bottomRow}>
+                        <Text style={styles.normalText}>
+                            Don't have an account?
+                        </Text>
 
-                    // style={styles.loginButton}
-                    />
+                        <Link href="/signup" asChild>
+                            <Text style={styles.link}>SignUp</Text>
+                        </Link>
+                    </View>
                 </View>
 
-                {/* Signup */}
-                <View style={styles.bottomRow}>
-                    <Text style={styles.normalText}>
-                        Don't have an account?
-                    </Text>
-
-                    <Link href="/signup" asChild>
-                        <Text style={styles.link}>SignUp</Text>
-                    </Link>
-                </View>
             </View>
 
-        </View>
-
+        </KeyboardAvoidingView>
     );
 };
 

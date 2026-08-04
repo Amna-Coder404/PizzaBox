@@ -19,7 +19,7 @@ export const createPizza = async (pizza) => {
             medium_price: pizza.medium_price,
             large_price: pizza.large_price,
 
-            available: true,
+            available: pizza.available,
         })
         .select()
         .single();
@@ -42,7 +42,7 @@ export const getPizzas = async () => {
             "created_at",
             { ascending: false }
         )
-        .single();
+
 
     if (error) throw error;
 
@@ -75,7 +75,7 @@ export const updatePizza = async (id, pizza) => {
             name: pizza.name,
             description: pizza.description,
             image_url: pizza.image_url,
-            category: pizza.category,
+            category_id: pizza.category,
 
             small_price: pizza.small_price,
             medium_price: pizza.medium_price,

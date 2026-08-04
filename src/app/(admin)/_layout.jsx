@@ -95,10 +95,10 @@ export default function AdminLayout() {
             <Tabs.Screen
                 name="addPizza"
                 options={{
-                    title: "Add Pizza",
+                    title: "Create",
                     tabBarIcon: ({ color, size, focused }) => (
                         <TabIcon
-                            name="pizza"
+                            name="add-circle"
                             color={color}
                             size={size}
                             focused={focused}

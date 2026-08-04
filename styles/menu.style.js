@@ -13,19 +13,18 @@ export default StyleSheet.create({
         paddingTop: 18,
     },
 
-    /*
-          Header
- */
+    //Header
 
     header: {
         flexDirection: "row",
         justifyContent: "space-between",
+
         alignItems: "center",
         marginBottom: 24,
     },
 
     logo: {
-        width: 200,
+        width: 100,
         height: 100,
         resizeMode: "contain",
     },
@@ -153,13 +152,13 @@ export default StyleSheet.create({
     },
 
     unavailableText: {
-        color: COLORS.red,
+        color: COLORS.error,
         fontSize: 15,
         fontWeight: "600",
     },
 
     description: {
-        color: COLORS.gray,
+        color: COLORS.text,
         fontSize: 14,
         lineHeight: 20,
     },
@@ -177,6 +176,7 @@ export default StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginLeft: 10,
+        gap: 12
     },
 
     actionButton: {
@@ -184,9 +184,11 @@ export default StyleSheet.create({
         height: 52,
         borderRadius: 26,
         borderWidth: 2,
-        borderColor: COLORS.primary,
+
         justifyContent: "center",
         alignItems: "center",
+        borderColor: COLORS.border,
+        borderWidth: 1
     },
 
     disabledButton: {

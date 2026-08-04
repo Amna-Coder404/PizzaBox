@@ -1,17 +1,16 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import COLORS from '../../constants/color';
 import styles from "../../styles/menu.style";
-import AppButton from '../AppButton';
 
-const renderPizzaMenu = ({ item }) => {
+const renderPizzaMenu = ({ item, onDelete, onEdit }) => {
     return (
         <View style={styles.pizzaCard}>
             <Image
                 source={{ uri: item.image_url }}
                 style={styles.pizzaImage}
             />
-
 
 
             <View style={styles.pizzaInfo}>
@@ -38,17 +37,21 @@ const renderPizzaMenu = ({ item }) => {
                     </Text>
                 </View>
                 <Text style={styles.price}>
-                    Rs. {item.small_price}
+                    ${item.small_price}
                 </Text>
 
             </View>
 
             {/* RIGHT */}
-            <AppButton
-                title={"SEE"}
-                onPress={() => console.log("Button are press")} style={styles.addIconButton} />
+            <View style={styles.rightContainer}>
+                <TouchableOpacity style={styles.actionButton} onPress={() => onDelete(item.id)}>
+                    <Ionicons name='trash' size={23} color={COLORS.error} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.actionButton} onPress={() => onEdit(item)}>
+                    <Ionicons name='pencil-outline' size={23} color={COLORS.white} />
+                </TouchableOpacity>
 
-
+            </View>
         </View>
     )
 }
