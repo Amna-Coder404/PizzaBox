@@ -128,24 +128,26 @@ export default StyleSheet.create({
         borderColor: "#262626",
         marginBottom: 16,
         width: "100%",
+        gap: 12
     },
 
     pizzaImage: {
-        width: width * 0.26,
+        width: width * 0.21,
         height: width * 0.26,
-        maxWidth: 110,
-        maxHeight: 110,
+        maxWidth: 140,
+        maxHeight: 120,
         minWidth: 80,
-        minHeight: 80,
+        minHeight: 90,
         borderRadius: 16,
+
     },
 
-
+    rightContent: {
+        justifyContent: "space-between",
+        flexDirection: "row"
+    },
     pizzaInfo: {
-        // flex: 1,
-        marginLeft: 12,
-        // justifyContent: "center",
-        // minWidth: 0, // important for text overflow
+        gap: 12
     },
 
 
@@ -183,6 +185,7 @@ export default StyleSheet.create({
         color: COLORS.error,
         fontSize: 13,
         fontWeight: "600",
+
     },
 
 
@@ -191,7 +194,6 @@ export default StyleSheet.create({
         color: COLORS.text,
         fontSize: 13,
 
-
     },
 
 
@@ -199,6 +201,7 @@ export default StyleSheet.create({
         marginTop: 8,
         color: COLORS.primary,
         fontSize: 20,
+
         fontWeight: "700",
     },
 
@@ -208,7 +211,15 @@ export default StyleSheet.create({
         marginTop: 80,
 
     },
-
+    orderBtn: {
+        backgroundColor: COLORS.primary,
+        paddingHorizontal: 12,
+        borderRadius: 16,
+        justifyContent: "center"
+    },
+    btnText: {
+        color: COLORS.white,
+    },
 
     disabledButton: {
         borderColor: "#444",

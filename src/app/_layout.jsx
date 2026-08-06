@@ -24,7 +24,7 @@ const RootLayout = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [segments]);
+  }, []);
 
   const checkAuth = async () => {
     try {
@@ -46,7 +46,12 @@ const RootLayout = () => {
           router.replace("/(admin)");
         }
       } else {
-        if (currentGroup !== "(customer)") {
+        const allowedCustomerRoutes = [
+          "(customer)",
+          "pizza"
+        ];
+
+        if (!allowedCustomerRoutes.includes(currentGroup)) {
           router.replace("/(customer)");
         }
       }
@@ -76,7 +81,7 @@ const RootLayout = () => {
             <Stack.Screen name="(auth)" />
             <Stack.Screen name="(customer)" />
             <Stack.Screen name="(admin)" />
-            {/* <Stack.Screen name="pizza" /> */}
+            <Stack.Screen name="pizza/[id]" />
           </Stack>
         </SafeAreaView>
       </SafeAreaProvider>

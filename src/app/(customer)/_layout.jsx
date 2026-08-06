@@ -9,9 +9,6 @@ import COLORS from "../../../constants/color";
 
 
 
-
-
-
 function TabIcon({ name, color, size, focused }) {
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [

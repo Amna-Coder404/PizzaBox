@@ -1,9 +1,10 @@
-import { Image, Text, View } from "react-native";
-import { IconButton } from "react-native-paper";
-import COLORS from "../../constants/color";
+
+import { useRouter } from "expo-router";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import styles from "../../styles/customerHome.stlye";
 
 const PizzaCard = ({ pizza, onAddToCart }) => {
+    const router = useRouter();
 
     return (
         <View style={styles.pizzaCard}>
@@ -32,21 +33,15 @@ const PizzaCard = ({ pizza, onAddToCart }) => {
                 </Text>
 
 
-                <Text style={styles.price}>
-                    Rs ${pizza.small_price}
-                </Text>
-
-            </View>
-
-            {/* ADD BUTTON */}
-            <View style={styles.buttonContainer}>
-                <IconButton
-                    icon="cart-plus"
-                    size={24}
-                    iconColor={COLORS.primary}
-
-                // onPress={() => onAddToCart?.(pizza)}
-                />
+                <View style={styles.rightContent}>
+                    <Text style={styles.price}>
+                        ${pizza.small_price}
+                    </Text>
+                    {/* ORDER */}
+                    <TouchableOpacity onPress={() => router.push(`/pizza/${pizza.id}`)} style={styles.orderBtn}>
+                        <Text style={styles.btnText}>Order</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
 

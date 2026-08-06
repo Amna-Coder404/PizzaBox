@@ -51,19 +51,6 @@ export const getPizzas = async () => {
 }
 
 
-// GET SINGLE PIZZA
-export const getPizzaById = async (id) => {
-
-    const { data, error } = await supabase.
-        from("pizzas")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-    if (error) throw error;
-
-    return data;
-}
 
 
 // UPDATE PIZZA
