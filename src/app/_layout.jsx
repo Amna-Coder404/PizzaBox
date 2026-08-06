@@ -17,14 +17,14 @@ const RootLayout = () => {
   useEffect(() => {
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
       checkAuth();
     });
-    return () => {
-      subscription.unsubscribe();
-    }
-  }, []);
 
+    return () => subscription.unsubscribe();
+  }, [segments]);
 
   const checkAuth = async () => {
     try {

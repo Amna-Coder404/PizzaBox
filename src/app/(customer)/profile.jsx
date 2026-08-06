@@ -7,7 +7,7 @@ const Profile = () => {
 
     return (
         <SafeAreaView>
-            <AppButton title={"Logout"} icon="logout" onPress={logout} loading={loading} />
+            <AppButton title={"Logout"} icon="logout" onPress={logout} />
         </SafeAreaView>
     )
 }

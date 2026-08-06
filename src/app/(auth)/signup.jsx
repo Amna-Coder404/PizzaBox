@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-    Alert, Platform, Text, TextInput, TouchableOpacity, View,
+    Alert, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -10,7 +10,7 @@ import AppButton from "../../../components/AppButton";
 import COLORS from "../../../constants/color";
 import styles from "../../../styles/auth.style";
 
-import { KeyboardAvoidingView } from "react-native-web";
+
 import useAuthStore from "../../../store/authStore";
 
 
@@ -32,7 +32,7 @@ const Signup = () => {
             await signup(name, email.trim(), password
             );
             Alert.alert("Success", "Account created successfully");
-            router.replace("/");
+            router.replace("/(customer)");
 
         } catch (error) {
             Alert.alert("Signup Failed", error.message);

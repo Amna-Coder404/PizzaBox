@@ -7,6 +7,7 @@ import {
     View
 } from "react-native";
 
+import { Alert } from "react-native";
 import AppButton from "../../../components/AppButton";
 import Loader from "../../../components/Loading";
 import renderPizzaMenu from "../../../components/pizza/renderPizzaMenu";
@@ -25,10 +26,27 @@ const Menu = () => {
     }, []);
 
 
-    const handleDelete = async (id) => {
-        await removePizza(id);
-    }
 
+    const handleDelete = (id) => {
+        Alert.alert(
+            "Delete Pizza",
+            "Are you sure you want to delete this pizza?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        await removePizza(id);
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
     const handleEdit = (pizza) => {
         console.log("EDIT PIZZA:", pizza);
         // later navigate to edit screen

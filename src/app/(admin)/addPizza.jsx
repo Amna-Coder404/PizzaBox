@@ -72,6 +72,7 @@ const AddPizza = () => {
             );
 
             setPizzaName("");
+            setImage(null);
             setDescription("");
             setCategory(null);
 
