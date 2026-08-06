@@ -81,9 +81,10 @@ export const updatePizza = async (id, pizza) => {
             medium_price: pizza.medium_price,
             large_price: pizza.large_price,
 
-            available: true,
+            available: pizza.available,
         })
         .eq("id", id)
+        .select()
         .single();
 
     if (error) throw error;
@@ -106,16 +107,3 @@ export const deletePizza = async (id) => {
 }
 
 
-// CHANGE AVAILABLE STATUS
-export const togglePizzaAvailability = async (id, available) => {
-    const { data, error } = await supabase.from("pizzas")
-        .update({
-            available
-        })
-        .eq("id", id)
-        .select()
-        .single();
-
-    if (error) throw error
-    return data;
-}

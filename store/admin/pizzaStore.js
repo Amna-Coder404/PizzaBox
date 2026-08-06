@@ -5,7 +5,7 @@
 // You manually manage everything.
 import { create } from "zustand";
 
-import { createPizza, deletePizza, getPizzas, togglePizzaAvailability, updatePizza } from "../../services/admin/pizza";
+import { createPizza, deletePizza, getPizzas, updatePizza } from "../../services/admin/pizza";
 
 
 
@@ -56,19 +56,6 @@ export const usePizzaStore = create((set) => ({
                 state.pizzas.filter(
                     item => item.id !== id
                 )
-        }));
-    },
-
-    // CHANGE AVAILABILITY  
-    changeAvailability: async (id, available) => {
-        const data = await togglePizzaAvailability(id, available);
-
-        set(state => ({
-            pizzas:
-                state.pizzas.map(item =>
-                    item.id === id ? data : item
-                )
-
         }));
     },
 }))

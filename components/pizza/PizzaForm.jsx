@@ -4,16 +4,19 @@ import { useEffect, useState } from "react";
 import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { Switch, TextInput } from "react-native-paper";
-import AppButton from "../../../components/AppButton";
-import COLORS from "../../../constants/color";
-import { uploadPizzaImage } from "../../../services/admin/storage";
-import { useCategoryStore } from "../../../store/admin/categoryStore";
-import { usePizzaStore } from "../../../store/admin/pizzaStore";
-import styles from "../../../styles/addPizza.style";
 
 
-const AddPizza = () => {
-    const { addPizza } = usePizzaStore();
+import { uploadPizzaImage } from "../../services/admin/storage";
+import { useCategoryStore } from "../../store/admin/categoryStore";
+import { usePizzaStore } from "../../store/admin/pizzaStore";
+import styles from "../../styles/addPizza.style";
+
+import COLORS from "../../constants/color";
+import AppButton from "../AppButton";
+
+
+const PizzaForm = ({ mode = "create", pizza = null, onClose, }) => {
+    const { addPizza, editPizza } = usePizzaStore();
     const { categories, fetchCategories } = useCategoryStore();
 
 
@@ -34,7 +37,40 @@ const AddPizza = () => {
     const [image, setImage] = useState(null);
     const [available, setAvailable] = useState(true);
 
-    const handleAddPizza = async () => {
+    // ADD THIS HERE 👇
+    useEffect(() => {
+        if (mode === "edit" && pizza) {
+
+            setPizzaName(pizza.name);
+            setDescription(pizza.description);
+
+            setCategory(
+                pizza.category_id.toString()
+            );
+
+            setSmallPrice(
+                String(pizza.small_price)
+            );
+            setMediumPrice(
+                String(pizza.medium_price)
+            );
+
+            setLargePrice(
+                String(pizza.large_price)
+            );
+
+            setAvailable(
+                pizza.available
+            );
+
+            setImage(
+                pizza.image_url
+            );
+        }
+
+    }, [mode, pizza]);
+
+    const handleSubmit = async () => {
         if (
             !pizzaName ||
             !description ||
@@ -49,13 +85,15 @@ const AddPizza = () => {
             );
             return;
         }
-
         try {
-            let imageUrl = "";
-            if (image) {
+
+            let imageUrl = image;
+            // upload only new selected image
+            if (image && !image.startsWith("http")) {
                 imageUrl = await uploadPizzaImage(image);
             }
-            await addPizza({
+
+            const pizzaData = {
                 name: pizzaName,
                 description,
                 category,
@@ -63,28 +101,37 @@ const AddPizza = () => {
                 small_price: Number(smallPrice),
                 medium_price: Number(mediumPrice),
                 large_price: Number(largePrice),
-                available
-            });
+                available: pizza.available,
+            };
+
+
+            if (mode === "create") {
+                await addPizza(pizzaData);
+                Alert.alert("Success", "Pizza added successfully."
+                );
+            } else {
+
+                await editPizza(
+                    pizza.id,
+                    pizzaData
+                );
+                Alert.alert(
+                    "Success",
+                    "Pizza updated successfully."
+                );
+            }
+
+
+            onClose?.();
+        } catch (error) {
 
             Alert.alert(
-                "Success",
-                "Pizza added successfully."
+                "Error",
+                error.message
             );
 
-            setPizzaName("");
-            setImage(null);
-            setDescription("");
-            setCategory(null);
-
-            setSmallPrice("");
-            setMediumPrice("");
-            setLargePrice("");
-
-        } catch (error) {
-            Alert.alert("Error", error.message);
         }
     };
-
     // IMAGE PICKER 
     const pickImage = async () => {
         const permisstion = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -106,12 +153,20 @@ const AddPizza = () => {
         }
     }
 
+
+
     return (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-            <Text style={styles.title}>
-                Add New Pizza 🍕
-            </Text>
+            <View style={styles.header}>
+                <Text style={styles.title}>
+                    {mode === "create" ? "  Add New Pizza 🍕" : "Update Pizza 🍕"}
+                </Text>
 
+                <TouchableOpacity onPress={() => onClose()} >
+                    <Ionicons name="close" size={23} color={"white"} />
+                </TouchableOpacity>
+
+            </View>
             <TouchableOpacity style={styles.imagePickerContainer} onPress={pickImage} >
                 {image ? (
                     <Image
@@ -210,13 +265,13 @@ const AddPizza = () => {
 
 
             <AppButton
-                title="Add Pizza"
+                title={mode === "create" ? "Add Pizza" : "Update Pizza"}
                 icon="pizza"
-                onPress={handleAddPizza}
+                onPress={handleSubmit}
             />
 
         </ScrollView>
     );
 };
 
-export default AddPizza;
+export default PizzaForm;

@@ -1,11 +1,6 @@
 
-import { router } from "expo-router";
-import { useEffect } from "react";
-import {
-    FlatList,
-    Image,
-    View
-} from "react-native";
+import { useEffect, useState } from "react";
+import { FlatList, Image, View } from "react-native";
 
 import { Alert } from "react-native";
 import AppButton from "../../../components/AppButton";
@@ -14,12 +9,14 @@ import renderPizzaMenu from "../../../components/pizza/renderPizzaMenu";
 import styles from "../../../styles/menu.style";
 
 import NotFound from "../../../components/NotFound";
+import PizzaModal from "../../../components/pizza/PizzaModal";
 import { usePizzaStore } from "../../../store/admin/pizzaStore";
-
 
 const Menu = () => {
     const { pizzas, fetchPizzas, removePizza, loading } = usePizzaStore();
-
+    const [showPizzaModal, setShowPizzaModal] = useState(false);
+    const [mode, setMode] = useState("create");
+    const [selectedPizza, setSelectedPizza] = useState(null);
 
     useEffect(() => {
         fetchPizzas();
@@ -48,10 +45,10 @@ const Menu = () => {
         );
     };
     const handleEdit = (pizza) => {
-        console.log("EDIT PIZZA:", pizza);
-        // later navigate to edit screen
+        setSelectedPizza(pizza);
+        setMode("edit");
+        setShowPizzaModal(true);
     };
-
     if (loading) {
         return <Loader />;
     }
@@ -72,7 +69,11 @@ const Menu = () => {
                     <AppButton
                         title="Add Pizza"
                         icon="pizza"
-                        onPress={() => router.push("/(admin)/addPizza")}
+                        onPress={() => {
+                            setMode("create");
+                            setSelectedPizza(null);
+                            setShowPizzaModal(true);
+                        }}
                     />
 
                 </View>
@@ -82,7 +83,7 @@ const Menu = () => {
                 {/* PIZZA LIST */}
 
                 <FlatList
-                    data={pizzas}
+                    data={pizzas.filter(Boolean)}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) =>
                         renderPizzaMenu({
@@ -103,7 +104,12 @@ const Menu = () => {
                 />
             </View>
 
-
+            <PizzaModal
+                visible={showPizzaModal}
+                onClose={() => setShowPizzaModal(false)}
+                mode={mode}
+                pizza={selectedPizza}
+            />
         </View>
 
     );

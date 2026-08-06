@@ -92,20 +92,7 @@ export default function AdminLayout() {
                     ),
                 }}
             />
-            <Tabs.Screen
-                name="addPizza"
-                options={{
-                    title: "Create",
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <TabIcon
-                            name="add-circle"
-                            color={color}
-                            size={size}
-                            focused={focused}
-                        />
-                    ),
-                }}
-            />
+
             <Tabs.Screen
                 name="profile"
                 options={{

@@ -9,7 +9,18 @@ const styles = StyleSheet.create({
         padding: 20,
         paddingBottom: 120,
     },
-
+    modalContainer: {
+        backgroundColor: "#151515",
+        marginHorizontal: 20,
+        borderRadius: 20,
+        padding: 15,
+        maxHeight: "90%",
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "baseline"
+    },
     title: {
         color: COLORS.white,
         fontSize: 26,

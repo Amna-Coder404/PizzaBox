@@ -128,7 +128,7 @@ const Signup = () => {
                             Already have account?
                         </Text>
 
-                        <Link href="/login" asChild>
+                        <Link href="/" asChild>
                             <TouchableOpacity>
                                 <Text style={styles.link}>
                                     Login
