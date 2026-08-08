@@ -7,12 +7,15 @@ import { checkSession } from "../../services/auth";
 import { getProfile } from "../../services/profile";
 
 import { PaperProvider } from "react-native-paper";
+
+import useAuthStore from "../../store/authStore";
+
 const RootLayout = () => {
   const router = useRouter();
   const segments = useSegments();
 
   const [loading, setLoading] = useState(true);
-
+  const { setSession, setProfile } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
@@ -39,8 +42,11 @@ const RootLayout = () => {
         return;
       }
 
-      const profile = await getProfile(session.user.id);
 
+
+      const profile = await getProfile(session.user.id);
+      setSession(session);
+      setProfile(profile);
       if (profile?.role === "admin") {
         if (currentGroup !== "(admin)") {
           router.replace("/(admin)");

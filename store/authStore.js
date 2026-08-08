@@ -1,10 +1,12 @@
 import { create } from "zustand";
+
 import {
     loginUser,
     logoutUser,
-    signUp
+    signUp,
 } from "../services/auth";
 
+import { getProfile } from "../services/profile";
 
 const useAuthStore = create((set) => ({
     session: null,
@@ -18,56 +20,75 @@ const useAuthStore = create((set) => ({
 
         try {
             const session = await loginUser(email, password);
+
+            const profile = await getProfile(session.user.id);
+
             set({
                 session,
-                user: session.user
+                user: session.user,
+                profile,
             });
 
             return session;
+
         } catch (error) {
             throw error;
+
         } finally {
             set({ loading: false });
         }
     },
 
     // Signup
-
-    signup: async (name, email, password, role) => {
+    signup: async (
+        name,
+        email,
+        password,
+        role = "customer"
+    ) => {
         set({ loading: true });
 
         try {
-            const user = await signUp(name, email, password, role);
+            const user = await signUp(
+                name,
+                email,
+                password,
+                role
+            );
+
             return user;
 
         } catch (error) {
-
             throw error;
+
         } finally {
             set({ loading: false });
         }
     },
 
-    // Logout 
+    // Logout
     logout: async () => {
         await logoutUser();
 
-        set({ session: null, user: null, profile: null });
+        set({
+            session: null,
+            user: null,
+            profile: null,
+        });
     },
 
     // Set session
-    setSession: (session) => set({
-        session,
-        user: session?.user ?? null,
-    }),
+    setSession: (session) =>
+        set({
+            session,
+            user: session?.user ?? null,
+        }),
 
-
-    // profile
-    setProfile: (profile) => set({
-        profile,
-    }),
-
-
+    // Set profile
+    setProfile: (profile) =>
+        set({
+            profile,
+        }),
 }));
 
 export default useAuthStore;

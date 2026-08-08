@@ -13,9 +13,9 @@ export default StyleSheet.create({
         paddingTop: 20,
     },
 
-    /* ===========================
+    /*
           Header Logo
-    =========================== */
+    */
 
     logoContainer: {
         alignItems: "center",
@@ -201,3 +201,4 @@ export default StyleSheet.create({
         height: 30,
     },
 });
+
