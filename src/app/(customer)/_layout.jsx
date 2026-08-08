@@ -41,20 +41,14 @@ export default function CustomerLayout() {
 
                 tabBarStyle: {
                     position: "absolute",
-                    left: 16,
-                    right: 16,
-                    bottom: 20,
-
                     height: 78,
-                    borderRadius: 20,
-
                     backgroundColor: "#1B1B1B",
                     borderTopWidth: 0,
-
                     elevation: 10,
-
                     shadowOpacity: 0.15,
                     shadowRadius: 10,
+                    borderTopRightRadius: 25,
+                    borderTopLeftRadius: 25,
                 },
 
                 tabBarLabelStyle: {

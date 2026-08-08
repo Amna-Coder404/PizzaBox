@@ -9,10 +9,12 @@ import COLORS from '../../../constants/color';
 import { useCustomerPizzaStore } from '../../../store/customer/pizzaStore';
 import styles from "../../../styles/pizzaDetail.style";
 
+import useCartStore from "../../../store/cartStore";
 
 const PizzaDetail = () => {
     const { id } = useLocalSearchParams();
     const router = useRouter();
+    const { addToCart } = useCartStore();
     const { fetchPizzaById, selectedPizza, loading } = useCustomerPizzaStore();
 
 
@@ -36,6 +38,20 @@ const PizzaDetail = () => {
         }
 
         return selectedPizza.small_price;
+    }
+
+    const handleAddToCart = () => {
+        addToCart({
+            cartId: `${selectedPizza.id}-${selectedSize}`,
+            id: selectedPizza.id,
+            name: selectedPizza.name,
+            image_url: selectedPizza.image_url,
+            size: selectedSize,
+            price: getPrice(),
+            quantity,
+        });
+
+        router.push("/(customer)/cart");
     }
 
     const totalPrice = getPrice() * quantity;
@@ -172,10 +188,11 @@ const PizzaDetail = () => {
                 {/* CART BUTTON */}
                 <View style={styles.buttonContainer}>
                     <View style={styles.button}>
-                        <AppButton title="Add To Cart" icon="cart" />
+                        <AppButton title="Add To Cart" icon="cart" onPress={handleAddToCart} />
                     </View>
+                    {/* TODO LATER : add payment methond using Strip */}
                     <View style={styles.button}>
-                        <AppButton title="Add To Cart" icon="cart" />
+                        <AppButton title="Order" icon="card" />
                     </View>
                 </View>
 

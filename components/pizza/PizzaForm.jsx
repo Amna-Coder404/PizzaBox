@@ -101,7 +101,7 @@ const PizzaForm = ({ mode = "create", pizza = null, onClose, }) => {
                 small_price: Number(smallPrice),
                 medium_price: Number(mediumPrice),
                 large_price: Number(largePrice),
-                available: pizza.available,
+                available: available,
             };
 
 
