@@ -1,12 +1,12 @@
+import { StripeProvider } from "@stripe/stripe-react-native";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
+import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { default as Loading } from "../../components/Loading";
 import { supabase } from "../../lib/supabase";
 import { checkSession } from "../../services/auth";
 import { getProfile } from "../../services/profile";
-
-import { PaperProvider } from "react-native-paper";
 
 import useAuthStore from "../../store/authStore";
 
@@ -76,22 +76,28 @@ const RootLayout = () => {
 
 
   return (
-    <PaperProvider>
-      <SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1 }}>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(customer)" />
-            <Stack.Screen name="(admin)" />
-            <Stack.Screen name="pizza/[id]" />
-          </Stack>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </PaperProvider>
+    <StripeProvider
+      publishableKey={
+        process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY
+      }
+    >
+      <PaperProvider>
+        <SafeAreaProvider>
+          <SafeAreaView style={{ flex: 1 }}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(customer)" />
+              <Stack.Screen name="(admin)" />
+              <Stack.Screen name="pizza/[id]" />
+            </Stack>
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </PaperProvider>
+    </StripeProvider>
   );
 };
 

@@ -1,11 +1,28 @@
+
 import { supabase } from "../lib/supabase";
 
-
 export const createOrder = async (orderData, items) => {
-    // Create Order
+    // 1. Get logged-in user
+    const {
+        data: { user },
+        error: userError,
+    } = await supabase.auth.getUser();
 
-    const { data: order, error: orderError } = await supabase.from("orders")
-        .insert(orderData)
+    if (userError) {
+        throw userError;
+    }
+
+    if (!user) {
+        throw new Error("User is not authenticated.");
+    }
+
+    // 2. Create order
+    const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+            ...orderData,
+            user_id: user.id,
+        })
         .select()
         .single();
 
@@ -13,27 +30,24 @@ export const createOrder = async (orderData, items) => {
         throw orderError;
     }
 
-    // 2. Add Order Items
+    // 3. Create order items
     const orderItems = items.map((item) => ({
         order_id: order.id,
         pizza_id: item.id,
-        name: item.name,
-        size: item.size,
         quantity: item.quantity,
-        price: item.price
-    }))
+        size: item.size,
+        unit_price: item.price,
+    }));
 
-    const { error: itemError } = await
-        supabase.from("order_items")
-            .insert(orderItems)
+    const { error: itemError } = await supabase
+        .from("order_items")
+        .insert(orderItems);
 
     if (itemError) {
         throw itemError;
     }
 
-
-
+    // 4. Return created order
     return order;
-}
+};
 
-// 

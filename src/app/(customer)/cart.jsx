@@ -1,17 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import { useStripe } from "@stripe/stripe-react-native";
+import { Alert, FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import AppButton from "../../../components/AppButton";
 import NotFound from "../../../components/NotFound";
 import COLORS from "../../../constants/color";
 import { createOrder } from "../../../services/order";
+import { createPaymentIntent } from "../../../services/payment";
 import useCartStore from "../../../store/cartStore";
 import styles from "../../../styles/cart.style";
 
-
-
 const Cart = () => {
-
-    const { cart, increaseQuantity, decreaseQuantity, removeFromCart } = useCartStore();
+    const { initPaymentSheet, presentPaymentSheet } = useStripe();
+    const { cart, increaseQuantity, decreaseQuantity, removeFromCart, clearCart } = useCartStore();
     const subtotal = cart.reduce((total, item) => {
         return total + item.price * item.quantity;
     }, 0);
@@ -21,21 +21,58 @@ const Cart = () => {
 
     const handleCheckout = async () => {
         try {
-            const orderData = {
-                subtotal,
-                delivery_fee: deliveryFee,
-                total,
-                status: "pending",
-                payment_status: "unpaid"
-            };
-            const order = await createOrder(orderData, cart);
-            console.log("ORDER CREATED:", order);
-            clearCart();
+            if (cart.length === 0) {
+                return;
+            }
+            // Create PaymentIntent using the real cart total
+            const clientSecret = await createPaymentIntent(total);
 
+            // Initialize Stripe PaymentSheet
+            const { error: initError } = await initPaymentSheet({
+                merchantDisplayName: "PizzaBox",
+                paymentIntentClientSecret: clientSecret,
+                allowsDelayedPaymentMethods: false,
+            });
+
+            if (initError) {
+                console.log("PAYMENT SHEET INIT ERROR:", initError);
+                return;
+            }
+
+            // Open Stripe payment screen
+            const { error: paymentError } = await presentPaymentSheet();
+
+            if (paymentError) {
+                console.log("PAYMENT ERROR:", paymentError);
+                return;
+            }
+            // Payment succeeded
+            console.log("PAYMENT SUCCESS");
+            // Create Order AFTER payment succeeds
+            const orderData = {
+                total_price: total,
+                delivery_fee: deliveryFee,
+                order_status: "pending",
+                payment_status: "paid"
+            };
+            console.log("ORDER DATA:", orderData);
+            const order = await createOrder(orderData, cart);
+
+            clearCart();
+            // 6. Show success alert
+            Alert.alert(
+                "Order Confirmed 🎉",
+                `Your order has been placed successfully!\n\nTotal: $${total}`,
+                [
+                    {
+                        text: "OK",
+                    },
+                ]
+            );
         } catch (error) {
-            console.log(
-                "ORDER ERROR:",
-                error.message
+            Alert.alert("Order Failed",
+                error?.message ||
+                "Something went wrong while placing your order."
             );
         }
     }

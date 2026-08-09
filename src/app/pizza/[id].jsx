@@ -1,17 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-
+import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import AppButton from "../../../components/AppButton";
 import Loader from "../../../components/Loading";
 import COLORS from '../../../constants/color';
+import { createPaymentIntent } from "../../../services/payment";
 import { useCustomerPizzaStore } from '../../../store/customer/pizzaStore';
 import styles from "../../../styles/pizzaDetail.style";
 
+import { useStripe } from '@stripe/stripe-react-native';
+import { createOrder } from '../../../services/order';
 import useCartStore from "../../../store/cartStore";
 
 const PizzaDetail = () => {
+    const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const { id } = useLocalSearchParams();
     const router = useRouter();
     const { addToCart } = useCartStore();
@@ -54,9 +57,84 @@ const PizzaDetail = () => {
         router.push("/(customer)/cart");
     }
 
+
     const totalPrice = getPrice() * quantity;
     const sizes = ["small", "medium", "large"];
 
+    const handleDirectOrder = async () => {
+        try {
+            const deliveryFee = 200;
+            const total = totalPrice + deliveryFee;
+
+            // 1. Create Stripe PaymentIntent
+            const clientSecret = await createPaymentIntent(total);
+
+            // 2. Initialize PaymentSheet
+            const { error: initError } = await initPaymentSheet({
+                merchantDisplayName: "PizzaBox",
+                paymentIntentClientSecret: clientSecret,
+                allowsDelayedPaymentMethods: false,
+            });
+
+            if (initError) {
+                console.log("PAYMENT SHEET ERROR:", initError);
+                return;
+            }
+
+            // 3. Open Stripe PaymentSheet
+            const { error: paymentError } = await presentPaymentSheet();
+
+            if (paymentError) {
+                console.log("PAYMENT ERROR:", paymentError);
+                return;
+            }
+
+
+
+            // 4. Order data
+            const orderData = {
+                total_price: total,
+                delivery_fee: deliveryFee,
+                order_status: "pending",
+                payment_status: "paid",
+            };
+
+            console.log("ORDER DATA:", orderData);
+
+            // 5. Selected pizza becomes the order item
+            const orderItem = {
+                id: selectedPizza.id,
+                name: selectedPizza.name,
+                size: selectedSize,
+                quantity: quantity,
+                price: getPrice(),
+            };
+
+
+            // 6. Create order
+            const order = await createOrder(
+                orderData,
+                [orderItem]
+            );
+
+
+            // Success alert
+            Alert.alert(
+                "Order Confirmed 🎉",
+                `Your order has been placed successfully!\n\nTotal: $${total}`,
+                [
+                    {
+                        text: "OK",
+                        onPress: () => router.replace("/(customer)"),
+                    },
+                ]
+            );
+        } catch (error) {
+            Alert.alert("Order Failed",
+                error?.message || "Something went wrong. Please try again."
+            );
+        }
+    };
     return (
         <ScrollView style={styles.container}>
             {/* HEADER */}
@@ -192,7 +270,7 @@ const PizzaDetail = () => {
                     </View>
                     {/* TODO LATER : add payment methond using Strip */}
                     <View style={styles.button}>
-                        <AppButton title="Order" icon="card" />
+                        <AppButton title="Order" icon="card" onPress={handleDirectOrder} />
                     </View>
                 </View>
 
