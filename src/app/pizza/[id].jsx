@@ -11,6 +11,7 @@ import styles from "../../../styles/pizzaDetail.style";
 
 import { useStripe } from '@stripe/stripe-react-native';
 import { createOrder } from '../../../services/order';
+import useAuthStore from '../../../store/authStore';
 import useCartStore from "../../../store/cartStore";
 
 const PizzaDetail = () => {
@@ -20,7 +21,7 @@ const PizzaDetail = () => {
     const { addToCart } = useCartStore();
     const { fetchPizzaById, selectedPizza, loading } = useCustomerPizzaStore();
 
-
+    const { profile } = useAuthStore();
     const [selectedSize, setSelectedSize] = useState("small");
     const [quantity, setQuantity] = useState(1);
 
@@ -51,6 +52,7 @@ const PizzaDetail = () => {
             image_url: selectedPizza.image_url,
             size: selectedSize,
             price: getPrice(),
+            delivery_address: profile.address,
             quantity,
         });
 
@@ -63,6 +65,27 @@ const PizzaDetail = () => {
 
     const handleDirectOrder = async () => {
         try {
+            if (!profile?.address?.trim()) {
+                Alert.alert(
+                    "Delivery Address Required",
+                    "Please add your delivery address before placing an order.",
+                    [
+                        {
+                            text: "Add Address",
+                            onPress: () => {
+                                router.push("/(customer)/profile");
+                            },
+                        },
+                        {
+                            text: "Cancel",
+                            style: "cancel",
+                        },
+                    ]
+                );
+
+                return;
+            }
+
             const deliveryFee = 200;
             const total = totalPrice + deliveryFee;
 
@@ -89,14 +112,13 @@ const PizzaDetail = () => {
                 return;
             }
 
-
-
             // 4. Order data
             const orderData = {
                 total_price: total,
                 delivery_fee: deliveryFee,
                 order_status: "pending",
                 payment_status: "paid",
+                delivery_address: profile.address,
             };
 
             console.log("ORDER DATA:", orderData);
@@ -279,5 +301,6 @@ const PizzaDetail = () => {
         </ScrollView>
     )
 }
+
 
 export default PizzaDetail

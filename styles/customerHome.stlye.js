@@ -8,7 +8,8 @@ export default StyleSheet.create({
         flex: 1,
         backgroundColor: COLORS.background,
         gap: 12,
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
+        paddingBottom: 72
     },
 
     content: {
@@ -57,7 +58,8 @@ export default StyleSheet.create({
         borderWidth: 1,
         borderRadius: 12,
         // width: 400,
-        height: 210
+        height: 210,
+        marginBottom: 12
     },
     bannerImage: {
         width: "100%",

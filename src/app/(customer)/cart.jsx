@@ -6,10 +6,12 @@ import NotFound from "../../../components/NotFound";
 import COLORS from "../../../constants/color";
 import { createOrder } from "../../../services/order";
 import { createPaymentIntent } from "../../../services/payment";
+import useAuthStore from "../../../store/authStore";
 import useCartStore from "../../../store/cartStore";
 import styles from "../../../styles/cart.style";
 
 const Cart = () => {
+    const { profile } = useAuthStore();
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const { cart, increaseQuantity, decreaseQuantity, removeFromCart, clearCart } = useCartStore();
     const subtotal = cart.reduce((total, item) => {
@@ -53,7 +55,9 @@ const Cart = () => {
                 total_price: total,
                 delivery_fee: deliveryFee,
                 order_status: "pending",
+                delivery_address: profile.address,
                 payment_status: "paid"
+
             };
             console.log("ORDER DATA:", orderData);
             const order = await createOrder(orderData, cart);

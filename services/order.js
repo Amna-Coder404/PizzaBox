@@ -37,6 +37,7 @@ export const createOrder = async (orderData, items) => {
         quantity: item.quantity,
         size: item.size,
         unit_price: item.price,
+
     }));
 
     const { error: itemError } = await supabase

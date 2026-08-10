@@ -8,7 +8,8 @@ export const createProfile = async (
     userId,
     name,
     email,
-    role = "customer"
+    role = "customer",
+    address = ""
 ) => {
     const { data, error } = await supabase
         .from("profiles")
@@ -17,6 +18,7 @@ export const createProfile = async (
             name,
             email,
             role,
+            address,
             avatar_url: DEFAULT_AVATAR,
         })
         .select()
