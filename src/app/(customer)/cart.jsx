@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useStripe } from "@stripe/stripe-react-native";
+import { useRouter } from "expo-router";
 import { Alert, FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import AppButton from "../../../components/AppButton";
 import NotFound from "../../../components/NotFound";
@@ -11,6 +12,7 @@ import useCartStore from "../../../store/cartStore";
 import styles from "../../../styles/cart.style";
 
 const Cart = () => {
+    const router = useRouter();
     const { profile } = useAuthStore();
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const { cart, increaseQuantity, decreaseQuantity, removeFromCart, clearCart } = useCartStore();
@@ -23,6 +25,26 @@ const Cart = () => {
 
     const handleCheckout = async () => {
         try {
+            if (!profile?.address?.trim()) {
+                Alert.alert(
+                    "Delivery Address Required",
+                    "Please add your delivery address before placing an order.",
+                    [
+                        {
+                            text: "Add Address",
+                            onPress: () => {
+                                router.push("/(customer)/profile");
+                            },
+                        },
+                        {
+                            text: "Cancel",
+                            style: "cancel",
+                        },
+                    ]
+                );
+
+                return;
+            }
             if (cart.length === 0) {
                 return;
             }
@@ -48,8 +70,7 @@ const Cart = () => {
                 console.log("PAYMENT ERROR:", paymentError);
                 return;
             }
-            // Payment succeeded
-            console.log("PAYMENT SUCCESS");
+
             // Create Order AFTER payment succeeds
             const orderData = {
                 total_price: total,
@@ -59,7 +80,7 @@ const Cart = () => {
                 payment_status: "paid"
 
             };
-            console.log("ORDER DATA:", orderData);
+
             const order = await createOrder(orderData, cart);
 
             clearCart();
@@ -81,7 +102,7 @@ const Cart = () => {
         }
     }
 
-    // Redner Cards
+    // Render Cards
     const renderCartItem = ({ item }) => (
         <View style={styles.card} >
             <Image source={{ uri: item.image_url }} style={styles.image} />

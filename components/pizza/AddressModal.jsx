@@ -1,11 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import {
-    Modal,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Modal, Text, TextInput, TouchableOpacity, View, } from "react-native";
 
 import COLORS from "../../constants/color";
 import styles from "../../styles/addressModal.style";
