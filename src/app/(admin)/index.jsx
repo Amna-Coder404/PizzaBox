@@ -61,7 +61,7 @@ const Order = () => {
                     item.id.toString()
                 }
                 renderItem={({ item }) => (
-                    <OrderCard order={item} />
+                    <OrderCard order={item} onStatusUpdated={fetchOrders} />
                 )}
                 showsVerticalScrollIndicator={false}
                 refreshControl={

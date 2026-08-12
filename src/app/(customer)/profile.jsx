@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
 import AddressModal from "../../../components/pizza/AddressModal";
+import MyOrders from "../../../components/pizza/MyOrders";
 import COLORS from "../../../constants/color";
 import { updateProfile } from "../../../services/profile";
 import useAuthStore from '../../../store/authStore';
@@ -13,6 +14,8 @@ const Profile = () => {
     const [visible, setVisible] = useState(false);
     const [address, setAddress] = useState(profile?.address || "");
     const [saving, setSaving] = useState(false);
+    const [showOrders, setShowOrders] = useState(false);
+
 
 
     const handleEditAddress = () => {
@@ -56,6 +59,13 @@ const Profile = () => {
         } finally {
             setSaving(false);
         }
+    }
+    if (showOrders) {
+        return (
+            <MyOrders
+                onBack={() => setShowOrders(false)}
+            />
+        );
     }
     return (
         <View style={styles.container}>
@@ -114,13 +124,13 @@ const Profile = () => {
             </View>
 
             {/* MENU CARDS */}
-            <View style={styles.menuCard}>
+            <TouchableOpacity style={styles.menuCard} onPress={() => setShowOrders(true)}>
                 <View style={styles.menuIconContainer}>
                     <Ionicons name="receipt-outline" size={24} color={COLORS.primary} />
                 </View>
                 <Text style={styles.menuText}>My Orders</Text>
                 <Ionicons name="chevron-forward" size={22} color="#AAAAAA" />
-            </View>
+            </TouchableOpacity>
 
             {/* LOGOUt CARDS */}
             <TouchableOpacity style={styles.logoutCard} onPress={logout}>

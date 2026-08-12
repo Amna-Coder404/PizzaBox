@@ -2,13 +2,60 @@ import { Ionicons } from "@expo/vector-icons";
 import {
     Image,
     Text,
-    View,
+    TouchableOpacity,
+    View
 } from "react-native";
 
+import { useState } from "react";
 import COLORS from "../../constants/color";
+import { updateOrderStatus } from "../../services/admin/orders";
 import styles from "../../styles/orderCard.style";
 
-const OrderCard = ({ order }) => {
+
+const STATUS_OPTIONS = [
+    {
+        value: "pending",
+        label: "Pending",
+    },
+    {
+        value: "preparing",
+        label: "Preparing",
+    },
+    {
+        value: "out_for_delivery",
+        label: "Out for Delivery",
+    },
+    {
+        value: "delivered",
+        label: "Delivered",
+    },
+];
+
+
+const OrderCard = ({ order, onStatusUpdated }) => {
+    const [updating, setUpdating] = useState(false);
+    const [showStatusModal, setShowStatusModal] = useState(false);
+
+    const handleStatusChange = async (status) => {
+        if (status === order.order_status) {
+            setShowStatusModal(false);
+            return;
+        }
+
+        try {
+            setUpdating(true);
+            await updateOrderStatus(order.id, status);
+
+            setShowStatusModal(false);
+            // Tell paren to fetch orders again
+            onStatusUpdated?.();
+        } catch (error) {
+            console.log("Status updateed ERROR!", error);
+        } finally {
+            setUpdating(false);
+        }
+
+    }
 
     return (
         <View style={styles.card}>
@@ -25,11 +72,75 @@ const OrderCard = ({ order }) => {
                         {new Date(order.created_at).toLocaleDateString()}
                     </Text>
                 </View>
+                {/* STATUS OPTIONS */}
 
-                <View style={styles.statusBadge}>
-                    <Text style={styles.statusText}>
-                        {order.order_status}
-                    </Text>
+                {/* STATUS DROPDOWN */}
+                <View style={styles.dropdownContainer}>
+
+                    <TouchableOpacity
+                        style={styles.statusBadge}
+                        onPress={() => setShowStatusModal(!showStatusModal)}
+                        disabled={updating}
+                    >
+                        <Text style={styles.statusText}>
+                            {
+                                STATUS_OPTIONS.find(
+                                    (status) =>
+                                        status.value === order.order_status
+                                )?.label || "Pending"
+                            }
+                        </Text>
+
+                        <Ionicons
+                            name={
+                                showStatusModal
+                                    ? "chevron-up"
+                                    : "chevron-down"
+                            }
+                            size={18}
+                            color={COLORS.primary}
+                        />
+                    </TouchableOpacity>
+
+                    {showStatusModal && (
+                        <View style={styles.dropdown}>
+
+                            {STATUS_OPTIONS.map((status) => (
+                                <TouchableOpacity
+                                    key={status.value}
+                                    style={[
+                                        styles.statusOption,
+                                        order.order_status === status.value &&
+                                        styles.selectedStatus,
+                                    ]}
+                                    onPress={() =>
+                                        handleStatusChange(status.value)
+                                    }
+                                    disabled={updating}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.statusOptionText,
+                                            order.order_status === status.value &&
+                                            styles.selectedStatusText,
+                                        ]}
+                                    >
+                                        {status.label}
+                                    </Text>
+
+                                    {order.order_status === status.value && (
+                                        <Ionicons
+                                            name="checkmark"
+                                            size={20}
+                                            color={COLORS.primary}
+                                        />
+                                    )}
+                                </TouchableOpacity>
+                            ))}
+
+                        </View>
+                    )}
+
                 </View>
 
             </View>

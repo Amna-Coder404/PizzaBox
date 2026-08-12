@@ -34,7 +34,7 @@ export const getAdminOrders = async () => {
                 .from("profiles")
                 .select("id, name, email, avatar_url")
                 .eq("id", order.user_id)
-                .single();
+                .maybeSingle();
 
             if (error) {
                 console.log("PROFILE ERROR:", error.message);
@@ -46,5 +46,24 @@ export const getAdminOrders = async () => {
             };
         })
     );
+
+
     return ordersWithProfiles
 };
+
+// Update Order Status
+export const updateOrderStatus = async (orderId, status) => {
+    const { data, error } = await supabase.from("orders")
+        .update({
+            order_status: status,
+        })
+        .eq("id", orderId)
+        .select()
+
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}

@@ -33,19 +33,21 @@ export default StyleSheet.create({
         marginTop: 4,
     },
 
+    // STATUS
     statusBadge: {
-        backgroundColor: COLORS.primary,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 5,
+
+        backgroundColor: "#2A1A12",
+        borderWidth: 1,
+        borderColor: COLORS.primary,
+
+        paddingHorizontal: 10,
+        paddingVertical: 7,
         borderRadius: 20,
     },
 
-    statusText: {
-        color: "#fff",
-        fontSize: 11,
-        fontWeight: "700",
-        textTransform: "capitalize",
-    },
 
     /* CUSTOMER */
 
@@ -185,5 +187,77 @@ export default StyleSheet.create({
         fontWeight: "800",
         marginTop: 2,
     },
+    dropdownContainer: {
+        position: "relative",
+        zIndex: 100,
+    },
 
+    statusBadge: {
+        minWidth: 130,
+        height: 40,
+        paddingHorizontal: 12,
+        borderRadius: 10,
+        backgroundColor: COLORS.surface,
+        borderWidth: 1,
+        borderColor: COLORS.primary,
+
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+
+    statusText: {
+        color: COLORS.primary,
+        fontSize: 14,
+        fontWeight: "600",
+    },
+
+    dropdown: {
+        position: "absolute",
+        top: 46,
+        right: 0,
+        width: 180,
+
+        backgroundColor: COLORS.card,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: COLORS.surface,
+
+        padding: 6,
+
+        zIndex: 1000,
+
+        elevation: 8,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+    },
+
+    statusOption: {
+        minHeight: 42,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+
+    selectedStatus: {
+        backgroundColor: COLORS.surface,
+    },
+
+    statusOptionText: {
+        color: "#fff",
+        fontSize: 14,
+    },
+
+    selectedStatusText: {
+        color: COLORS.primary,
+        fontWeight: "600",
+    },
 });
