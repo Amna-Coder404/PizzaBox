@@ -187,10 +187,7 @@ const MyOrders = ({ onBack }) => {
                                     Payment
                                 </Text>
 
-                                <Text
-                                    style={
-                                        styles.paymentStatus
-                                    }
+                                <Text style={styles.paymentStatus}
                                 >
                                     {item.payment_status}
                                 </Text>

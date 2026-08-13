@@ -2,8 +2,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import MyOrders from "../../../components/orders/MyOrders";
 import AddressModal from "../../../components/pizza/AddressModal";
-import MyOrders from "../../../components/pizza/MyOrders";
 import COLORS from "../../../constants/color";
 import { updateProfile } from "../../../services/profile";
 import useAuthStore from '../../../store/authStore';

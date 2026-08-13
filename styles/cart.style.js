@@ -113,22 +113,31 @@ export default StyleSheet.create({
     // FOOTER
     bottomContainer: {
         position: "absolute",
-
         left: 0,
         right: 0,
         bottom: 98,
 
         backgroundColor: COLORS.card,
 
-        // borderTopLeftRadius: 24,
-        // borderTopRightRadius: 24,
-
         paddingHorizontal: 20,
-        paddingTop: 16,
-        paddingBottom: 25,
+        paddingTop: 8,
+        paddingBottom: 15,
 
         borderTopWidth: 1,
         borderColor: "#2C2C2C",
+
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+
+        elevation: 10,
+
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: -3,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
     },
 
     priceRow: {
@@ -196,5 +205,43 @@ export default StyleSheet.create({
         fontSize: 16,
         marginTop: 8,
         textAlign: "center",
+    },
+    footerHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+
+        paddingVertical: 5,
+    },
+
+    footerTotalLabel: {
+        color: "#999",
+        fontSize: 13,
+        marginBottom: 2,
+    },
+
+    footerTotal: {
+        color: "#fff",
+        fontSize: 21,
+        fontWeight: "700",
+    },
+
+    footerToggle: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+
+        alignItems: "center",
+        justifyContent: "center",
+
+        backgroundColor: "#24140D",
+
+        borderWidth: 1,
+        borderColor: COLORS.primary,
+    },
+
+    footerContent: {
+        overflow: "hidden",
+        paddingTop: 10,
     },
 });

@@ -4,10 +4,11 @@ import { FlatList, Image, RefreshControl, View } from 'react-native'
 
 import Loader from "../../../components/Loading"
 import NotFound from "../../../components/NotFound"
-import OrderCard from '../../../components/pizza/OrderCard'
+import OrderCard from '../../../components/orders/OrderCard'
 import COLORS from '../../../constants/color'
 import { getAdminOrders } from '../../../services/admin/orders'
 import styles from "../../../styles/orders.styles"
+
 
 const Order = () => {
     const [orders, setOrders] = useState([]);

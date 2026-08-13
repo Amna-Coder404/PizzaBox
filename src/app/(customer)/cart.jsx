@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useStripe } from "@stripe/stripe-react-native";
 import { useRouter } from "expo-router";
 import { Alert, FlatList, Image, Text, TouchableOpacity, View } from "react-native";
-import AppButton from "../../../components/AppButton";
 import NotFound from "../../../components/NotFound";
 import COLORS from "../../../constants/color";
 import { createOrder } from "../../../services/order";
@@ -11,11 +10,22 @@ import useAuthStore from "../../../store/authStore";
 import useCartStore from "../../../store/cartStore";
 import styles from "../../../styles/cart.style";
 
+
+import { useState } from "react";
+import CartFooter from "../../../components/cart/CartFooter";
+
+
+
+
 const Cart = () => {
     const router = useRouter();
     const { profile } = useAuthStore();
+    const [paymentMethod, setPaymentMethod] = useState("stripe");
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
+
     const { cart, increaseQuantity, decreaseQuantity, removeFromCart, clearCart } = useCartStore();
+
     const subtotal = cart.reduce((total, item) => {
         return total + item.price * item.quantity;
     }, 0);
@@ -25,6 +35,7 @@ const Cart = () => {
 
     const handleCheckout = async () => {
         try {
+            // First Check that Customer have address or not
             if (!profile?.address?.trim()) {
                 Alert.alert(
                     "Delivery Address Required",
@@ -45,13 +56,48 @@ const Cart = () => {
 
                 return;
             }
+
             if (cart.length === 0) {
                 return;
             }
-            // Create PaymentIntent using the real cart total
+
+
+            // CASH ON DELIVERY
+
+            if (paymentMethod === "cod") {
+                const orderData = {
+                    total_price: total,
+                    delivery_fee: deliveryFee,
+                    order_status: "pending",
+                    payment_status: "unpaid",
+                    payment_method: "cod",
+                    delivery_address: profile.address,
+                };
+
+                await createOrder(orderData, cart);
+                clearCart();
+
+                Alert.alert(
+                    "Order Confirmed 🎉",
+                    `Your Cash on Delivery order has been placed successfully!\n\nTotal: $${total}`,
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                router.replace("/(customer)");
+                            },
+                        },
+                    ]
+                );
+
+                return;
+            }
+
+
+            // STRIPE
+
             const clientSecret = await createPaymentIntent(total);
 
-            // Initialize Stripe PaymentSheet
             const { error: initError } = await initPaymentSheet({
                 merchantDisplayName: "PizzaBox",
                 paymentIntentClientSecret: clientSecret,
@@ -59,49 +105,53 @@ const Cart = () => {
             });
 
             if (initError) {
-                console.log("PAYMENT SHEET INIT ERROR:", initError);
+                Alert.alert("Payment Error", initError.messag);
                 return;
             }
 
-            // Open Stripe payment screen
-            const { error: paymentError } = await presentPaymentSheet();
+            const { error: paymentError } =
+                await presentPaymentSheet();
 
-            if (paymentError) {
-                console.log("PAYMENT ERROR:", paymentError);
-                return;
-            }
+            if (paymentError) return;
 
-            // Create Order AFTER payment succeeds
+            // Stripe payment succeeded
             const orderData = {
                 total_price: total,
                 delivery_fee: deliveryFee,
                 order_status: "pending",
+                payment_status: "paid",
+                payment_method: "stripe",
                 delivery_address: profile.address,
-                payment_status: "paid"
-
             };
 
-            const order = await createOrder(orderData, cart);
+            console.log("STRIPE ORDER:", orderData);
+
+            await createOrder(orderData, cart);
 
             clearCart();
-            // 6. Show success alert
+
             Alert.alert(
                 "Order Confirmed 🎉",
                 `Your order has been placed successfully!\n\nTotal: $${total}`,
                 [
                     {
                         text: "OK",
+                        onPress: () => {
+                            router.replace("/(customer)");
+                        },
                     },
                 ]
             );
         } catch (error) {
-            Alert.alert("Order Failed",
+            console.log("CHECKOUT ERROR:", error);
+
+            Alert.alert(
+                "Order Failed",
                 error?.message ||
                 "Something went wrong while placing your order."
             );
         }
-    }
-
+    };
     // Render Cards
     const renderCartItem = ({ item }) => (
         <View style={styles.card} >
@@ -178,36 +228,14 @@ const Cart = () => {
 
             {/* FIXED FOOTER */}
             {cart.length > 0 && (
-                <View style={styles.bottomContainer}>
-
-                    <View style={styles.priceRow}>
-                        <Text style={styles.label}>Subtotal</Text>
-                        <Text style={styles.value}>${subtotal}</Text>
-                    </View>
-
-                    <View style={styles.priceRow}>
-                        <Text style={styles.label}>Delivery</Text>
-                        <Text style={styles.value}>
-                            ${deliveryFee}
-                        </Text>
-                    </View>
-
-                    <View style={styles.divider} />
-
-                    <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>Total</Text>
-                        <Text style={styles.totalPrice}>
-                            ${total}
-                        </Text>
-                    </View>
-
-                    <AppButton
-                        title="Checkout"
-                        icon="card"
-                        onPress={handleCheckout}
-                    />
-
-                </View>
+                <CartFooter
+                    subtotal={subtotal}
+                    deliveryFee={deliveryFee}
+                    total={total}
+                    paymentMethod={paymentMethod}
+                    setPaymentMethod={setPaymentMethod}
+                    onCheckout={handleCheckout}
+                />
             )}
 
         </View>

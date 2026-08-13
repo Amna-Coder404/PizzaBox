@@ -10,9 +10,11 @@ import { useCustomerPizzaStore } from '../../../store/customer/pizzaStore';
 import styles from "../../../styles/pizzaDetail.style";
 
 import { useStripe } from '@stripe/stripe-react-native';
+import PizzaOrderPayment from '../../../components/payment/PizzaOrderPayment';
 import { createOrder } from '../../../services/order';
 import useAuthStore from '../../../store/authStore';
 import useCartStore from "../../../store/cartStore";
+
 
 const PizzaDetail = () => {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -24,6 +26,10 @@ const PizzaDetail = () => {
     const { profile } = useAuthStore();
     const [selectedSize, setSelectedSize] = useState("small");
     const [quantity, setQuantity] = useState(1);
+
+
+    const [showPayment, setShowPayment] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState("stripe");
 
     useEffect(() => {
         if (id) {
@@ -89,41 +95,40 @@ const PizzaDetail = () => {
             const deliveryFee = 200;
             const total = totalPrice + deliveryFee;
 
-            // 1. Create Stripe PaymentIntent
-            const clientSecret = await createPaymentIntent(total);
+            // STRIPE
+            if (paymentMethod === "stripe") {
+                const clientSecret = await createPaymentIntent(total);
 
-            // 2. Initialize PaymentSheet
-            const { error: initError } = await initPaymentSheet({
-                merchantDisplayName: "PizzaBox",
-                paymentIntentClientSecret: clientSecret,
-                allowsDelayedPaymentMethods: false,
-            });
+                const { error: initError } = await initPaymentSheet({
+                    merchantDisplayName: "PizzaBox",
+                    paymentIntentClientSecret: clientSecret,
+                    allowsDelayedPaymentMethods: false,
+                });
 
-            if (initError) {
-                console.log("PAYMENT SHEET ERROR:", initError);
-                return;
+                if (initError) {
+                    console.log("PAYMENT SHEET ERROR:", initError);
+                    return;
+                }
+
+                const { error: paymentError } =
+                    await presentPaymentSheet();
+
+                if (paymentError) {
+                    console.log("PAYMENT ERROR:", paymentError);
+                    return;
+                }
             }
 
-            // 3. Open Stripe PaymentSheet
-            const { error: paymentError } = await presentPaymentSheet();
-
-            if (paymentError) {
-                console.log("PAYMENT ERROR:", paymentError);
-                return;
-            }
-
-            // 4. Order data
+            // ORDER DATA
             const orderData = {
                 total_price: total,
                 delivery_fee: deliveryFee,
                 order_status: "pending",
-                payment_status: "paid",
+                payment_status:
+                    paymentMethod === "stripe" ? "paid" : "pending",
                 delivery_address: profile.address,
             };
 
-            console.log("ORDER DATA:", orderData);
-
-            // 5. Selected pizza becomes the order item
             const orderItem = {
                 id: selectedPizza.id,
                 name: selectedPizza.name,
@@ -132,15 +137,11 @@ const PizzaDetail = () => {
                 price: getPrice(),
             };
 
-
-            // 6. Create order
-            const order = await createOrder(
+            await createOrder(
                 orderData,
                 [orderItem]
             );
 
-
-            // Success alert
             Alert.alert(
                 "Order Confirmed 🎉",
                 `Your order has been placed successfully!\n\nTotal: $${total}`,
@@ -151,12 +152,28 @@ const PizzaDetail = () => {
                     },
                 ]
             );
+
+            setShowPayment(false);
+
         } catch (error) {
-            Alert.alert("Order Failed",
-                error?.message || "Something went wrong. Please try again."
+            Alert.alert(
+                "Order Failed",
+                error?.message ||
+                "Something went wrong. Please try again."
             );
         }
     };
+    if (showPayment) {
+        return (
+            <PizzaOrderPayment
+                paymentMethod={paymentMethod}
+                onPaymentMethodChange={setPaymentMethod}
+                onOrder={handleDirectOrder}
+                onBack={() => setShowPayment(false)}
+            />
+        );
+    }
+
     return (
         <ScrollView style={styles.container}>
             {/* HEADER */}
@@ -176,6 +193,7 @@ const PizzaDetail = () => {
             />
             {/* CONTENT */}
             <View style={styles.content}>
+
                 <Text style={styles.name}>
                     {selectedPizza.name}
                 </Text>
@@ -206,8 +224,7 @@ const PizzaDetail = () => {
                                     styles.sizeButton,
                                     selectedSize === size &&
                                     styles.activeSize
-                                ]}
-                            >
+                                ]} >
                                 <Text
                                     style={[
                                         styles.sizeText,
@@ -221,58 +238,30 @@ const PizzaDetail = () => {
                         ))
                     }
                 </View>
+
+
                 {/* PRICE */}
                 <View style={styles.priceBox}>
-
-                    <Text style={styles.priceLabel}>
-                        Price
-                    </Text>
-
-                    <Text style={styles.price}>
-                        ${getPrice()}
-                    </Text>
-
+                    <Text style={styles.priceLabel}>Price  </Text>
+                    <Text style={styles.price}>  ${getPrice()} </Text>
                 </View>
 
+
                 <View style={styles.quantityBox}>
-
-
-                    <TouchableOpacity
-                        onPress={() =>
-                            setQuantity(
-                                Math.max(1, quantity - 1)
-                            )
-                        }
-                    >
-                        <Ionicons
-                            name="remove-circle"
-                            size={38}
-                            color={COLORS.primary}
-                        />
+                    <TouchableOpacity onPress={() => setQuantity(Math.max(1, quantity - 1))} >
+                        <Ionicons name="remove-circle" size={38} color={COLORS.primary} />
                     </TouchableOpacity>
-
-
 
                     <Text style={styles.quantity}>
                         {quantity}
                     </Text>
 
-
-
-                    <TouchableOpacity
-                        onPress={() =>
-                            setQuantity(quantity + 1)
-                        }
-                    >
-                        <Ionicons
-                            name="add-circle"
-                            size={38}
-                            color={COLORS.primary}
-                        />
+                    <TouchableOpacity onPress={() => setQuantity(quantity + 1)}>
+                        <Ionicons name="add-circle" size={38} color={COLORS.primary} />
                     </TouchableOpacity>
-
-
                 </View>
+
+
                 {/* TOTAL */}
                 <View style={styles.totalBox}>
 
@@ -292,7 +281,11 @@ const PizzaDetail = () => {
                     </View>
                     {/* TODO LATER : add payment methond using Strip */}
                     <View style={styles.button}>
-                        <AppButton title="Order" icon="card" onPress={handleDirectOrder} />
+                        <AppButton
+                            title="Order"
+                            icon="card"
+                            onPress={() => setShowPayment(true)}
+                        />
                     </View>
                 </View>
 

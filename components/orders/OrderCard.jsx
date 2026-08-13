@@ -47,7 +47,8 @@ const OrderCard = ({ order, onStatusUpdated }) => {
             await updateOrderStatus(order.id, status);
 
             setShowStatusModal(false);
-            // Tell paren to fetch orders again
+
+            // Tell parent to fetch orders again
             onStatusUpdated?.();
         } catch (error) {
             console.log("Status updateed ERROR!", error);
