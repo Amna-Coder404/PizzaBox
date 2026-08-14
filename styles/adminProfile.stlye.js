@@ -7,50 +7,35 @@ export default StyleSheet.create({
         backgroundColor: COLORS.background,
     },
 
-    content: {
-        flex: 1,
-        paddingHorizontal: 18,
-        paddingTop: 20,
+    scrollContent: {
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 30,
     },
 
-    /*
-          Header Logo
-    */
-
-    logoContainer: {
-        alignItems: "center",
-        marginBottom: 22,
-    },
-
-    logo: {
-        width: 150,
-        height: 45,
-        resizeMode: "contain",
-    },
-
-    /* ===========================
-          Profile Card
-    =========================== */
+    /* PROFILE CARD */
 
     profileCard: {
-        backgroundColor: "#1A1A1A",
+        backgroundColor: "#171717",
         borderRadius: 22,
         overflow: "hidden",
         borderWidth: 1,
-        borderColor: "#2A2A2A",
-        marginBottom: 20,
+        borderColor: "#292929",
+        marginBottom: 24,
     },
 
     coverImage: {
-        height: 120,
         width: "100%",
+        height: 125,
+        resizeMode: "cover",
     },
 
     profileContent: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 18,
-        marginTop: -40,
+        paddingHorizontal: 18,
+        paddingBottom: 20,
+        marginTop: -42,
     },
 
     avatarContainer: {
@@ -58,62 +43,173 @@ export default StyleSheet.create({
     },
 
     avatar: {
-        width: 95,
-        height: 95,
-        borderRadius: 48,
+        width: 92,
+        height: 92,
+        borderRadius: 46,
         borderWidth: 4,
-        borderColor: "#1A1A1A",
+        borderColor: "#171717",
+        backgroundColor: "#222222",
     },
 
     editButton: {
         position: "absolute",
+        right: -2,
         bottom: 2,
-        right: 2,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: COLORS.white,
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: COLORS.primary,
         justifyContent: "center",
         alignItems: "center",
+        borderWidth: 3,
+        borderColor: "#171717",
     },
 
     profileInfo: {
         flex: 1,
-        marginLeft: 16,
+        marginLeft: 15,
+        paddingTop: 34,
+    },
+
+    nameRow: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+
+    ownerText: {
+        color: COLORS.white,
+        fontSize: 20,
+        fontWeight: "700",
+        maxWidth: "75%",
+    },
+
+    adminBadge: {
+        width: 19,
+        height: 19,
+        borderRadius: 10,
+        backgroundColor: COLORS.primary,
+        justifyContent: "center",
+        alignItems: "center",
+        marginLeft: 7,
+    },
+
+    roleText: {
+        marginTop: 3,
+        color: COLORS.primary,
+        fontSize: 13,
+        fontWeight: "600",
+    },
+
+    email: {
+        marginTop: 5,
+        color: COLORS.muted,
+        fontSize: 13,
+    },
+
+
+    /* RESTAURANT INFO */
+
+    restaurantInfo: {
+        flexDirection: "row",
+        alignItems: "center",
+        borderTopWidth: 1,
+        borderTopColor: "#292929",
+        paddingHorizontal: 18,
+        paddingVertical: 15,
+    },
+
+    restaurantIcon: {
+        width: 42,
+        height: 42,
+        borderRadius: 13,
+        backgroundColor: "rgba(255, 77, 0, 0.12)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    restaurantDetails: {
+        flex: 1,
+        marginLeft: 12,
+    },
+
+    restaurantLabel: {
+        color: COLORS.muted,
+        fontSize: 12,
     },
 
     restaurantName: {
         color: COLORS.white,
-        fontSize: 28,
-        fontWeight: "700",
-    },
-
-    ownerText: {
-        marginTop: 6,
-        color: COLORS.white,
         fontSize: 16,
+        fontWeight: "700",
+        marginTop: 2,
     },
 
-    email: {
-        marginTop: 8,
-        color: COLORS.gray,
+    activeBadge: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "rgba(34, 197, 94, 0.10)",
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 20,
+    },
+
+    activeDot: {
+        width: 7,
+        height: 7,
+        borderRadius: 4,
+        backgroundColor: "#22C55E",
+        marginRight: 6,
+    },
+
+    activeText: {
+        color: "#22C55E",
+        fontSize: 12,
+        fontWeight: "600",
+    },
+
+
+
+    /* LOGOUT */
+
+    logoutCard: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#171717",
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: "#292929",
+        paddingHorizontal: 16,
+        height: 64,
+    },
+
+    logoutIconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        backgroundColor: "rgba(239, 68, 68, 0.10)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    logoutText: {
+        color: "#EF4444",
         fontSize: 15,
+        fontWeight: "600",
+        flex: 1,
+        marginLeft: 13,
     },
 
-    verifiedIcon: {
-        marginLeft: 8,
-    },
-
-    /* ===========================
-          Statistics Card
-    =========================== */
-
-    statsCard: {
+    // addinal
+    iconStyle: {
+        fontSize: 20,
+        color: COLORS.muted
+    }
+    , statsCard: {
         flexDirection: "row",
         backgroundColor: "#171717",
         borderRadius: 18,
         borderWidth: 1,
-        borderColor: "#262626",
+        borderColor: "#292929",
         marginBottom: 22,
         overflow: "hidden",
     },
@@ -121,84 +217,26 @@ export default StyleSheet.create({
     statItem: {
         flex: 1,
         alignItems: "center",
-        paddingVertical: 20,
-    },
-
-    divider: {
-        width: 1,
-        backgroundColor: "#2A2A2A",
+        justifyContent: "center",
+        paddingVertical: 18,
     },
 
     statValue: {
-        marginTop: 12,
         color: COLORS.white,
-        fontSize: 28,
+        fontSize: 22,
         fontWeight: "700",
+        marginTop: 8,
     },
 
     statLabel: {
-        marginTop: 8,
-        color: COLORS.gray,
-        fontSize: 14,
+        color: COLORS.muted,
+        fontSize: 12,
+        marginTop: 4,
     },
 
-    /* ===========================
-          Menu Sections
-    =========================== */
-
-    menuCard: {
-        backgroundColor: "#171717",
-        borderRadius: 18,
-        borderWidth: 1,
-        borderColor: "#262626",
-        marginBottom: 18,
-        overflow: "hidden",
-    },
-
-    menuItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        paddingHorizontal: 18,
-        height: 62,
-    },
-
-    menuIcon: {
-        width: 30,
-        alignItems: "center",
-    },
-
-    menuTitle: {
-        flex: 1,
-        marginLeft: 14,
-        color: COLORS.white,
-        fontSize: 16,
-        fontWeight: "500",
-    },
-
-    menuArrow: {
-        color: COLORS.gray,
-    },
-
-    menuDivider: {
-        height: 1,
-        backgroundColor: "#2A2A2A",
-        marginLeft: 60,
-    },
-
-    logoutText: {
-        color: "#EF4444",
-        fontSize: 16,
-        fontWeight: "600",
-        flex: 1,
-        marginLeft: 14,
-    },
-
-    /* ===========================
-          Bottom Spacing
-    =========================== */
-
-    bottomSpace: {
-        height: 30,
+    statDivider: {
+        width: 1,
+        backgroundColor: "#292929",
+        marginVertical: 15,
     },
 });
-

@@ -49,15 +49,8 @@ const MyOrders = ({ onBack }) => {
             {/* HEADER */}
             <View style={styles.header}>
 
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={onBack}
-                >
-                    <Ionicons
-                        name="arrow-back"
-                        size={24}
-                        color={COLORS.primary}
-                    />
+                <TouchableOpacity style={styles.backButton} onPress={onBack} >
+                    <Ionicons name="arrow-back" size={24} color={COLORS.primary} />
 
                     <Text style={styles.backText}>
                         Back
@@ -79,16 +72,11 @@ const MyOrders = ({ onBack }) => {
                 renderItem={({ item }) => (
 
                     <View style={styles.orderCard}>
-
                         {/* ORDER HEADER */}
                         <View style={styles.orderHeader}>
 
                             <View>
-                                <Text
-                                    style={
-                                        styles.orderNumber
-                                    }
-                                >
+                                <Text style={styles.orderNumber}  >
                                     Order #{item.id}
                                 </Text>
 
@@ -110,39 +98,17 @@ const MyOrders = ({ onBack }) => {
                         </View>
 
                         {/* ORDER STATUS */}
-                        <View
-                            style={
-                                styles.statusContainer
-                            }
-                        >
-                            <View
-                                style={
-                                    styles.statusIcon
-                                }
-                            >
-                                <Ionicons
-                                    name="time-outline"
-                                    size={20}
-                                    color={
-                                        COLORS.primary
-                                    }
-                                />
+                        <View style={styles.statusContainer}   >
+                            <View style={styles.statusIcon} >
+                                <Ionicons name="time-outline" size={20} color={COLORS.primary} />
                             </View>
 
                             <View>
-                                <Text
-                                    style={
-                                        styles.statusLabel
-                                    }
-                                >
+                                <Text style={styles.statusLabel}   >
                                     Order Status
                                 </Text>
 
-                                <Text
-                                    style={
-                                        styles.statusValue
-                                    }
-                                >
+                                <Text style={styles.statusValue}  >
                                     {item.order_status
                                         .replaceAll(
                                             "_",
@@ -158,20 +124,10 @@ const MyOrders = ({ onBack }) => {
                         </View>
 
                         {/* DELIVERY ADDRESS */}
-                        <View
-                            style={
-                                styles.addressContainer
-                            }
-                        >
-                            <Ionicons
-                                name="location-outline"
-                                size={20}
-                                color={COLORS.primary}
-                            />
+                        <View style={styles.addressContainer} >
+                            <Ionicons name="location-outline" size={20} color={COLORS.primary} />
 
-                            <Text
-                                style={styles.address}
-                            >
+                            <Text style={styles.address}  >
                                 {item.delivery_address ||
                                     "No delivery address"}
                             </Text>
@@ -179,38 +135,25 @@ const MyOrders = ({ onBack }) => {
 
                         {/* PAYMENT */}
                         <View style={styles.footer}>
-
                             <View>
-                                <Text
-                                    style={styles.label}
-                                >
+                                <Text style={styles.label}  >
                                     Payment
                                 </Text>
 
-                                <Text style={styles.paymentStatus}
-                                >
+                                <Text style={styles.paymentStatus}  >
                                     {item.payment_status}
                                 </Text>
                             </View>
 
-                            <View
-                                style={
-                                    styles.totalContainer
-                                }
-                            >
-                                <Text
-                                    style={styles.label}
-                                >
+                            <View style={styles.totalContainer}  >
+                                <Text style={styles.label} >
                                     Total
                                 </Text>
 
-                                <Text
-                                    style={styles.total}
-                                >
+                                <Text style={styles.total}>
                                     Rs. {item.total_price}
                                 </Text>
                             </View>
-
                         </View>
 
                     </View>

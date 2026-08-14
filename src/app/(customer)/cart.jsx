@@ -152,6 +152,9 @@ const Cart = () => {
             );
         }
     };
+
+
+
     // Render Cards
     const renderCartItem = ({ item }) => (
         <View style={styles.card} >

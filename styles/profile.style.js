@@ -24,6 +24,26 @@ export default StyleSheet.create({
         fontWeight: "700",
     },
 
+    menuContent: {
+        flex: 1,
+        marginLeft: 14,
+        marginRight: 10,
+        justifyContent: "center",
+    },
+
+    menuTitle: {
+        color: COLORS.white,
+        fontSize: 16,
+        fontWeight: "600",
+    },
+
+    menuSubtitle: {
+        color: COLORS.muted,
+        fontSize: 13,
+        marginTop: 4,
+        lineHeight: 18,
+    },
+
     // PROFILE CARD
     profileCard: {
         flexDirection: "row",
@@ -65,11 +85,8 @@ export default StyleSheet.create({
     // ADDRESS CARD
     addressCard: {
         backgroundColor: COLORS.card,
-
         borderRadius: 18,
-
         padding: 18,
-
         marginBottom: 16,
     },
 
@@ -105,10 +122,8 @@ export default StyleSheet.create({
 
     addressIconContainer: {
         width: 30,
-
         alignItems: "center",
         justifyContent: "flex-start",
-
         marginTop: 2,
     },
 
@@ -126,23 +141,17 @@ export default StyleSheet.create({
     // MENU CARDS
     menuCard: {
         height: 65,
-
         flexDirection: "row",
         alignItems: "center",
-
         backgroundColor: COLORS.card,
-
         borderRadius: 17,
-
         paddingHorizontal: 17,
-
         marginBottom: 14,
     },
 
     menuIconContainer: {
         width: 38,
         height: 38,
-
         alignItems: "center",
         justifyContent: "center",
     },
@@ -153,12 +162,9 @@ export default StyleSheet.create({
 
     menuText: {
         flex: 1,
-
         color: "#FFFFFF",
-
         fontSize: 17,
         fontWeight: "500",
-
         marginLeft: 13,
     },
 
@@ -169,16 +175,11 @@ export default StyleSheet.create({
     // LOGOUT
     logoutCard: {
         height: 65,
-
         flexDirection: "row",
         alignItems: "center",
-
         backgroundColor: COLORS.card,
-
         borderRadius: 17,
-
         paddingHorizontal: 17,
-
         marginBottom: 15,
     },
 
@@ -189,10 +190,8 @@ export default StyleSheet.create({
     logoutText: {
         flex: 1,
         color: "#FFFFFF",
-
         fontSize: 17,
         fontWeight: "500",
-
         marginLeft: 13,
     },
 
@@ -275,27 +274,19 @@ export default StyleSheet.create({
     statusContainer: {
         flexDirection: "row",
         alignItems: "center",
-
         backgroundColor: COLORS.surface,
-
         borderRadius: 14,
-
         padding: 12,
-
         marginBottom: 14,
     },
 
     statusIcon: {
         width: 42,
         height: 42,
-
         borderRadius: 21,
-
         backgroundColor: COLORS.card,
-
         alignItems: "center",
         justifyContent: "center",
-
         marginRight: 12,
     },
 
@@ -395,5 +386,51 @@ export default StyleSheet.create({
         fontSize: 14,
         textAlign: "center",
         marginTop: 6,
+    },
+
+
+    // About us 
+    aboutusHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "baseline"
+
+    },
+    aboutContainer: {
+        flex: 1,
+        backgroundColor: COLORS.background,
+        paddingHorizontal: 20,
+        paddingTop: 25,
+        paddingBottom: 30,
+    },
+
+
+    aboutTitle: {
+        color: COLORS.white,
+        fontSize: 26,
+        fontWeight: "700",
+        marginBottom: 24,
+    },
+
+    aboutText: {
+        color: COLORS.muted,
+        fontSize: 15,
+        lineHeight: 24,
+        marginBottom: 18,
+    },
+
+    aboutFooter: {
+        color: COLORS.white,
+        fontSize: 15,
+        fontWeight: "600",
+        lineHeight: 22,
+        marginTop: 10,
+    },
+    funText: {
+        color: COLORS.white,
+        fontSize: 15,
+        lineHeight: 23,
+        fontWeight: "600",
+        marginBottom: 18,
     },
 });

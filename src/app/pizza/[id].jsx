@@ -95,7 +95,7 @@ const PizzaDetail = () => {
             const deliveryFee = 200;
             const total = totalPrice + deliveryFee;
 
-            // STRIPE
+            // STRIPE PAYMENT
             if (paymentMethod === "stripe") {
                 const clientSecret = await createPaymentIntent(total);
 
@@ -107,6 +107,12 @@ const PizzaDetail = () => {
 
                 if (initError) {
                     console.log("PAYMENT SHEET ERROR:", initError);
+
+                    Alert.alert(
+                        "Payment Error",
+                        initError.message
+                    );
+
                     return;
                 }
 
@@ -115,6 +121,7 @@ const PizzaDetail = () => {
 
                 if (paymentError) {
                     console.log("PAYMENT ERROR:", paymentError);
+
                     return;
                 }
             }
@@ -124,8 +131,16 @@ const PizzaDetail = () => {
                 total_price: total,
                 delivery_fee: deliveryFee,
                 order_status: "pending",
+
+                // Stripe = already paid
+                // COD = paid when delivered
                 payment_status:
-                    paymentMethod === "stripe" ? "paid" : "pending",
+                    paymentMethod === "stripe"
+                        ? "paid"
+                        : "unpaid",
+
+                payment_method: paymentMethod,
+
                 delivery_address: profile.address,
             };
 
@@ -137,9 +152,9 @@ const PizzaDetail = () => {
                 price: getPrice(),
             };
 
-            await createOrder(
-                orderData,
-                [orderItem]
+
+
+            await createOrder(orderData, [orderItem]
             );
 
             Alert.alert(
@@ -148,7 +163,9 @@ const PizzaDetail = () => {
                 [
                     {
                         text: "OK",
-                        onPress: () => router.replace("/(customer)"),
+                        onPress: () => {
+                            router.replace("/(customer)");
+                        },
                     },
                 ]
             );
@@ -156,11 +173,7 @@ const PizzaDetail = () => {
             setShowPayment(false);
 
         } catch (error) {
-            Alert.alert(
-                "Order Failed",
-                error?.message ||
-                "Something went wrong. Please try again."
-            );
+            Alert.alert("Order Failed", error?.message || "Something went wrong. Please try again.");
         }
     };
     if (showPayment) {

@@ -15,6 +15,7 @@ const Profile = () => {
     const [address, setAddress] = useState(profile?.address || "");
     const [saving, setSaving] = useState(false);
     const [showOrders, setShowOrders] = useState(false);
+    const [showAboutUs, setShowAboutUs] = useState(false);
 
 
 
@@ -65,6 +66,52 @@ const Profile = () => {
             <MyOrders
                 onBack={() => setShowOrders(false)}
             />
+        );
+    }
+
+    if (showAboutUs) {
+        return (
+
+            <View style={styles.aboutContainer}>
+                <View style={styles.aboutusHeader}>
+                    <Text style={styles.aboutTitle}>
+                        🍕 About PizzaBox
+                    </Text>
+                    <TouchableOpacity style={styles.backButton} onPress={() => setShowAboutUs(false)} >
+                        <Ionicons name="close" size={24} color={COLORS.primary} />
+                    </TouchableOpacity>
+                </View>
+
+
+                <Text style={styles.aboutText}>
+                    Welcome to PizzaBox! 👋
+                </Text>
+
+                <Text style={styles.aboutText}>
+                    PizzaBox is a simple and convenient pizza ordering
+                    app designed to make ordering your favorite pizzas
+                    quick, easy, and enjoyable.
+                </Text>
+
+                <Text style={styles.aboutText}>
+                    Browse our menu, choose your favorite pizza and size,
+                    add it to your cart, and place your order with ease.
+                </Text>
+                <Text style={styles.funText}>
+                    😂 Diet starts tomorrow.
+                </Text>
+                <Text style={styles.aboutText}>
+                    We aim to provide a smooth ordering experience while
+                    helping our restaurant manage orders efficiently.
+                </Text>
+                <Text style={styles.funText}>
+                    Made with code, coffee ☕, and a serious love for pizza.
+                </Text>
+                <Text style={styles.aboutFooter}>
+                    Thank you for choosing PizzaBox! ❤️
+                </Text>
+            </View>
+
         );
     }
     return (
@@ -123,6 +170,7 @@ const Profile = () => {
                 </View>
             </View>
 
+
             {/* MENU CARDS */}
             <TouchableOpacity style={styles.menuCard} onPress={() => setShowOrders(true)}>
                 <View style={styles.menuIconContainer}>
@@ -131,6 +179,27 @@ const Profile = () => {
                 <Text style={styles.menuText}>My Orders</Text>
                 <Ionicons name="chevron-forward" size={22} color="#AAAAAA" />
             </TouchableOpacity>
+
+
+            {/* ABOUT US */}
+            <TouchableOpacity style={styles.menuCard} onPress={() => setShowAboutUs(true)}>
+                <View style={styles.menuIconContainer}>
+                    <Ionicons name="information-circle-outline" size={24} color={COLORS.primary} />
+
+                </View>
+                <View style={styles.menuContent}>
+                    <Text style={styles.menuTitle}>
+                        About Us
+                    </Text>
+
+                    <Text style={styles.menuSubtitle}>
+                        Learn more about PizzaBox
+                    </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={22} color="#AAAAAA" />
+
+            </TouchableOpacity>
+
 
             {/* LOGOUt CARDS */}
             <TouchableOpacity style={styles.logoutCard} onPress={logout}>

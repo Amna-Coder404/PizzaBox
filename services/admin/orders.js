@@ -93,3 +93,29 @@ export const updateOrderStatus = async (orderId, status) => {
 
     return data;
 };
+
+// It give total Orders Length and total earn money 
+export const getAdminOrderStats = async () => {
+    const { data, error } = await supabase
+        .from("orders")
+        .select("total_price, payment_status");
+
+    if (error) {
+        throw error;
+    }
+
+    const totalOrders = data.length;
+
+    const totalRevenue = data
+        .filter((order) => order.payment_status === "paid")
+        .reduce(
+            (total, order) =>
+                total + Number(order.total_price || 0),
+            0
+        );
+
+    return {
+        totalOrders,
+        totalRevenue,
+    };
+};
