@@ -1,21 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import {
-    FlatList,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Alert, FlatList, Text, TouchableOpacity, View, } from "react-native";
 
 import COLORS from "../../constants/color";
-import { getMyOrders } from "../../services/order";
+import { cancelOrder, getMyOrders } from "../../services/order";
 import useAuthStore from "../../store/authStore";
 import styles from "../../styles/profile.style";
+import AppButton from "../AppButton";
 import Loader from "../Loading";
+
+
 
 const MyOrders = ({ onBack }) => {
     const { profile } = useAuthStore();
-
+    const [cancellingOrderId, setCancellingOrderId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [orders, setOrders] = useState([]);
 
@@ -33,11 +31,62 @@ const MyOrders = ({ onBack }) => {
         }
     };
 
+
+
+    // SHOW CONFIRMATION ALERT FOR CANCEL ORDER
+    const handleCancel = (order) => {
+        Alert.alert(
+            "Cancel Order",
+            `Are you sure you want to cancel Order #${order.id}?`,
+            [
+                {
+                    text: "No",
+                    style: "cancel",
+                },
+                {
+                    text: "Yes, Cancel",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            setCancellingOrderId(order.id);
+
+                            await cancelOrder(order.id);
+
+                            const data = await getMyOrders(profile.id);
+                            setOrders(data || []);
+
+                            Alert.alert(
+                                "Order Cancelled",
+                                `Order #${order.id} has been cancelled successfully.`
+                            );
+                        } catch (error) {
+                            console.log(
+                                "CANCEL ORDER ERROR:",
+                                error
+                            );
+
+                            Alert.alert(
+                                "Unable to Cancel",
+                                error?.message ||
+                                "Something went wrong while cancelling the order."
+                            );
+                        } finally {
+                            setCancellingOrderId(null);
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
+
     useEffect(() => {
         if (profile?.id) {
             fetchOrders();
         }
     }, [profile?.id]);
+
+
 
     if (loading) {
         return <Loader />;
@@ -155,10 +204,14 @@ const MyOrders = ({ onBack }) => {
                                 </Text>
                             </View>
                         </View>
-
+                        <View style={{ marginTop: 12 }} />
+                        {item.order_status === "pending" && (
+                            <AppButton icon={"close-circle"} title={"Cancel order"} onPress={() => handleCancel(item)}
+                            />)}
                     </View>
                 )}
             />
+
 
         </View>
     );

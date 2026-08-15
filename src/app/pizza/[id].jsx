@@ -71,6 +71,9 @@ const PizzaDetail = () => {
 
     const handleDirectOrder = async () => {
         try {
+
+            let paymentIntentId = null;
+
             if (!profile?.address?.trim()) {
                 Alert.alert(
                     "Delivery Address Required",
@@ -97,7 +100,12 @@ const PizzaDetail = () => {
 
             // STRIPE PAYMENT
             if (paymentMethod === "stripe") {
-                const clientSecret = await createPaymentIntent(total);
+                const paymentData = await createPaymentIntent(total);
+
+                console.log("PAYMENT DATA:", paymentData);
+                const { clientSecret } = paymentData;
+                paymentIntentId = paymentData.paymentIntentId;
+
 
                 const { error: initError } = await initPaymentSheet({
                     merchantDisplayName: "PizzaBox",
@@ -116,8 +124,7 @@ const PizzaDetail = () => {
                     return;
                 }
 
-                const { error: paymentError } =
-                    await presentPaymentSheet();
+                const { error: paymentError } = await presentPaymentSheet();
 
                 if (paymentError) {
                     console.log("PAYMENT ERROR:", paymentError);
@@ -125,6 +132,7 @@ const PizzaDetail = () => {
                     return;
                 }
             }
+
 
             // ORDER DATA
             const orderData = {
@@ -140,7 +148,10 @@ const PizzaDetail = () => {
                         : "unpaid",
 
                 payment_method: paymentMethod,
-
+                payment_intent_id:
+                    paymentMethod === "stripe"
+                        ? paymentIntentId
+                        : null,
                 delivery_address: profile.address,
             };
 
@@ -292,7 +303,7 @@ const PizzaDetail = () => {
                     <View style={styles.button}>
                         <AppButton title="Add To Cart" icon="cart" onPress={handleAddToCart} />
                     </View>
-                    {/* TODO LATER : add payment methond using Strip */}
+                    {/* Payment Method */}
                     <View style={styles.button}>
                         <AppButton
                             title="Order"

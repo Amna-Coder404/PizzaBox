@@ -433,4 +433,44 @@ export default StyleSheet.create({
         fontWeight: "600",
         marginBottom: 18,
     },
+    feedbackCard: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#171717",
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: "#292929",
+        padding: 16,
+        marginTop: 10,
+        marginBottom: 12
+    },
+
+    feedbackIconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 14,
+        backgroundColor: "rgba(255, 77, 0, 0.10)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    feedbackContent: {
+        flex: 1,
+        marginLeft: 14,
+        marginRight: 10,
+    },
+
+    feedbackTitle: {
+        color: COLORS.white,
+        fontSize: 16,
+        fontWeight: "600",
+    },
+
+    feedbackSubtitle: {
+        color: COLORS.muted,
+        fontSize: 13,
+        lineHeight: 18,
+        marginTop: 4,
+        marginBottom: 12
+    },
 });

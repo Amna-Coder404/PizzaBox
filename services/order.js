@@ -1,5 +1,8 @@
 
 import { supabase } from "../lib/supabase";
+import { refundPayment } from "./payment";
+
+
 
 export const createOrder = async (orderData, items) => {
     // 1. Get logged-in user
@@ -67,3 +70,104 @@ export const getMyOrders = async (userId) => {
 
     return data;
 };
+
+
+
+// Cancel Order 
+
+
+export const cancelOrder = async (orderId) => {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (!user) {
+        throw new Error("User is not authenticated.");
+    }
+
+    // Get current order
+    const { data: order, error: fetchError } = await supabase
+        .from("orders")
+        .select(
+            `
+            id,
+            order_status,
+            payment_method,
+            payment_status,
+            payment_intent_id
+            `
+        )
+        .eq("id", orderId)
+        .single();
+
+    if (fetchError) throw fetchError;
+
+
+    if (order.order_status !== "pending") {
+        throw new Error(
+            "This order can no longer be cancelled."
+        );
+    }
+    // COD
+    if (order.payment_method === "cod") {
+        const { data, error } = await supabase
+            .from("orders")
+            .update({
+                order_status: "cancelled",
+            })
+            .eq("id", orderId)
+            .eq("user_id", user.id)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        return data;
+    }
+
+    // Stripe
+    if (
+        order.payment_method === "stripe" &&
+        order.payment_status === "paid"
+    ) {
+        // Payment Intent must exist
+        if (!order.payment_intent_id) {
+            throw new Error(
+                "Payment information is missing for this order."
+            );
+        }
+
+        const refundData =
+            await refundPayment(
+                order.payment_intent_id
+            );
+
+        // Make sure refund succeeded
+        if (!refundData?.success) {
+            throw new Error(
+                refundData?.error ||
+                "Payment refund failed."
+            );
+        }
+        // Only cancel the order After Rrefund  succeeds
+        const { data, error } = await supabase
+            .from("orders")
+            .update({
+                order_status: "cancelled",
+                payment_status: "refunded"
+            })
+            .eq("id", orderId)
+            .eq("user_id", user.id)
+            .select()
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+
+    }
+
+    throw new Error(
+        "This order cannot be cancelled."
+    );
+}

@@ -1,7 +1,8 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Linking, Text, TouchableOpacity, View } from "react-native";
+import Aboutus from "../../../components/Aboutus";
 import MyOrders from "../../../components/orders/MyOrders";
 import AddressModal from "../../../components/pizza/AddressModal";
 import COLORS from "../../../constants/color";
@@ -17,6 +18,29 @@ const Profile = () => {
     const [showOrders, setShowOrders] = useState(false);
     const [showAboutUs, setShowAboutUs] = useState(false);
 
+
+    const handleFeedback = async () => {
+        const email = "kamalgroup272@gmail.com";
+
+        const subject = encodeURIComponent(
+            "PizzaBox Feedback"
+        )
+
+        const body = encodeURIComponent(
+            `Hi PizzaBox Team, \n\n` +
+            `I would like to share some feedback : \n\n\n` +
+            `Thank You!`
+        );
+
+        const url = `mailto:${email}?subject=${subject}&body=${body}`;
+
+        try {
+            await Linking.openURL(url);
+
+        } catch (error) {
+            Alert.alert("Email Not Available", "Please contact us through our email.");
+        }
+    }
 
 
     const handleEditAddress = () => {
@@ -61,59 +85,13 @@ const Profile = () => {
             setSaving(false);
         }
     }
-    if (showOrders) {
-        return (
-            <MyOrders
-                onBack={() => setShowOrders(false)}
-            />
-        );
-    }
-
-    if (showAboutUs) {
-        return (
-
-            <View style={styles.aboutContainer}>
-                <View style={styles.aboutusHeader}>
-                    <Text style={styles.aboutTitle}>
-                        🍕 About PizzaBox
-                    </Text>
-                    <TouchableOpacity style={styles.backButton} onPress={() => setShowAboutUs(false)} >
-                        <Ionicons name="close" size={24} color={COLORS.primary} />
-                    </TouchableOpacity>
-                </View>
 
 
-                <Text style={styles.aboutText}>
-                    Welcome to PizzaBox! 👋
-                </Text>
+    if (showOrders) return <MyOrders onBack={() => setShowOrders(false)} />
+    if (showAboutUs) return <Aboutus onBack={() => setShowAboutUs(false)} />
 
-                <Text style={styles.aboutText}>
-                    PizzaBox is a simple and convenient pizza ordering
-                    app designed to make ordering your favorite pizzas
-                    quick, easy, and enjoyable.
-                </Text>
 
-                <Text style={styles.aboutText}>
-                    Browse our menu, choose your favorite pizza and size,
-                    add it to your cart, and place your order with ease.
-                </Text>
-                <Text style={styles.funText}>
-                    😂 Diet starts tomorrow.
-                </Text>
-                <Text style={styles.aboutText}>
-                    We aim to provide a smooth ordering experience while
-                    helping our restaurant manage orders efficiently.
-                </Text>
-                <Text style={styles.funText}>
-                    Made with code, coffee ☕, and a serious love for pizza.
-                </Text>
-                <Text style={styles.aboutFooter}>
-                    Thank you for choosing PizzaBox! ❤️
-                </Text>
-            </View>
 
-        );
-    }
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -199,6 +177,37 @@ const Profile = () => {
                 <Ionicons name="chevron-forward" size={22} color="#AAAAAA" />
 
             </TouchableOpacity>
+
+            <TouchableOpacity
+                style={styles.feedbackCard}
+                onPress={handleFeedback}
+                activeOpacity={0.8}
+            >
+                <View style={styles.feedbackIconContainer}>
+                    <Ionicons
+                        name="chatbubble-ellipses-outline"
+                        size={24}
+                        color={COLORS.primary}
+                    />
+                </View>
+
+                <View style={styles.feedbackContent}>
+                    <Text style={styles.feedbackTitle}>
+                        💬 Tell us what you think
+                    </Text>
+
+                    <Text style={styles.feedbackSubtitle}>
+                        Have a suggestion or found something we can improve?
+                    </Text>
+                </View>
+
+                <Ionicons
+                    name="chevron-forward"
+                    size={22}
+                    color="#AAAAAA"
+                />
+            </TouchableOpacity>
+
 
 
             {/* LOGOUt CARDS */}
