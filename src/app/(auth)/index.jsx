@@ -15,6 +15,7 @@ import styles from "../../../styles/auth.style";
 
 import { Link } from "expo-router";
 import AppButton from "../../../components/AppButton";
+import Loader from "../../../components/Loading";
 import COLORS from "../../../constants/color";
 import useAuthStore from "../../../store/authStore";
 
@@ -23,7 +24,7 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-
+    const [loading, setLoading] = useState(false);
     const { login } = useAuthStore();
 
 
@@ -34,14 +35,19 @@ const Login = () => {
         }
 
         try {
+            setLoading(true);
             await login(email, password);
 
         } catch (error) {
             Alert.alert("Login Failed", error.message);
             console.log("ERROR", error);
+        } finally {
+            setLoading(false);
         }
     };
-
+    if (loading) {
+        return <Loader />
+    }
     return (
 
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"
@@ -133,7 +139,6 @@ const Login = () => {
                             icon="login"
                             onPress={handleLogin}
 
-                        // style={styles.loginButton}
                         />
                     </View>
 

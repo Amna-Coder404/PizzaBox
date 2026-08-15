@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Alert, FlatList, Text, TouchableOpacity, View, } from "react-native";
+import { Alert, FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 
 import COLORS from "../../constants/color";
 import { cancelOrder, getMyOrders } from "../../services/order";
@@ -8,15 +8,15 @@ import useAuthStore from "../../store/authStore";
 import styles from "../../styles/profile.style";
 import AppButton from "../AppButton";
 import Loader from "../Loading";
+import NotFound from "../NotFound";
 
 
-
-const MyOrders = ({ onBack }) => {
+const MyOrders = ({ onBack, totalCount }) => {
     const { profile } = useAuthStore();
     const [cancellingOrderId, setCancellingOrderId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [orders, setOrders] = useState([]);
-
+    const [refreshing, setRefreshing] = useState(false);
     const fetchOrders = async () => {
         try {
             setLoading(true);
@@ -31,7 +31,19 @@ const MyOrders = ({ onBack }) => {
         }
     };
 
+    const handleRefresh = async () => {
+        try {
+            setRefreshing(true);
 
+            const data = await getMyOrders(profile.id);
+
+            setOrders(data || []);
+        } catch (error) {
+            console.log("REFRESH ORDERS ERROR:", error);
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
     // SHOW CONFIRMATION ALERT FOR CANCEL ORDER
     const handleCancel = (order) => {
@@ -96,18 +108,25 @@ const MyOrders = ({ onBack }) => {
         <View style={styles.container}>
 
             {/* HEADER */}
-            <View style={styles.header}>
-
-                <TouchableOpacity style={styles.backButton} onPress={onBack} >
+            <View style={styles.myOrderHeader}>
+                {/* BACK */}
+                <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7}  >
                     <Ionicons name="arrow-back" size={24} color={COLORS.primary} />
-
-                    <Text style={styles.backText}>
-                        Back
-                    </Text>
                 </TouchableOpacity>
 
-            </View>
 
+                <Text style={styles.myorder}>
+                    My Orders
+                </Text>
+
+                {/* ORDER COUNT */}
+                <View style={styles.orderCountBadge}>
+                    <Text style={styles.orderCountText}>
+                        {totalCount}
+                    </Text>
+                </View>
+
+            </View>
             {/* ORDERS */}
             <FlatList
                 data={orders}
@@ -117,6 +136,14 @@ const MyOrders = ({ onBack }) => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={
                     styles.listContent
+                }
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={handleRefresh}
+                        colors={[COLORS.primary]}
+                        tintColor={COLORS.primary}
+                    />
                 }
                 renderItem={({ item }) => (
 
@@ -210,6 +237,14 @@ const MyOrders = ({ onBack }) => {
                             />)}
                     </View>
                 )}
+
+                ListEmptyComponent={
+                    <NotFound
+                        icon="receipt-outline"
+                        title="No Orders Yet"
+                        description="You haven't placed any orders yet."
+                    />
+                }
             />
 
 

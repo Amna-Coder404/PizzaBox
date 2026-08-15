@@ -54,11 +54,12 @@ export const getAdminOrders = async () => {
 
 
 // Update Order Status
+
 export const updateOrderStatus = async (orderId, status) => {
-    // 1. Get the current payment information
+    // Get current order
     const { data: order, error: fetchError } = await supabase
         .from("orders")
-        .select("payment_method, payment_status")
+        .select("order_status, payment_method, payment_status")
         .eq("id", orderId)
         .single();
 
@@ -66,12 +67,19 @@ export const updateOrderStatus = async (orderId, status) => {
         throw fetchError;
     }
 
-    // 2. Prepare the update
+    // Cancelled orders cannot be changed by admin
+    if (order.order_status === "cancelled") {
+        throw new Error(
+            "This order has been cancelled and cannot be updated."
+        );
+    }
+
+    // Prepare update
     const updateData = {
         order_status: status,
     };
 
-    // 3. Cash on delivery (COD) payment is collected when the order is delivered
+    // COD payment is collected when order is delivered
     if (
         status === "delivered" &&
         order.payment_method === "cod" &&
@@ -80,7 +88,7 @@ export const updateOrderStatus = async (orderId, status) => {
         updateData.payment_status = "paid";
     }
 
-    // 4. Update the order
+    // Update order
     const { data, error } = await supabase
         .from("orders")
         .update(updateData)

@@ -260,4 +260,28 @@ export default StyleSheet.create({
         color: COLORS.primary,
         fontWeight: "600",
     },
+
+    cancelledBadge: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 8,
+        backgroundColor: "#2A1515",
+        borderWidth: 1,
+        borderColor: "#EF4444",
+    },
+
+    cancelledStatusText: {
+        color: "#EF4444",
+        fontSize: 13,
+        fontWeight: "700",
+        textTransform: "uppercase",
+    },
+    refundedStatus: {
+        color: "#22C55E",
+        fontWeight: "700",
+    }
 });

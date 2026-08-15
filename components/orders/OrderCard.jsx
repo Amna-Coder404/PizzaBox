@@ -2,11 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import {
     Image,
     Text,
-    TouchableOpacity,
     View
 } from "react-native";
 
 import { useState } from "react";
+import { TouchableOpacity } from "react-native";
 import COLORS from "../../constants/color";
 import { updateOrderStatus } from "../../services/admin/orders";
 import styles from "../../styles/orderCard.style";
@@ -35,6 +35,7 @@ const STATUS_OPTIONS = [
 const OrderCard = ({ order, onStatusUpdated }) => {
     const [updating, setUpdating] = useState(false);
     const [showStatusModal, setShowStatusModal] = useState(false);
+    const isCancelled = order.order_status === "cancelled";
 
     const handleStatusChange = async (status) => {
         if (status === order.order_status) {
@@ -58,8 +59,9 @@ const OrderCard = ({ order, onStatusUpdated }) => {
 
     }
 
+
     return (
-        <View style={styles.card}>
+        <View style={[styles.card, isCancelled && styles.cancelledCard,]}>
 
             {/* HEADER */}
             <View style={styles.header}>
@@ -76,73 +78,83 @@ const OrderCard = ({ order, onStatusUpdated }) => {
                 {/* STATUS OPTIONS */}
 
                 {/* STATUS DROPDOWN */}
-                <View style={styles.dropdownContainer}>
+                {isCancelled ? (
+                    <View style={styles.cancelledBadge}>
+                        <Ionicons name="close-circle" size={18} color="#EF4444" />
 
-                    <TouchableOpacity
-                        style={styles.statusBadge}
-                        onPress={() => setShowStatusModal(!showStatusModal)}
-                        disabled={updating}
-                    >
-                        <Text style={styles.statusText}>
-                            {
-                                STATUS_OPTIONS.find(
-                                    (status) =>
-                                        status.value === order.order_status
-                                )?.label || "Pending"
-                            }
+                        <Text style={styles.cancelledStatusText}>
+                            Order Cancelled
                         </Text>
+                    </View>
+                ) : (
+                    <View style={styles.dropdownContainer}>
 
-                        <Ionicons
-                            name={
-                                showStatusModal
-                                    ? "chevron-up"
-                                    : "chevron-down"
-                            }
-                            size={18}
-                            color={COLORS.primary}
-                        />
-                    </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.statusBadge}
+                            onPress={() => setShowStatusModal(!showStatusModal)}
+                            disabled={updating}
+                        >
+                            <Text style={styles.statusText}>
+                                {
+                                    STATUS_OPTIONS.find(
+                                        (status) =>
+                                            status.value === order.order_status
+                                    )?.label || "Pending"
+                                }
+                            </Text>
 
-                    {showStatusModal && (
-                        <View style={styles.dropdown}>
+                            <Ionicons
+                                name={
+                                    showStatusModal
+                                        ? "chevron-up"
+                                        : "chevron-down"
+                                }
+                                size={18}
+                                color={COLORS.primary}
+                            />
+                        </TouchableOpacity>
 
-                            {STATUS_OPTIONS.map((status) => (
-                                <TouchableOpacity
-                                    key={status.value}
-                                    style={[
-                                        styles.statusOption,
-                                        order.order_status === status.value &&
-                                        styles.selectedStatus,
-                                    ]}
-                                    onPress={() =>
-                                        handleStatusChange(status.value)
-                                    }
-                                    disabled={updating}
-                                >
-                                    <Text
+                        {showStatusModal && (
+                            <View style={styles.dropdown}>
+
+                                {STATUS_OPTIONS.map((status) => (
+                                    <TouchableOpacity
+                                        key={status.value}
                                         style={[
-                                            styles.statusOptionText,
+                                            styles.statusOption,
                                             order.order_status === status.value &&
-                                            styles.selectedStatusText,
+                                            styles.selectedStatus,
                                         ]}
+                                        onPress={() =>
+                                            handleStatusChange(status.value)
+                                        }
+                                        disabled={updating}
                                     >
-                                        {status.label}
-                                    </Text>
+                                        <Text
+                                            style={[
+                                                styles.statusOptionText,
+                                                order.order_status === status.value &&
+                                                styles.selectedStatusText,
+                                            ]}
+                                        >
+                                            {status.label}
+                                        </Text>
 
-                                    {order.order_status === status.value && (
-                                        <Ionicons
-                                            name="checkmark"
-                                            size={20}
-                                            color={COLORS.primary}
-                                        />
-                                    )}
-                                </TouchableOpacity>
-                            ))}
+                                        {order.order_status === status.value && (
+                                            <Ionicons
+                                                name="checkmark"
+                                                size={20}
+                                                color={COLORS.primary}
+                                            />
+                                        )}
+                                    </TouchableOpacity>
+                                ))}
 
-                        </View>
-                    )}
+                            </View>
+                        )}
 
-                </View>
+                    </View>
+                )}
 
             </View>
 
@@ -228,10 +240,15 @@ const OrderCard = ({ order, onStatusUpdated }) => {
                         Payment
                     </Text>
 
-                    <Text style={styles.paymentStatus}>
+                    <Text
+                        style={[
+                            styles.paymentStatus,
+                            order.payment_status === "refunded" &&
+                            styles.refundedStatus,
+                        ]}
+                    >
                         {order.payment_status}
                     </Text>
-
                 </View>
 
                 <View style={styles.totalBox}>

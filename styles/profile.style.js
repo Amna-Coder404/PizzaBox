@@ -1,206 +1,362 @@
-
 import { StyleSheet } from "react-native";
 import COLORS from "../constants/color";
 
-
 export default StyleSheet.create({
 
-    // SCREEN
+    // PROFILE SCREEN
+
     container: {
         flex: 1,
         backgroundColor: COLORS.background,
         paddingHorizontal: 18,
     },
 
-    // HEADER
     header: {
         marginTop: 18,
-        marginBottom: 25,
+        marginBottom: 18,
     },
 
     title: {
-        color: "#FFFFFF",
+        color: COLORS.white,
         fontSize: 26,
         fontWeight: "700",
     },
 
-    menuContent: {
-        flex: 1,
-        marginLeft: 14,
-        marginRight: 10,
-        justifyContent: "center",
-    },
+    // PROFILE HEADER
 
-    menuTitle: {
-        color: COLORS.white,
-        fontSize: 16,
-        fontWeight: "600",
-    },
-
-    menuSubtitle: {
-        color: COLORS.muted,
-        fontSize: 13,
-        marginTop: 4,
-        lineHeight: 18,
-    },
-
-    // PROFILE CARD
     profileCard: {
         flexDirection: "row",
         alignItems: "center",
-
         backgroundColor: COLORS.card,
-
-        borderRadius: 18,
-
-        padding: 18,
-
-        marginBottom: 16,
+        borderRadius: 20,
+        padding: 14,
+        marginBottom: 14,
+        borderWidth: 1,
+        borderColor: "#292929",
     },
 
     avatar: {
-        width: 100,
-        height: 100,
-
+        width: 78,
+        height: 78,
+        borderRadius: 45,
+        backgroundColor: COLORS.surface,
     },
 
     profileInfo: {
         flex: 1,
-        marginLeft: 16,
+        marginLeft: 14,
     },
 
     profileName: {
-        color: "#FFFFFF",
+        color: COLORS.white,
         fontSize: 20,
         fontWeight: "700",
-
-        marginBottom: 6,
+        marginBottom: 5,
     },
 
     profileEmail: {
-        color: "#AAAAAA",
-        fontSize: 15,
+        color: COLORS.muted,
+        fontSize: 13,
+        marginBottom: 8,
+    },
+    orderCountBadge: {
+        minWidth: 26,
+        height: 26,
+        paddingHorizontal: 7,
+        borderRadius: 13,
+        backgroundColor: "rgba(255, 77, 0, 0.10)",
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 10,
     },
 
-    // ADDRESS CARD
+    orderCountText: {
+        color: COLORS.primary,
+        fontSize: 12,
+        fontWeight: "700",
+    },
+
+    // DELIVERY ADDRESS
+
     addressCard: {
         backgroundColor: COLORS.card,
         borderRadius: 18,
-        padding: 18,
-        marginBottom: 16,
+        padding: 14,
+        marginBottom: 14,
+        borderWidth: 1,
+        borderColor: "#292929",
     },
 
     addressHeader: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+        marginBottom: 12,
+    },
 
-        marginBottom: 16,
+    addressTitleContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+
+    addressTitleIcon: {
+        width: 32,
+        height: 32,
+        borderRadius: 10,
+        backgroundColor: "rgba(34, 197, 94, 0.10)",
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 9,
     },
 
     addressTitle: {
-        color: "#FFFFFF",
-        fontSize: 18,
+        color: COLORS.white,
+        fontSize: 15,
         fontWeight: "700",
     },
-
     editButton: {
-        paddingHorizontal: 4,
-        paddingVertical: 2,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 8,
+        backgroundColor: "rgba(255, 77, 0, 0.10)",
     },
 
     editText: {
         color: COLORS.primary,
-        fontSize: 16,
+        fontSize: 13,
         fontWeight: "700",
     },
 
     addressContent: {
         flexDirection: "row",
         alignItems: "flex-start",
+        backgroundColor: COLORS.surface,
+        borderRadius: 12,
+        padding: 11,
     },
 
     addressIconContainer: {
-        width: 30,
+        width: 28,
+        height: 28,
         alignItems: "center",
-        justifyContent: "flex-start",
-        marginTop: 2,
+        justifyContent: "center",
+        marginTop: 1,
     },
 
     addressTextContainer: {
         flex: 1,
-        marginLeft: 10,
+        marginLeft: 8,
     },
 
     addressText: {
-        color: "#B5B5B5",
-        fontSize: 15,
-        lineHeight: 24,
+        color: COLORS.muted,
+        fontSize: 13,
+        lineHeight: 19,
     },
 
+
     // MENU CARDS
+
     menuCard: {
-        height: 65,
+        minHeight: 58,
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: COLORS.card,
-        borderRadius: 17,
-        paddingHorizontal: 17,
-        marginBottom: 14,
+        borderRadius: 15,
+        paddingHorizontal: 13,
+        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: "#292929",
     },
 
-    menuIconContainer: {
+    // MY ORDERS ICON
+
+    ordersIconContainer: {
         width: 38,
         height: 38,
+        borderRadius: 11,
+        backgroundColor: "rgba(255, 77, 0, 0.10)",
         alignItems: "center",
         justifyContent: "center",
     },
 
-    menuIcon: {
-        color: "#C7C7C7",
+    // ABOUT US ICON
+
+    aboutIconContainer: {
+        width: 38,
+        height: 38,
+        borderRadius: 11,
+        backgroundColor: "rgba(59, 130, 246, 0.10)",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    // FEEDBACK ICON
+
+    feedbackIconContainer: {
+        width: 38,
+        height: 38,
+        borderRadius: 11,
+        backgroundColor: "rgba(168, 85, 247, 0.10)",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    // LOGOUT ICON
+
+    logoutIconContainer: {
+        width: 38,
+        height: 38,
+        borderRadius: 11,
+        backgroundColor: "rgba(239, 68, 68, 0.10)",
+        alignItems: "center",
+        justifyContent: "center",
     },
 
     menuText: {
         flex: 1,
-        color: "#FFFFFF",
-        fontSize: 17,
-        fontWeight: "500",
-        marginLeft: 13,
+        color: COLORS.white,
+        fontSize: 15,
+        fontWeight: "600",
+        marginLeft: 11,
     },
 
     menuArrow: {
-        color: "#AAAAAA",
+        color: "#777777",
     },
 
-    // LOGOUT
-    logoutCard: {
-        height: 65,
+
+    // ABOUT US MENU
+
+    menuContent: {
+        flex: 1,
+        marginLeft: 11,
+        marginRight: 8,
+        justifyContent: "center",
+    },
+
+    menuTitle: {
+        color: COLORS.white,
+        fontSize: 15,
+        fontWeight: "600",
+    },
+
+    menuSubtitle: {
+        color: COLORS.muted,
+        fontSize: 11,
+        marginTop: 2,
+        lineHeight: 15,
+    },
+
+
+    // FEEDBACK
+
+    feedbackCard: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: COLORS.card,
-        borderRadius: 17,
-        paddingHorizontal: 17,
-        marginBottom: 15,
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: "#292929",
+        padding: 12,
+        marginTop: 2,
+        marginBottom: 8,
     },
 
-    logoutIcon: {
-        color: "#C7C7C7",
+    feedbackContent: {
+        flex: 1,
+        marginLeft: 11,
+        marginRight: 8,
+    },
+
+    feedbackTitle: {
+        color: COLORS.white,
+        fontSize: 14,
+        fontWeight: "600",
+    },
+
+    feedbackSubtitle: {
+        color: COLORS.muted,
+        fontSize: 11,
+        lineHeight: 15,
+        marginTop: 3,
+    },
+
+
+    // LOGOUT
+
+    logoutCard: {
+        minHeight: 58,
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: COLORS.card,
+        borderRadius: 15,
+        paddingHorizontal: 13,
+        marginTop: 4,
+        borderWidth: 1,
+        borderColor: "#292929",
     },
 
     logoutText: {
         flex: 1,
-        color: "#FFFFFF",
-        fontSize: 17,
-        fontWeight: "500",
-        marginLeft: 13,
+        color: COLORS.error,
+        fontSize: 15,
+        fontWeight: "600",
+        marginLeft: 11,
     },
 
-    // BOTTOM SPACE
-    content: {
-        paddingBottom: 110,
+
+    // MY ORDERS
+    myOrderHeader: {
+        height: 58,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 4,
+        marginBottom: 12,
+        position: "relative",
     },
 
-    // MY ORDERS SCREEN
+    backButton: {
+        width: 42,
+        height: 42,
+        borderRadius: 12,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: COLORS.card,
+    },
+
+    myorder: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        textAlign: "center",
+        color: COLORS.white,
+        fontSize: 20,
+        fontWeight: "700",
+    },
+
+    orderCountBadge: {
+        minWidth: 32,
+        height: 32,
+        paddingHorizontal: 8,
+        borderRadius: 16,
+        backgroundColor: "rgba(255, 77, 0, 0.10)",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    orderCountText: {
+        color: COLORS.primary,
+        fontSize: 13,
+        fontWeight: "700",
+    },
+
+    // ORDERS SCREEN
+
     ordersContainer: {
         flex: 1,
         backgroundColor: COLORS.background,
@@ -215,25 +371,24 @@ export default StyleSheet.create({
     backButton: {
         width: 40,
         height: 40,
-
         alignItems: "center",
         justifyContent: "center",
-
         marginRight: 10,
     },
 
     ordersTitle: {
-        color: "#FFFFFF",
+        color: COLORS.white,
         fontSize: 24,
         fontWeight: "700",
     },
 
-    // ORDERS LIST
     listContent: {
         paddingBottom: 110,
     },
 
+
     // ORDER CARD
+
     orderCard: {
         backgroundColor: COLORS.card,
         borderRadius: 18,
@@ -241,17 +396,15 @@ export default StyleSheet.create({
         marginBottom: 16,
     },
 
-    // ORDER HEADER
     orderHeader: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-
         marginBottom: 16,
     },
 
     orderNumber: {
-        color: "#FFFFFF",
+        color: COLORS.white,
         fontSize: 17,
         fontWeight: "700",
     },
@@ -259,18 +412,18 @@ export default StyleSheet.create({
     orderDate: {
         color: "#888888",
         fontSize: 13,
-
         marginTop: 5,
     },
 
-    // ORDER TOTAL
     total: {
         color: COLORS.primary,
         fontSize: 17,
         fontWeight: "700",
     },
 
-    // STATUS
+
+    // ORDER STATUS
+
     statusContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -293,68 +446,58 @@ export default StyleSheet.create({
     statusLabel: {
         color: "#888888",
         fontSize: 12,
-
         marginBottom: 3,
     },
 
     statusValue: {
         color: COLORS.primary,
-
         fontSize: 15,
         fontWeight: "700",
-
         textTransform: "capitalize",
     },
 
-    // DELIVERY ADDRESS
+
+    // DELIVERY ADDRESS IN ORDER
+
     addressContainer: {
         flexDirection: "row",
         alignItems: "flex-start",
-
         paddingVertical: 12,
-
         borderTopWidth: 1,
         borderTopColor: "#292929",
     },
 
     address: {
         flex: 1,
-
         color: "#B5B5B5",
-
         fontSize: 14,
         lineHeight: 20,
-
         marginLeft: 9,
     },
 
+
     // ORDER FOOTER
+
     footer: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-
         borderTopWidth: 1,
         borderTopColor: "#292929",
-
         paddingTop: 14,
-
         marginTop: 4,
     },
 
     label: {
         color: "#888888",
         fontSize: 12,
-
         marginBottom: 4,
     },
 
     paymentStatus: {
-        color: "#FFFFFF",
-
+        color: COLORS.white,
         fontSize: 14,
         fontWeight: "600",
-
         textTransform: "capitalize",
     },
 
@@ -362,22 +505,20 @@ export default StyleSheet.create({
         alignItems: "flex-end",
     },
 
+
     // EMPTY ORDERS
+
     emptyContainer: {
         flex: 1,
-
         alignItems: "center",
         justifyContent: "center",
-
         paddingHorizontal: 30,
     },
 
     emptyTitle: {
-        color: "#FFFFFF",
-
+        color: COLORS.white,
         fontSize: 19,
         fontWeight: "700",
-
         marginTop: 14,
     },
 
@@ -389,13 +530,14 @@ export default StyleSheet.create({
     },
 
 
-    // About us 
+    // ABOUT US
+
     aboutusHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "baseline"
-
+        alignItems: "baseline",
     },
+
     aboutContainer: {
         flex: 1,
         backgroundColor: COLORS.background,
@@ -403,7 +545,6 @@ export default StyleSheet.create({
         paddingTop: 25,
         paddingBottom: 30,
     },
-
 
     aboutTitle: {
         color: COLORS.white,
@@ -426,6 +567,7 @@ export default StyleSheet.create({
         lineHeight: 22,
         marginTop: 10,
     },
+
     funText: {
         color: COLORS.white,
         fontSize: 15,
@@ -433,44 +575,5 @@ export default StyleSheet.create({
         fontWeight: "600",
         marginBottom: 18,
     },
-    feedbackCard: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#171717",
-        borderRadius: 18,
-        borderWidth: 1,
-        borderColor: "#292929",
-        padding: 16,
-        marginTop: 10,
-        marginBottom: 12
-    },
 
-    feedbackIconContainer: {
-        width: 44,
-        height: 44,
-        borderRadius: 14,
-        backgroundColor: "rgba(255, 77, 0, 0.10)",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    feedbackContent: {
-        flex: 1,
-        marginLeft: 14,
-        marginRight: 10,
-    },
-
-    feedbackTitle: {
-        color: COLORS.white,
-        fontSize: 16,
-        fontWeight: "600",
-    },
-
-    feedbackSubtitle: {
-        color: COLORS.muted,
-        fontSize: 13,
-        lineHeight: 18,
-        marginTop: 4,
-        marginBottom: 12
-    },
 });

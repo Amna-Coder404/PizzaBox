@@ -1,6 +1,6 @@
 
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+
 import { Alert, Image, Linking, Text, TouchableOpacity, View } from "react-native";
 import Aboutus from "../../../components/Aboutus";
 import MyOrders from "../../../components/orders/MyOrders";
@@ -10,6 +10,9 @@ import { updateProfile } from "../../../services/profile";
 import useAuthStore from '../../../store/authStore';
 import styles from "../../../styles/profile.style";
 
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
+import { getMyOrders } from "../../../services/order";
 const Profile = () => {
     const { logout, profile, setProfile } = useAuthStore();
     const [visible, setVisible] = useState(false);
@@ -17,7 +20,7 @@ const Profile = () => {
     const [saving, setSaving] = useState(false);
     const [showOrders, setShowOrders] = useState(false);
     const [showAboutUs, setShowAboutUs] = useState(false);
-
+    const [orderCount, setOrderCount] = useState(0);
 
     const handleFeedback = async () => {
         const email = "kamalgroup272@gmail.com";
@@ -85,26 +88,77 @@ const Profile = () => {
             setSaving(false);
         }
     }
+    const handleLogout = () => {
+        Alert.alert(
+            "Logout",
+            "Are you sure you want to logout?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Logout",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await logout();
+                        } catch (error) {
+                            console.log("LOGOUT ERROR:", error);
 
+                            Alert.alert(
+                                "Logout Failed",
+                                error?.message || "Unable to logout. Please try again."
+                            );
+                        }
+                    },
+                },
+            ]
+        );
+    };
 
-    if (showOrders) return <MyOrders onBack={() => setShowOrders(false)} />
+    useFocusEffect(
+        useCallback(() => {
+            const fetchOrderCount = async () => {
+                if (!profile?.id) {
+                    setOrderCount(0);
+                    return;
+                }
+
+                try {
+                    const orders = await getMyOrders(profile.id);
+
+                    setOrderCount(orders?.length || 0);
+                } catch (error) {
+                    console.log("GET ORDER COUNT ERROR:", error);
+                }
+            };
+
+            fetchOrderCount();
+        }, [profile?.id])
+    );
+
+    if (showOrders) return <MyOrders onBack={() => setShowOrders(false)} totalCount={orderCount} />
     if (showAboutUs) return <Aboutus onBack={() => setShowAboutUs(false)} />
 
 
 
     return (
         <View style={styles.container}>
+
+            {/* HEADER */}
             <View style={styles.header}>
                 <Text style={styles.title}>Profile</Text>
-
             </View>
+
 
             {/* PROFILE CARD */}
             <View style={styles.profileCard}>
 
-                <Image source={{ uri: profile?.avatar_url }} style={styles.avatar} />
-
-
+                <Image
+                    source={{ uri: profile?.avatar_url }}
+                    style={styles.avatar}
+                />
 
                 <View style={styles.profileInfo}>
                     <Text style={styles.profileName}>
@@ -118,54 +172,78 @@ const Profile = () => {
 
             </View>
 
-            {/* ADDRESS CARD */}
-            <View style={styles.addressCard}>
-                <View style={styles.addressHeader}>
-                    <Text style={styles.addressTitle}>Delivery Address</Text>
 
-                    <TouchableOpacity style={styles.editButton} onPress={handleEditAddress}>
-                        <Text style={styles.editText}>Edit</Text>
+            {/* DELIVERY ADDRESS */}
+            <View style={styles.addressCard}>
+
+                <View style={styles.addressHeader}>
+
+                    <View style={styles.addressTitleContainer}>
+
+                        <Text style={styles.addressTitle}>
+                            Delivery Address
+                        </Text>
+                    </View>
+
+                    <TouchableOpacity style={styles.editButton} onPress={handleEditAddress}  >
+
+                        <Ionicons name="pencil-outline" size={15} color={COLORS.primary} />
+
+                        <Text style={styles.editText}>
+                            Edit
+                        </Text>
                     </TouchableOpacity>
+
                 </View>
+
 
                 <View style={styles.addressContent}>
-                    <View style={styles.addressIconContainer}>
-                        <Ionicons name="location-outline" size={30} color={COLORS.primary} />
+                    <View style={styles.sectionIconContainer}>
+                        <Ionicons name="location-outline" color={COLORS.primary} size={18} />
                     </View>
-
                     <View style={styles.addressTextContainer}>
-                        {profile?.address ? (
-                            <Text style={styles.addressText}>
-                                {profile.address}
-                            </Text>
-                        ) : (
-                            <Text style={styles.addressText}>
-                                No delivery address added.
-                            </Text>
-                        )}
 
+                        <Text style={styles.addressText}>
+                            {profile?.address
+                                ? profile.address
+                                : "No delivery address added."}
+                        </Text>
                     </View>
+
                 </View>
+
             </View>
 
 
-            {/* MENU CARDS */}
-            <TouchableOpacity style={styles.menuCard} onPress={() => setShowOrders(true)}>
+            {/* MY ORDERS */}
+            <TouchableOpacity style={styles.menuCard} onPress={() => setShowOrders(true)} activeOpacity={0.75} >
+
                 <View style={styles.menuIconContainer}>
-                    <Ionicons name="receipt-outline" size={24} color={COLORS.primary} />
+                    <Ionicons name="receipt-outline" size={21} color={COLORS.primary} />
                 </View>
-                <Text style={styles.menuText}>My Orders</Text>
-                <Ionicons name="chevron-forward" size={22} color="#AAAAAA" />
+
+                <Text style={styles.menuText}>
+                    My Orders
+                </Text>
+                <View style={styles.orderCountBadge}>
+                    <Text style={styles.orderCountText}>
+                        {orderCount}
+                    </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#777777" />
+
             </TouchableOpacity>
 
 
             {/* ABOUT US */}
-            <TouchableOpacity style={styles.menuCard} onPress={() => setShowAboutUs(true)}>
-                <View style={styles.menuIconContainer}>
-                    <Ionicons name="information-circle-outline" size={24} color={COLORS.primary} />
+            <TouchableOpacity style={styles.menuCard} onPress={() => setShowAboutUs(true)} activeOpacity={0.75} >
 
+                <View style={styles.menuIconContainer}>
+                    <Ionicons name="information-circle-outline" size={21} color={COLORS.primary} />
                 </View>
+
                 <View style={styles.menuContent}>
+
                     <Text style={styles.menuTitle}>
                         About Us
                     </Text>
@@ -173,54 +251,54 @@ const Profile = () => {
                     <Text style={styles.menuSubtitle}>
                         Learn more about PizzaBox
                     </Text>
+
                 </View>
-                <Ionicons name="chevron-forward" size={22} color="#AAAAAA" />
+
+                <Ionicons name="chevron-forward" size={20} color="#777777" />
 
             </TouchableOpacity>
 
-            <TouchableOpacity
-                style={styles.feedbackCard}
-                onPress={handleFeedback}
-                activeOpacity={0.8}
-            >
-                <View style={styles.feedbackIconContainer}>
-                    <Ionicons
-                        name="chatbubble-ellipses-outline"
-                        size={24}
-                        color={COLORS.primary}
+
+            {/* FEEDBACK */}
+            <TouchableOpacity style={styles.menuCard} onPress={handleFeedback} activeOpacity={0.75}  >
+                <View style={styles.menuIconContainer}>
+                    <Ionicons name="chatbubble-ellipses-outline" size={21} color={COLORS.primary}
                     />
                 </View>
 
-                <View style={styles.feedbackContent}>
-                    <Text style={styles.feedbackTitle}>
-                        💬 Tell us what you think
+                <View style={styles.menuContent}>
+
+                    <Text style={styles.menuTitle}>
+                        Tell us what you think
                     </Text>
 
-                    <Text style={styles.feedbackSubtitle}>
-                        Have a suggestion or found something we can improve?
+                    <Text style={styles.menuSubtitle}>
+                        Share feedback or suggestions
                     </Text>
+
                 </View>
 
-                <Ionicons
-                    name="chevron-forward"
-                    size={22}
-                    color="#AAAAAA"
-                />
+                <Ionicons name="chevron-forward" size={20} color="#777777" />
+
             </TouchableOpacity>
 
 
-
-            {/* LOGOUt CARDS */}
-            <TouchableOpacity style={styles.logoutCard} onPress={logout}>
-                <View style={styles.menuIconContainer}>
-                    <Ionicons name="log-out-outline" size={24} color={COLORS.primary} />
+            {/* LOGOUT */}
+            <TouchableOpacity style={styles.logoutCard} onPress={handleLogout} activeOpacity={0.75} >
+                <View style={styles.logoutIconContainer}>
+                    <Ionicons name="log-out-outline" size={21} color={COLORS.error} />
                 </View>
-                <Text style={styles.menuText}>Logout</Text>
-                <Ionicons name="chevron-forward" size={22} color="#AAAAAA" />
+
+                <Text style={styles.logoutText}>
+                    Logout
+                </Text>
+
+                <Ionicons name="chevron-forward" size={20} color="#777777" />
+
             </TouchableOpacity>
 
 
-            {/* ADDRESS MODAL  */}
+            {/* ADDRESS MODAL */}
             <AddressModal
                 visible={visible}
                 onClose={() => setVisible(false)}
@@ -229,6 +307,7 @@ const Profile = () => {
                 address={address}
                 onChangeAddress={setAddress}
             />
+
         </View>
     )
 }

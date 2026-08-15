@@ -11,6 +11,7 @@ import COLORS from "../../../constants/color";
 import styles from "../../../styles/auth.style";
 
 
+import Loader from "../../../components/Loading";
 import useAuthStore from "../../../store/authStore";
 
 
@@ -20,7 +21,7 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const { signup } = useAuthStore();
-
+    const [loading, setLoading] = useState(false);
 
     const handleSignup = async () => {
         if (!email || !password || !name) {
@@ -29,6 +30,7 @@ const Signup = () => {
         }
 
         try {
+            setLoading(true);
             await signup(name, email.trim(), password
             );
             Alert.alert("Success", "Account created successfully");
@@ -36,11 +38,15 @@ const Signup = () => {
 
         } catch (error) {
             Alert.alert("Signup Failed", error.message);
+        } finally {
+            setLoading(true);
         }
 
     };
 
-
+    if (loading) {
+        return <Loader />
+    }
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"
         }>
