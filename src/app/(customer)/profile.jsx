@@ -3,22 +3,24 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { Alert, Image, Linking, Text, TouchableOpacity, View } from "react-native";
 import Aboutus from "../../../components/Aboutus";
-import MyOrders from "../../../components/orders/MyOrders";
 import AddressModal from "../../../components/pizza/AddressModal";
 import COLORS from "../../../constants/color";
 import { updateProfile } from "../../../services/profile";
 import useAuthStore from '../../../store/authStore';
 import styles from "../../../styles/profile.style";
 
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { getMyOrders } from "../../../services/order";
+
+
+
 const Profile = () => {
     const { logout, profile, setProfile } = useAuthStore();
     const [visible, setVisible] = useState(false);
     const [address, setAddress] = useState(profile?.address || "");
     const [saving, setSaving] = useState(false);
-    const [showOrders, setShowOrders] = useState(false);
+
     const [showAboutUs, setShowAboutUs] = useState(false);
     const [orderCount, setOrderCount] = useState(0);
 
@@ -138,7 +140,6 @@ const Profile = () => {
         }, [profile?.id])
     );
 
-    if (showOrders) return <MyOrders onBack={() => setShowOrders(false)} totalCount={orderCount} />
     if (showAboutUs) return <Aboutus onBack={() => setShowAboutUs(false)} />
 
 
@@ -215,8 +216,18 @@ const Profile = () => {
             </View>
 
 
-            {/* MY ORDERS */}
-            <TouchableOpacity style={styles.menuCard} onPress={() => setShowOrders(true)} activeOpacity={0.75} >
+            {/* MY ORDERS */}<TouchableOpacity
+                style={styles.menuCard}
+                onPress={() =>
+                    router.push({
+                        pathname: "/(customer)/cart",
+                        params: {
+                            page: "orders",
+                        },
+                    })
+                }
+                activeOpacity={0.75}
+            >
 
                 <View style={styles.menuIconContainer}>
                     <Ionicons name="receipt-outline" size={21} color={COLORS.primary} />

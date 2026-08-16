@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Alert, FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, RefreshControl, Text, View } from "react-native";
 
 import COLORS from "../../constants/color";
 import { cancelOrder, getMyOrders } from "../../services/order";
@@ -11,7 +11,7 @@ import Loader from "../Loading";
 import NotFound from "../NotFound";
 
 
-const MyOrders = ({ onBack, totalCount }) => {
+const MyOrders = () => {
     const { profile } = useAuthStore();
     const [cancellingOrderId, setCancellingOrderId] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -109,11 +109,6 @@ const MyOrders = ({ onBack, totalCount }) => {
 
             {/* HEADER */}
             <View style={styles.myOrderHeader}>
-                {/* BACK */}
-                <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.7}  >
-                    <Ionicons name="arrow-back" size={24} color={COLORS.primary} />
-                </TouchableOpacity>
-
 
                 <Text style={styles.myorder}>
                     My Orders
@@ -122,7 +117,8 @@ const MyOrders = ({ onBack, totalCount }) => {
                 {/* ORDER COUNT */}
                 <View style={styles.orderCountBadge}>
                     <Text style={styles.orderCountText}>
-                        {totalCount}
+                        {orders.length}
+                        {/* 12 */}
                     </Text>
                 </View>
 

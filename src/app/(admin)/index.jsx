@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FlatList, Image, RefreshControl, View } from 'react-native'
 
 import Loader from "../../../components/Loading"
@@ -14,6 +14,7 @@ const Order = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const fetchOrders = async () => {
         try {
@@ -36,6 +37,8 @@ const Order = () => {
         fetchOrders();
     };
 
+
+    const filteredPizzas = useMemo
     if (loading) return <Loader />
 
 
