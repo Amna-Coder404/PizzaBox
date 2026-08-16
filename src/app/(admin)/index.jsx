@@ -9,12 +9,11 @@ import COLORS from '../../../constants/color'
 import { getAdminOrders } from '../../../services/admin/orders'
 import styles from "../../../styles/orders.styles"
 
-
 const Order = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
+
 
     const fetchOrders = async () => {
         try {

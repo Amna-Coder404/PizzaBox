@@ -1,51 +1,53 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Image, View } from "react-native";
 
+import Loader from "../../../components/Loading";
+import NotFound from "../../../components/NotFound";
 import PizzaCard from "../../../components/pizza/PizzaCard";
 import AppSearchBar from "../../../components/SearchBar";
 import COLORS from "../../../constants/color";
+import useSearch from "../../../hooks/useSearch";
 import { useCustomerPizzaStore } from "../../../store/customer/pizzaStore";
 import styles from "../../../styles/customerHome.stlye";
 
 const Home = () => {
-    const { pizzas, fetchPizzas } = useCustomerPizzaStore();
+    const { pizzas, loading, fetchPizzas } = useCustomerPizzaStore();
 
-    const [search, setSearch] = useState("");
     const [showSearch, setShowSearch] = useState(false);
+
+    const { searchQuery, setSearchQuery, filteredData, } = useSearch(pizzas, ["name", "category"]);
 
     useEffect(() => {
         fetchPizzas();
     }, []);
 
     const toggleSearch = () => {
-        setShowSearch((prev) => !prev);
+        setShowSearch((prev) => {
+            const nextValue = !prev;
 
-        if (showSearch) {
-            setSearch("");
-        }
+            if (!nextValue) {
+                setSearchQuery("");
+            }
+
+            return nextValue;
+        });
     };
 
-    // Filter pizzas based on search
-    const filteredPizzas = useMemo(() => {
-        const query = search.trim().toLowerCase();
 
-        if (!query) {
-            return pizzas;
-        }
-
-        return pizzas.filter((pizza) =>
-            pizza.name?.toLowerCase().includes(query)
-        );
-    }, [pizzas, search]);
-
+    const isSearching = searchQuery.trim().length > 0;
+    if (loading && pizzas.length === 0) {
+        return <Loader />;
+    }
     return (
         <View style={styles.container}>
 
             {/* HEADER */}
             <View style={styles.header}>
                 <Image
-                    source={require("../../../assets/images/app-images/logo-header.png")}
+                    source={require(
+                        "../../../assets/images/app-images/logo-header.png"
+                    )}
                     style={styles.logo}
                 />
 
@@ -57,38 +59,53 @@ const Home = () => {
                         onPress={toggleSearch}
                     />
 
-                    <Ionicons
-                        name="notifications"
-                        color={COLORS.text}
-                        size={24}
-                    />
+
                 </View>
             </View>
 
             {/* SEARCH */}
             <AppSearchBar
                 visible={showSearch}
-                value={search}
-                onChangeText={setSearch}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search pizzas..."
             />
 
             {/* CONTENT */}
             <FlatList
-                data={filteredPizzas}
+                data={filteredData}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <PizzaCard pizza={item} />
                 )}
                 ListHeaderComponent={
-                    <View style={styles.bannerContainer}>
+                    !isSearching ? (<View style={styles.bannerContainer}>
                         <Image
                             source={require(
                                 "../../../assets/images/banners/banner1.png"
                             )}
                             style={styles.bannerImage}
                         />
-                    </View>
+                    </View>) : null
+
+                } ListEmptyComponent={
+                    isSearching ? (
+                        <NotFound
+                            icon="magnify"
+                            title="No Pizzas Found"
+                            description={`No pizzas match "${searchQuery}".`}
+                        />
+                    ) : (
+                        <NotFound
+                            icon="pizza"
+                            title="No Pizzas Available"
+                            description="There are no pizzas available right now."
+                        />
+                    )
                 }
+                contentContainerStyle={{
+                    paddingBottom: 20,
+                }}
                 showsVerticalScrollIndicator={false}
             />
 

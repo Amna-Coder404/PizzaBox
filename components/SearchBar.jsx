@@ -47,7 +47,7 @@ const AppSearchBar = ({
                 elevation={0}
                 style={{
                     marginHorizontal: 16,
-                    marginVertical: 10,
+                    // marginVertical: 10,
                     borderRadius: 999,
                     backgroundColor: "transparent",
                     borderWidth: 1,
