@@ -4,7 +4,7 @@ import {
     deleteCategory,
     getCategories,
     updateCategory
-} from "../../services/admin/category";
+} from "../../services/category";
 
 export const useCategoryStore = create((set) => ({
     categories: [],
