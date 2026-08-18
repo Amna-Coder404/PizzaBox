@@ -51,13 +51,12 @@ export const useCategoryStore = create((set) => ({
 
     // DELETE CATEGORY
     removeCategory: async (id) => {
+        await deleteCategory(id);
 
-        const data = await deleteCategory(id);
         set((state) => ({
             categories: state.categories.filter(
                 (item) => item.id !== id
             ),
         }));
-
     },
 }))

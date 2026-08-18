@@ -2,10 +2,12 @@ import { StyleSheet } from "react-native";
 import COLORS from "../constants/color";
 
 export default StyleSheet.create({
+    /* CONTAINER */
+
     container: {
         flex: 1,
         backgroundColor: COLORS.background,
-        paddingBottom: 80
+        paddingBottom: 80,
     },
 
     content: {
@@ -14,14 +16,13 @@ export default StyleSheet.create({
         paddingTop: 18,
     },
 
-    //Header
+    /* HEADER */
 
     header: {
         flexDirection: "row",
         justifyContent: "space-between",
-
         alignItems: "center",
-        marginBottom: 24,
+
     },
 
     logo: {
@@ -30,71 +31,85 @@ export default StyleSheet.create({
         resizeMode: "contain",
     },
 
-    addButton: {
+    /* CATEGORY LIST */
+
+    categoryList: {
+        gap: 10,
+        paddingBottom: 18,
+
+
+    },
+
+    categoryCard: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: COLORS.primary,
-        paddingHorizontal: 18,
-        height: 52,
-        borderRadius: 26,
-    },
-
-    addButtonText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "700",
-        marginLeft: 8,
-    },
-
-    /*
-          Categories
- */
-
-    categoryContainer: {
-        marginBottom: 22,
-    },
-
-    categoryContent: {
-        paddingRight: 10,
-    },
-
-    categoryItem: {
-        alignItems: "center",
-        marginRight: 18,
-    },
-
-    activeCategory: {},
-
-    categoryIcon: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        backgroundColor: "#171717",
+        backgroundColor: COLORS.card,
+        borderRadius: 23,
         borderWidth: 1,
-        borderColor: "#2A2A2A",
-        justifyContent: "center",
+        borderColor: COLORS.surface,
+        overflow: "hidden",
+        padding: 12,
+
+        height: 52
+    },
+
+    categoryMain: {
+        flexDirection: "row",
         alignItems: "center",
-        marginBottom: 8,
+        paddingHorizontal: 14,
+
+        gap: 7,
     },
 
-    activeCategoryIcon: {
-        borderColor: COLORS.primary,
-        backgroundColor: "#241507",
-    },
-
-    categoryText: {
-        color: COLORS.gray,
-        fontSize: 15,
+    categoryName: {
+        color: COLORS.white,
+        fontSize: 14,
         fontWeight: "600",
+        maxWidth: 100,
     },
-
-    activeCategoryText: {
+    activeBorderColor: {
+        borderColor: COLORS.primary,
+        borderWidth: 1,
+    },
+    activeCategoryName: {
         color: COLORS.primary,
     },
 
-    /*
-          Pizza List
- */
+    categoryActions: {
+        flexDirection: "row",
+        gap: 6,
+        paddingRight: 8,
+    },
+
+    categoryAction: {
+        width: 32,
+        height: 32,
+        borderRadius: 10,
+        backgroundColor: COLORS.surface,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    addCategoryCard: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 5,
+        paddingHorizontal: 14,
+        height: 44,
+        borderRadius: 24,
+        borderWidth: 1,
+        borderStyle: "solid",
+        borderColor: COLORS.primary,
+        backgroundColor: COLORS.card,
+    },
+
+    addCategoryText: {
+        color: COLORS.primary,
+        fontSize: 13,
+        fontWeight: "700",
+    },
+
+    /* PIZZA LIST */
 
     listContent: {
         paddingBottom: 30,
@@ -108,6 +123,7 @@ export default StyleSheet.create({
         borderWidth: 1,
         borderColor: "#262626",
         marginBottom: 16,
+        marginTop: 12
     },
 
     pizzaImage: {
@@ -122,9 +138,7 @@ export default StyleSheet.create({
         justifyContent: "space-between",
     },
 
-    /*
-          Pizza Details
- */
+    /* PIZZA DETAILS */
 
     pizzaName: {
         color: COLORS.white,
@@ -171,25 +185,23 @@ export default StyleSheet.create({
         fontWeight: "700",
     },
 
-    /*  Add Button*/
+    /* PIZZA ACTIONS */
 
     rightContainer: {
         justifyContent: "center",
         alignItems: "center",
         marginLeft: 10,
-        gap: 12
+        gap: 12,
     },
 
     actionButton: {
         width: 52,
         height: 52,
         borderRadius: 26,
-        borderWidth: 2,
-
         justifyContent: "center",
         alignItems: "center",
+        borderWidth: 1,
         borderColor: COLORS.border,
-        borderWidth: 1
     },
 
     disabledButton: {
@@ -197,9 +209,7 @@ export default StyleSheet.create({
         opacity: 0.45,
     },
 
-    /*
-          Empty State
- */
+    /* EMPTY STATE */
 
     emptyContainer: {
         flex: 1,
@@ -220,5 +230,12 @@ export default StyleSheet.create({
         textAlign: "center",
         paddingHorizontal: 35,
         lineHeight: 22,
+    },
+
+    /* MENU TEXT */
+    noCategoriesText: {
+        color: COLORS.gray,
+        fontSize: 14,
+        marginBottom: 18,
     },
 });
