@@ -167,7 +167,46 @@ export default StyleSheet.create({
         fontWeight: "600",
     },
 
+    historyCard: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: COLORS.card,
+        borderRadius: 16,
+        padding: 16,
+        marginTop: 12,
+        gap: 12,
+        marginBottom: 12
 
+    },
+
+    historyIconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        backgroundColor: COLORS.background,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    historyContent: {
+        flex: 1,
+    },
+
+    historyTitle: {
+        color: COLORS.text,
+        fontSize: 16,
+        fontWeight: "600",
+    },
+
+    historyDescription: {
+        color: COLORS.muted,
+        fontSize: 12,
+        marginTop: 4,
+    },
+
+    historyArrow: {
+        marginLeft: 4,
+    },
 
     /* LOGOUT */
 

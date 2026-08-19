@@ -45,7 +45,7 @@ const PizzaForm = ({ mode = "create", pizza = null, onClose, }) => {
             setDescription(pizza.description);
 
             setCategory(
-                pizza.category_id.toString()
+                pizza.category_id.toString() || ""
             );
 
             setSmallPrice(

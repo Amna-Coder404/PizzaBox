@@ -8,6 +8,8 @@ export const getAdminOrders = async () => {
             order_items (
                 id,
                 pizza_id,
+                  pizza_name,
+                pizza_image_url,
                 quantity,
                 size,
                 unit_price,
@@ -18,6 +20,7 @@ export const getAdminOrders = async () => {
                 )
             )
         `)
+        .eq("is_hidden", false)
         .order("created_at", {
             ascending: false,
         });
@@ -126,4 +129,70 @@ export const getAdminOrderStats = async () => {
         totalOrders,
         totalRevenue,
     };
+};
+
+
+// THis will hide Canceled / Deliverd Order form Admin screen but Store in History 
+export const hideOrder = async (orderId) => {
+    const { error } = await supabase
+        .from("orders")
+        .update({ is_hidden: true })
+        .eq("id", orderId);
+
+    if (error) {
+        console.log("HIDE ORDER ERROR:", error);
+        throw error;
+    }
+
+    return true;
+};
+// Notice: we are not deleting anything.
+
+// Get Hide/Removed Pizza As history
+export const getHiddenOrders = async () => {
+    const { data, error } = await supabase
+        .from("orders")
+        .select(`
+            *,
+            order_items (
+                id,
+                pizza_id,
+                pizza_name,
+                pizza_image_url,
+                quantity,
+                size,
+                unit_price
+            )
+        `)
+        .eq("is_hidden", true)
+        .order("created_at", {
+            ascending: false,
+        });
+
+    if (error) {
+        console.log("GET HIDDEN ORDERS ERROR:", error);
+        throw error;
+    }
+
+    const ordersWithProfiles = await Promise.all(
+        data.map(async (order) => {
+            const { data: profile, error: profileError } =
+                await supabase
+                    .from("profiles")
+                    .select("id, name, email, avatar_url")
+                    .eq("id", order.user_id)
+                    .maybeSingle();
+
+            if (profileError) {
+                console.log("PROFILE ERROR:", profileError.message);
+            }
+
+            return {
+                ...order,
+                profile: profile || null,
+            };
+        })
+    );
+
+    return ordersWithProfiles;
 };

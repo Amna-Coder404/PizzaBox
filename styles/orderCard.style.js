@@ -13,7 +13,15 @@ export default StyleSheet.create({
     },
 
     /* HEADER */
+    headerRight: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+    },
 
+    hideButton: {
+        padding: 6,
+    },
     header: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -283,5 +291,5 @@ export default StyleSheet.create({
     refundedStatus: {
         color: "#22C55E",
         fontWeight: "700",
-    }
+    },
 });

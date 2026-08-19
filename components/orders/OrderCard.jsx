@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
+    Alert,
     Image,
     Text,
     View
@@ -8,7 +9,7 @@ import {
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import COLORS from "../../constants/color";
-import { updateOrderStatus } from "../../services/admin/orders";
+import { hideOrder, updateOrderStatus } from "../../services/admin/orders";
 import styles from "../../styles/orderCard.style";
 
 
@@ -44,6 +45,14 @@ const OrderCard = ({ order, onStatusUpdated }) => {
     const [showStatusModal, setShowStatusModal] = useState(false);
     const isCancelled = order.order_status === "cancelled";
 
+    // This is for Hide Btn Show 
+    const canHide =
+        !order.is_hidden &&
+        (
+            order.order_status === "delivered" ||
+            order.order_status === "cancelled"
+        );
+
     const handleStatusChange = async (status) => {
         if (status === order.order_status) {
             setShowStatusModal(false);
@@ -66,6 +75,35 @@ const OrderCard = ({ order, onStatusUpdated }) => {
 
     }
 
+    const handleHideOrder = () => {
+        Alert.alert(
+            "Hide Order",
+            "Are you sure you want to hide this order from the orders list?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Hide",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            setUpdating(true);
+
+                            await hideOrder(order.id);
+
+                            onStatusUpdated?.();
+                        } catch (error) {
+                            console.log("HIDE ORDER ERROR:", error);
+                        } finally {
+                            setUpdating(false);
+                        }
+                    },
+                },
+            ]
+        );
+    };
 
     return (
         <View style={[styles.card, isCancelled && styles.cancelledCard,]}>
@@ -82,87 +120,93 @@ const OrderCard = ({ order, onStatusUpdated }) => {
                         {new Date(order.created_at).toLocaleDateString()}
                     </Text>
                 </View>
-                {/* STATUS OPTIONS */}
 
-                {/* STATUS DROPDOWN */}
-                {isCancelled ? (
-                    <View style={styles.cancelledBadge}>
-                        <Ionicons name="close-circle" size={18} color="#EF4444" />
-
-                        <Text style={styles.cancelledStatusText}>
-                            Order Cancelled
-                        </Text>
-                    </View>
-                ) : (
-                    <View style={styles.dropdownContainer}>
-
+                <View style={styles.headerRight}>
+                    {canHide && (
                         <TouchableOpacity
-                            style={styles.statusBadge}
-                            onPress={() => setShowStatusModal(!showStatusModal)}
+                            onPress={handleHideOrder}
                             disabled={updating}
                         >
-                            <Text style={styles.statusText}>
-                                {
-                                    STATUS_OPTIONS.find(
-                                        (status) =>
-                                            status.value === order.order_status
-                                    )?.label || "Pending"
-                                }
-                            </Text>
-
                             <Ionicons
-                                name={
-                                    showStatusModal
-                                        ? "chevron-up"
-                                        : "chevron-down"
-                                }
-                                size={18}
+                                name="trash-outline"
+                                size={20}
                                 color={COLORS.primary}
                             />
                         </TouchableOpacity>
+                    )}
 
-                        {showStatusModal && (
-                            <View style={styles.dropdown}>
+                    {/* STATUS DROPDOWN */}
+                    {isCancelled ? (
+                        <View style={styles.cancelledBadge}>
+                            <Ionicons name="close-circle" size={18} color="#EF4444" />
 
-                                {STATUS_OPTIONS.map((status) => (
-                                    <TouchableOpacity
-                                        key={status.value}
-                                        style={[
-                                            styles.statusOption,
-                                            order.order_status === status.value &&
-                                            styles.selectedStatus,
-                                        ]}
-                                        onPress={() =>
-                                            handleStatusChange(status.value)
-                                        }
-                                        disabled={updating}
-                                    >
-                                        <Text
+                            <Text style={styles.cancelledStatusText}>
+                                Order Cancelled
+                            </Text>
+                        </View>
+                    ) : (
+                        <View style={styles.dropdownContainer}>
+
+                            <TouchableOpacity
+                                style={styles.statusBadge}
+                                onPress={() => setShowStatusModal(!showStatusModal)}
+                                disabled={updating} >
+                                <Text style={styles.statusText}>
+                                    {
+                                        STATUS_OPTIONS.find(
+                                            (status) =>
+                                                status.value === order.order_status
+                                        )?.label || "Pending"
+                                    }
+                                </Text>
+
+                                <Ionicons
+                                    name={showStatusModal ? "chevron-up" : "chevron-down"} size={18} color={COLORS.primary}
+                                />
+                            </TouchableOpacity>
+
+                            {showStatusModal && (
+                                <View style={styles.dropdown}>
+
+                                    {STATUS_OPTIONS.map((status) => (
+                                        <TouchableOpacity
+                                            key={status.value}
                                             style={[
-                                                styles.statusOptionText,
+                                                styles.statusOption,
                                                 order.order_status === status.value &&
-                                                styles.selectedStatusText,
+                                                styles.selectedStatus,
                                             ]}
+                                            onPress={() =>
+                                                handleStatusChange(status.value)
+                                            }
+                                            disabled={updating}
                                         >
-                                            {status.label}
-                                        </Text>
+                                            <Text
+                                                style={[
+                                                    styles.statusOptionText,
+                                                    order.order_status === status.value &&
+                                                    styles.selectedStatusText,
+                                                ]}
+                                            >
+                                                {status.label}
+                                            </Text>
 
-                                        {order.order_status === status.value && (
-                                            <Ionicons
-                                                name="checkmark"
-                                                size={20}
-                                                color={COLORS.primary}
-                                            />
-                                        )}
-                                    </TouchableOpacity>
-                                ))}
+                                            {order.order_status === status.value && (
+                                                <Ionicons
+                                                    name="checkmark"
+                                                    size={20}
+                                                    color={COLORS.primary}
+                                                />
+                                            )}
+                                        </TouchableOpacity>
+                                    ))}
 
-                            </View>
-                        )}
+                                </View>
+                            )}
 
-                    </View>
-                )}
-
+                        </View>
+                    )}
+                </View>
             </View>
 
             {/* CUSTOMER */}
@@ -202,47 +246,40 @@ const OrderCard = ({ order, onStatusUpdated }) => {
             {/* PIZZA ITEMS */}
             <View style={styles.itemsContainer}>
 
-                {order.order_items?.map((item) => (
+                {order.order_items?.map((item) => {
 
-                    <View
-                        key={item.id}
-                        style={styles.item}
-                    >
+                    return (
+                        <View key={item.id} style={styles.item}>
+                            <Image
+                                source={{ uri: item.pizza_image_url }}
+                                style={styles.pizzaImage}
+                            />
 
-                        <Image
-                            source={{
-                                uri: item.pizzas?.image_url,
-                            }}
-                            style={styles.pizzaImage}
-                        />
+                            <View style={styles.itemInfo}>
 
-                        <View style={styles.itemInfo}>
+                                <Text style={styles.pizzaName}>
+                                    {item.pizza_name}
+                                </Text>
 
-                            <Text style={styles.pizzaName}>
-                                {item.pizzas?.name}
-                            </Text>
+                                <Text style={styles.pizzaDetails}>
+                                    {item.size} × {item.quantity}
+                                </Text>
 
-                            <Text style={styles.pizzaDetails}>
-                                {item.size} × {item.quantity}
+                            </View>
+
+                            <Text style={styles.itemPrice}>
+                                Rs. {item.unit_price}
                             </Text>
 
                         </View>
-
-                        <Text style={styles.itemPrice}>
-                            Rs. {item.unit_price}
-                        </Text>
-
-                    </View>
-
-                ))}
+                    );
+                })}
 
             </View>
 
             {/* FOOTER */}
             <View style={styles.footer}>
-
                 <View>
-
                     <Text style={styles.paymentLabel}>
                         Payment
                     </Text>

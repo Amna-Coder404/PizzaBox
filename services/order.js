@@ -32,17 +32,23 @@ export const createOrder = async (orderData, items) => {
     if (orderError) {
         throw orderError;
     }
-
+    console.log("CART ITEMS BEFORE ORDER:", items);
     // 3. Create order items
     const orderItems = items.map((item) => ({
         order_id: order.id,
+
+        // Keep reference to current pizza
         pizza_id: item.id,
+
+        // Keep pizza information for order history
+        pizza_name: item.name,
+        pizza_image_url: item.image_url,
+
         quantity: item.quantity,
         size: item.size,
         unit_price: item.price,
-
     }));
-
+    console.log("ORDER ITEMS TO INSERT:", orderItems);
     const { error: itemError } = await supabase
         .from("order_items")
         .insert(orderItems);

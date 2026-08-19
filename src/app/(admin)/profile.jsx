@@ -3,17 +3,19 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
+import OrderHistory from "../../../components/orders/OrderHistory";
 import COLORS from "../../../constants/color";
 import { getAdminOrderStats } from "../../../services/admin/orders";
 import useAuthStore from "../../../store/authStore";
 import styles from "../../../styles/adminProfile.stlye";
-;
 
 
 
 const Profile = () => {
     const { logout, profile } = useAuthStore();
     const [stats, setStats] = useState({ totalOrders: 0, totalRevenue: 0, });
+    const [showOrderHistory, setShowOrderHistory] = useState(false);
+
 
     useFocusEffect(
         useCallback(() => {
@@ -160,7 +162,36 @@ const Profile = () => {
             </View>
 
 
+            {/* ORDER HISTORY */}
+            <TouchableOpacity
+                style={styles.historyCard}
+                onPress={() => setShowOrderHistory(true)}
+                activeOpacity={0.7}
+            >
+                <View style={styles.historyIconContainer}>
+                    <Ionicons
+                        name="time-outline"
+                        size={22}
+                        color={COLORS.primary}
+                    />
+                </View>
 
+                <View style={styles.historyContent}>
+                    <Text style={styles.historyTitle}>
+                        Order History
+                    </Text>
+
+                    <Text style={styles.historyDescription}>
+                        View completed and cancelled orders
+                    </Text>
+                </View>
+
+                <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={COLORS.muted}
+                />
+            </TouchableOpacity>
 
 
             {/* LOGOUT */}
@@ -175,7 +206,10 @@ const Profile = () => {
 
                 <Ionicons name="chevron-forward" style={styles.iconStyle} />
             </TouchableOpacity>
-
+            <OrderHistory
+                visible={showOrderHistory}
+                onClose={() => setShowOrderHistory(false)}
+            />
         </ScrollView >
     );
 };
