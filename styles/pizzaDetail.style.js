@@ -164,11 +164,11 @@ export default StyleSheet.create({
 
 
     totalBox: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 20
+        backgroundColor: COLORS.card,
+        padding: 16,
+        borderRadius: 15,
+        marginBottom: 20,
     },
-
 
     totalText: {
         color: "#aaa",
@@ -210,5 +210,40 @@ export default StyleSheet.create({
     },
     button: {
         flex: 1,
+    },
+    totalText: {
+        color: "#aaa",
+        fontSize: 16,
+    },
+
+    totalPrice: {
+        color: COLORS.secondary,
+        fontSize: 17,
+        fontWeight: "700",
+    },
+
+    summaryRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 12,
+    },
+
+    summaryDivider: {
+        height: 1,
+        backgroundColor: "#333",
+        marginVertical: 4,
+    },
+
+    finalTotalText: {
+        color: "#fff",
+        fontSize: 19,
+        fontWeight: "800",
+    },
+
+    finalTotalPrice: {
+        color: COLORS.primary,
+        fontSize: 22,
+        fontWeight: "900",
     },
 });

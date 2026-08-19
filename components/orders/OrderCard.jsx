@@ -29,8 +29,15 @@ const STATUS_OPTIONS = [
         value: "delivered",
         label: "Delivered",
     },
-];
 
+];
+export const FILTER_STATUS_OPTIONS = [
+    ...STATUS_OPTIONS,
+    {
+        value: "cancelled",
+        label: "Cancelled",
+    },
+];
 
 const OrderCard = ({ order, onStatusUpdated }) => {
     const [updating, setUpdating] = useState(false);

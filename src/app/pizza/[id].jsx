@@ -67,6 +67,9 @@ const PizzaDetail = () => {
 
 
     const totalPrice = getPrice() * quantity;
+    const deliveryFee = 200;
+    const finalTotal = totalPrice + deliveryFee;
+
     const sizes = ["small", "medium", "large"];
 
     const handleDirectOrder = async () => {
@@ -95,8 +98,7 @@ const PizzaDetail = () => {
                 return;
             }
 
-            const deliveryFee = 200;
-            const total = totalPrice + deliveryFee;
+            const total = finalTotal;
 
             // STRIPE PAYMENT
             if (paymentMethod === "stripe") {
@@ -222,13 +224,11 @@ const PizzaDetail = () => {
                     {selectedPizza.name}
                 </Text>
 
-
                 <View style={styles.categoryBox}>
                     <Text style={styles.category}>
-                        {selectedPizza.categories?.name}
+                        {selectedPizza.categories?.name || "Uncategorized"}
                     </Text>
                 </View>
-
                 <Text style={styles.description}>
                     {selectedPizza.description}
                 </Text>
@@ -286,18 +286,42 @@ const PizzaDetail = () => {
                 </View>
 
 
-                {/* TOTAL */}
+                {/* ORDER SUMMARY */}
                 <View style={styles.totalBox}>
 
-                    <Text style={styles.totalText}>
-                        Total
-                    </Text>
+                    <View style={styles.summaryRow}>
+                        <Text style={styles.totalText}>
+                            Pizza Price
+                        </Text>
 
-                    <Text style={styles.totalPrice}>
-                        ${totalPrice}
-                    </Text>
+                        <Text style={styles.totalPrice}>
+                            ${totalPrice}
+                        </Text>
+                    </View>
+
+                    <View style={styles.summaryRow}>
+                        <Text style={styles.totalText}>
+                            Delivery Fee
+                        </Text>
+
+                        <Text style={styles.totalPrice}>
+                            ${deliveryFee}
+                        </Text>
+                    </View>
+
+                    <View style={styles.summaryDivider} />
+
+                    <View style={styles.summaryRow}>
+                        <Text style={styles.finalTotalText}>
+                            Total
+                        </Text>
+
+                        <Text style={styles.finalTotalPrice}>
+                            ${finalTotal}
+                        </Text>
+                    </View>
+
                 </View>
-
                 {/* CART BUTTON */}
                 <View style={styles.buttonContainer}>
                     <View style={styles.button}>

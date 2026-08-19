@@ -17,6 +17,7 @@ export default StyleSheet.create({
     },
     //Header
 
+
     header: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -47,5 +48,42 @@ export default StyleSheet.create({
         color: COLORS.gray,
         lineHeight: 22,
     },
+    /* STATUS FILTER */
 
+    statusScroll: {
+        height: 50,
+        flexGrow: 0,
+    },
+
+    statusContainer: {
+        alignItems: "center",
+        paddingHorizontal: 4,
+        gap: 10,
+    },
+
+    statusChip: {
+        height: 36,
+        paddingHorizontal: 16,
+        borderRadius: 18,
+        backgroundColor: COLORS.card,
+        borderWidth: 1,
+        borderColor: COLORS.surface,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
+    activeStatusChip: {
+        backgroundColor: COLORS.primary,
+        borderColor: COLORS.primary,
+    },
+
+    statusText: {
+        color: COLORS.muted,
+        fontSize: 14,
+        fontWeight: "600",
+    },
+
+    activeStatusText: {
+        color: COLORS.white,
+    },
 });
