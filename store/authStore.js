@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import {
+    checkSession,
     loginUser, logoutUser, signUp,
 } from "../services/auth";
 
@@ -47,15 +48,20 @@ const useAuthStore = create((set) => ({
         set({ loading: true });
 
         try {
-            const user = await signUp(
+            const { user, profile } = await signUp(
                 name,
                 email,
                 password,
                 role
             );
 
-            return user;
+            const session = await checkSession();
 
+            set({
+                session,
+                user,
+                profile,
+            });
         } catch (error) {
             throw error;
 

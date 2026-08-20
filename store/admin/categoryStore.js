@@ -49,13 +49,21 @@ export const useCategoryStore = create((set) => ({
 
     },
 
-    // DELETE CATEGORY
-    removeCategory: async (id) => {
-        await deleteCategory(id);
+    removeCategory: async (category) => {
+        const categoryId =
+            typeof category === "object"
+                ? category?.id
+                : category;
+
+        if (!categoryId) {
+            throw new Error("Category ID is required.");
+        }
+
+        await deleteCategory(categoryId);
 
         set((state) => ({
             categories: state.categories.filter(
-                (item) => item.id !== id
+                (item) => item.id !== categoryId
             ),
         }));
     },

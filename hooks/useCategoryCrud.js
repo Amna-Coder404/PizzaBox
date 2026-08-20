@@ -12,9 +12,7 @@ const useCategoryCrud = () => {
 
     const [actionLoading, setActionLoading] = useState(false);
 
-    /*
-       CREATE */
-
+    // CREATE
     const create = async (category) => {
         try {
             setActionLoading(true);
@@ -34,16 +32,21 @@ const useCategoryCrud = () => {
         }
     };
 
-
-    /*
-       UPDATE
-   = */
-
+    // UPDATE
     const update = async (id, category) => {
         try {
             setActionLoading(true);
 
-            await editCategory(id, category);
+            const categoryId =
+                typeof id === "object"
+                    ? id?.id
+                    : id;
+
+            if (!categoryId) {
+                throw new Error("Category ID is required.");
+            }
+
+            await editCategory(categoryId, category);
 
             return true;
         } catch (error) {
@@ -58,17 +61,28 @@ const useCategoryCrud = () => {
         }
     };
 
-
-    /*  DELETE*/
-
-    const remove = async (id) => {
+    // DELETE
+    const remove = async (category) => {
         try {
             setActionLoading(true);
 
-            await removeCategory(id);
+            const categoryId =
+                typeof category === "object"
+                    ? category?.id
+                    : category;
+
+            if (!categoryId) {
+                throw new Error("Category ID is required.");
+            }
+
+            console.log("DELETE CATEGORY ID:", categoryId);
+
+            await removeCategory(categoryId);
 
             return true;
         } catch (error) {
+            console.error("DELETE CATEGORY ERROR:", error);
+
             Alert.alert(
                 "Error",
                 error?.message || "Failed to delete category."
@@ -79,7 +93,6 @@ const useCategoryCrud = () => {
             setActionLoading(false);
         }
     };
-
 
     return {
         create,

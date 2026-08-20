@@ -315,7 +315,11 @@ export default StyleSheet.create({
     },
 
     /* IMAGE */
-
+    profileLoader: {
+        minHeight: 120,
+        alignItems: "center",
+        justifyContent: "center",
+    },
     imageSection: {
         alignItems: "center",
         marginBottom: 26,

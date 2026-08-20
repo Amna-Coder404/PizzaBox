@@ -1,16 +1,12 @@
 import { supabase } from "../lib/supabase";
 
-const DEFAULT_AVATAR =
-    "https://xaccpurglkrikrymzikk.supabase.co/storage/v1/object/public/avatars/Default_pfp.jpg";
+const DEFAULT_AVATAR = "https://xaccpurglkrikrymzikk.supabase.co/storage/v1/object/public/avatars/Default_pfp.jpg";
 
 // Create Profile
-export const createProfile = async (
-    userId,
-    name,
-    email,
-    role = "customer",
-    address = ""
+export const createProfile = async (userId, name, email, role = "customer", address = ""
 ) => {
+
+
     const { data, error } = await supabase
         .from("profiles")
         .insert({
@@ -24,7 +20,12 @@ export const createProfile = async (
         .select()
         .single();
 
-    if (error) throw error;
+    if (error) {
+
+        throw error;
+    }
+
+
 
     return data;
 };

@@ -11,13 +11,14 @@ import styles from "../../../styles/profile.style";
 
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
+import { ActivityIndicator } from "react-native-paper";
 import EditProfileModal from "../../../components/EditProfileModal";
 import { getMyOrders } from "../../../services/order";
 
 
 
 const Profile = () => {
-    const { logout, profile, setProfile } = useAuthStore();
+    const { logout, profile, setProfile, } = useAuthStore();
     const [visible, setVisible] = useState(false);
     const [address, setAddress] = useState(profile?.address || "");
     const [saving, setSaving] = useState(false);
@@ -159,39 +160,55 @@ const Profile = () => {
             {/* PROFILE CARD */}
             <View style={styles.profileCard}>
 
-                {/* PROFILE IMAGE */}
-                <View style={styles.imageSection}>
-                    <Image
-                        source={
-                            profile?.avatar_url
-                                ? { uri: profile.avatar_url }
-                                : require("../../../assets/images/app-images/owner-image.png")
-                        }
-                        style={styles.profileImage}
-                    />
+                {!profile ? (
+                    <View style={styles.profileLoader}>
+                        <ActivityIndicator
+                            size="small"
+                            color={COLORS.primary}
+                        />
+                    </View>
+                ) : (
+                    <>
+                        {/* PROFILE IMAGE */}
+                        <View style={styles.imageSection}>
 
-                    <TouchableOpacity
-                        style={styles.editProfileButton}
-                        onPress={() => setEditModalVisible(true)}
-                        activeOpacity={0.8} >
-                        <Ionicons name="create-outline" size={16} color={COLORS.primary} />
+                            <Image
+                                source={{ uri: profile.avatar_url }}
+                                style={styles.profileImage}
+                            />
 
-                        <Text style={styles.editProfileText}>
-                            Edit Profile
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                            <TouchableOpacity
+                                style={styles.editProfileButton}
+                                onPress={() => setEditModalVisible(true)}
+                                activeOpacity={0.8}
+                            >
+                                <Ionicons
+                                    name="create-outline"
+                                    size={16}
+                                    color={COLORS.primary}
+                                />
 
-                {/* PROFILE INFO */}
-                <View style={styles.profileInfo}>
-                    <Text style={styles.profileName}>
-                        {profile?.name}
-                    </Text>
+                                <Text style={styles.editProfileText}>
+                                    Edit Profile
+                                </Text>
+                            </TouchableOpacity>
 
-                    <Text style={styles.profileEmail}>
-                        {profile?.email}
-                    </Text>
-                </View>
+                        </View>
+
+                        {/* PROFILE INFO */}
+                        <View style={styles.profileInfo}>
+
+                            <Text style={styles.profileName}>
+                                {profile.name}
+                            </Text>
+
+                            <Text style={styles.profileEmail}>
+                                {profile.email}
+                            </Text>
+
+                        </View>
+                    </>
+                )}
 
             </View>
             {/* DELIVERY ADDRESS */}

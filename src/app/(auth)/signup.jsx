@@ -22,7 +22,7 @@ const Signup = () => {
     const [password, setPassword] = useState("");
     const { signup } = useAuthStore();
     const [loading, setLoading] = useState(false);
-
+    const [showPassword, setShowPassword] = useState(false);
     const handleSignup = async () => {
         if (!email || !password || !name) {
             Alert.alert("Missing Field", "Please fill all fields");
@@ -113,10 +113,21 @@ const Signup = () => {
                                 }
                                 value={password}
                                 onChangeText={setPassword}
-                                secureTextEntry
+                                secureTextEntry={!showPassword}
                                 style={styles.input}
                             />
+                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}
+                            >
+                                <Ionicons name={
+                                    showPassword
+                                        ? "eye-outline"
+                                        : "eye-off-outline"
+                                }
+                                    size={22}
+                                    color={COLORS.textSecondary}
+                                />
 
+                            </TouchableOpacity>
 
                         </View>
 
