@@ -11,6 +11,7 @@ import styles from "../../../styles/profile.style";
 
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
+import EditProfileModal from "../../../components/EditProfileModal";
 import { getMyOrders } from "../../../services/order";
 
 
@@ -23,6 +24,8 @@ const Profile = () => {
 
     const [showAboutUs, setShowAboutUs] = useState(false);
     const [orderCount, setOrderCount] = useState(0);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+
 
     const handleFeedback = async () => {
         const email = "kamalgroup272@gmail.com";
@@ -156,11 +159,30 @@ const Profile = () => {
             {/* PROFILE CARD */}
             <View style={styles.profileCard}>
 
-                <Image
-                    source={{ uri: profile?.avatar_url }}
-                    style={styles.avatar}
-                />
+                {/* PROFILE IMAGE */}
+                <View style={styles.imageSection}>
+                    <Image
+                        source={
+                            profile?.avatar_url
+                                ? { uri: profile.avatar_url }
+                                : require("../../../assets/images/app-images/owner-image.png")
+                        }
+                        style={styles.profileImage}
+                    />
 
+                    <TouchableOpacity
+                        style={styles.editProfileButton}
+                        onPress={() => setEditModalVisible(true)}
+                        activeOpacity={0.8} >
+                        <Ionicons name="create-outline" size={16} color={COLORS.primary} />
+
+                        <Text style={styles.editProfileText}>
+                            Edit Profile
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* PROFILE INFO */}
                 <View style={styles.profileInfo}>
                     <Text style={styles.profileName}>
                         {profile?.name}
@@ -172,8 +194,6 @@ const Profile = () => {
                 </View>
 
             </View>
-
-
             {/* DELIVERY ADDRESS */}
             <View style={styles.addressCard}>
 
@@ -317,6 +337,14 @@ const Profile = () => {
                 saving={saving}
                 address={address}
                 onChangeAddress={setAddress}
+            />
+
+
+            <EditProfileModal
+                visible={editModalVisible}
+                onClose={() => setEditModalVisible(false)}
+                profile={profile}
+
             />
 
         </View>

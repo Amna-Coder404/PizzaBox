@@ -3,6 +3,7 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
+import EditProfileModal from "../../../components/EditProfileModal";
 import OrderHistory from "../../../components/orders/OrderHistory";
 import COLORS from "../../../constants/color";
 import { getAdminOrderStats } from "../../../services/admin/orders";
@@ -13,9 +14,12 @@ import styles from "../../../styles/adminProfile.stlye";
 
 const Profile = () => {
     const { logout, profile } = useAuthStore();
+
+
     const [stats, setStats] = useState({ totalOrders: 0, totalRevenue: 0, });
     const [showOrderHistory, setShowOrderHistory] = useState(false);
 
+    const [editModalVisible, setEditModalVisible] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -48,22 +52,35 @@ const Profile = () => {
                     style={styles.coverImage}
                 />
 
-                {/* TODO LATER : add imag picker and store this image frm supabse storage  */}
-                {/*          <Image source={{ uri: profile?.avatar_url }} style={styles.avatar} /> */}
-                {/* PROFILE CONTENT */}
+
                 <View style={styles.profileContent}>
 
                     {/* AVATAR */}
                     <View style={styles.avatarContainer}>
 
                         <Image
-                            source={require("../../../assets/images/app-images/owner-image.png")} style={styles.avatar}
+                            source={
+                                profile?.avatar_url
+                                    ? { uri: profile.avatar_url }
+                                    : require("../../../assets/images/app-images/owner-image.png")
+                            }
+                            style={styles.avatar}
                         />
-
                         <TouchableOpacity style={styles.editButton} activeOpacity={0.8} >
                             <Ionicons name="camera" size={14} color={COLORS.white} />
                         </TouchableOpacity>
 
+
+                        <TouchableOpacity
+                            style={styles.editProfileButton}
+                            activeOpacity={0.8}
+                            onPress={() => setEditModalVisible(true)}  >
+                            <Ionicons name="create-outline" size={18} color={COLORS.white} />
+
+                            <Text style={styles.editProfileText}>
+                                Edit Profile
+                            </Text>
+                        </TouchableOpacity>
                     </View>
 
 
@@ -206,9 +223,19 @@ const Profile = () => {
 
                 <Ionicons name="chevron-forward" style={styles.iconStyle} />
             </TouchableOpacity>
+
+            {/* MODALS */}
+
             <OrderHistory
                 visible={showOrderHistory}
                 onClose={() => setShowOrderHistory(false)}
+            />
+
+            <EditProfileModal
+                visible={editModalVisible}
+                onClose={() => setEditModalVisible(false)}
+                profile={profile}
+
             />
         </ScrollView >
     );

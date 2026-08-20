@@ -1,13 +1,6 @@
 import { useState } from "react";
 import {
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+    Alert, Image, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -48,6 +41,8 @@ const Login = () => {
     if (loading) {
         return <Loader />
     }
+
+
     return (
 
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"

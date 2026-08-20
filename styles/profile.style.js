@@ -35,12 +35,6 @@ export default StyleSheet.create({
         borderColor: "#292929",
     },
 
-    avatar: {
-        width: 78,
-        height: 78,
-        borderRadius: 45,
-        backgroundColor: COLORS.surface,
-    },
 
     profileInfo: {
         flex: 1,
@@ -318,6 +312,64 @@ export default StyleSheet.create({
         paddingHorizontal: 4,
         marginBottom: 12,
         position: "relative",
+    },
+
+    /* IMAGE */
+
+    imageSection: {
+        alignItems: "center",
+        marginBottom: 26,
+    },
+
+    imageWrapper: {
+        position: "relative",
+        marginBottom: 9,
+
+    },
+
+    editProfileButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 5,
+        paddingVertical: 6,
+        paddingHorizontal: 8,
+    },
+
+    editProfileText: {
+        color: COLORS.primary,
+        fontSize: 13,
+        fontWeight: "600",
+    },
+
+    profileImage: {
+        width: 78,
+        height: 78,
+        borderRadius: 50,
+        backgroundColor: COLORS.card,
+        borderWidth: 2,
+        borderColor: COLORS.primary,
+
+    },
+
+    cameraButton: {
+        position: "absolute",
+        right: 0,
+        bottom: 0,
+        left: 50,
+        width: 34,
+        height: 34,
+        borderRadius: 17,
+        backgroundColor: COLORS.primary,
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 3,
+        borderColor: COLORS.surface,
+    },
+
+    changeImageText: {
+        color: COLORS.primary,
+        fontSize: 14,
+        fontWeight: "600",
     },
 
     backButton: {

@@ -278,4 +278,22 @@ export default StyleSheet.create({
         backgroundColor: "#292929",
         marginVertical: 15,
     },
+
+    editProfileButton: {
+        marginTop: 14,
+        alignSelf: "flex-start",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 7,
+        paddingHorizontal: 14,
+        paddingVertical: 9,
+        borderRadius: 10,
+        backgroundColor: COLORS.primary,
+    },
+
+    editProfileText: {
+        color: COLORS.white,
+        fontSize: 13,
+        fontWeight: "600",
+    },
 });

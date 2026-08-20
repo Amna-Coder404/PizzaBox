@@ -1,9 +1,7 @@
 import { create } from "zustand";
 
 import {
-    loginUser,
-    logoutUser,
-    signUp,
+    loginUser, logoutUser, signUp,
 } from "../services/auth";
 
 import { getProfile } from "../services/profile";
