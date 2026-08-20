@@ -151,10 +151,6 @@ export default function useEditProfile(profile, onSuccess) {
                     : null,
             };
 
-            console.log(
-                "PROFILE SENT TO ZUSTAND:",
-                profileForStore
-            );
 
             // Update global profile.
             setProfile(profileForStore);

@@ -2,13 +2,18 @@ import { useStripe } from "@stripe/stripe-react-native";
 import { useRouter } from "expo-router";
 import { Alert } from "react-native";
 
+import { useState } from "react";
 import { createOrder } from "../services/order";
 import { createPaymentIntent } from "../services/payment";
 import useAuthStore from "../store/authStore";
 import useCartStore from "../store/cartStore";
+import useNetWorkStatus from "./useNetworkStatus";
 
 const useCheckout = ({ total, deliveryFee, paymentMethod, }) => {
     const router = useRouter();
+    const [showOfflineModal, setShowOfflineModal] = useState(false);
+
+    const { isOnline } = useNetWorkStatus();
 
     const { profile } = useAuthStore();
     const { clearCart } = useCartStore();
@@ -17,6 +22,10 @@ const useCheckout = ({ total, deliveryFee, paymentMethod, }) => {
 
     const handleCheckout = async () => {
         try {
+            if (!isOnline) {
+                setShowOfflineModal(true);
+                return;
+            }
             // Check delivery address
             if (!profile?.address?.trim()) {
                 Alert.alert(
@@ -156,6 +165,8 @@ const useCheckout = ({ total, deliveryFee, paymentMethod, }) => {
 
     return {
         handleCheckout,
+        showOfflineModal,
+        setShowOfflineModal,
     };
 };
 

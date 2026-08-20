@@ -2,17 +2,16 @@ import { StripeProvider } from "@stripe/stripe-react-native";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { PaperProvider } from "react-native-paper";
-import {
-  SafeAreaProvider,
-  SafeAreaView,
-} from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView, } from "react-native-safe-area-context";
 
 import Loading from "../../components/Loading";
 import { supabase } from "../../lib/supabase";
 import { checkSession } from "../../services/auth";
 import { getProfile } from "../../services/profile";
 
+import InternetBanner from "../../components/NetInfo/NetworkBanner";
 import useAuthStore from "../../store/authStore";
+
 
 const RootLayout = () => {
   const router = useRouter();
@@ -20,17 +19,12 @@ const RootLayout = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const {
-    setSession,
-    setProfile,
-  } = useAuthStore();
+  const { setSession, setProfile, } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(
+    const { data: { subscription }, } = supabase.auth.onAuthStateChange(
       async (event, session) => {
 
         // User logged out
@@ -138,6 +132,7 @@ const RootLayout = () => {
               <Stack.Screen name="(admin)" />
               <Stack.Screen name="pizza/[id]" />
             </Stack>
+            <InternetBanner />
           </SafeAreaView>
         </SafeAreaProvider>
       </PaperProvider>
