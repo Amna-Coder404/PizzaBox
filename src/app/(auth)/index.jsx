@@ -6,7 +6,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import styles from "../../../styles/auth.style";
 
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import AppButton from "../../../components/AppButton";
 import Loader from "../../../components/Loading";
 import COLORS from "../../../constants/color";
@@ -14,22 +14,35 @@ import useAuthStore from "../../../store/authStore";
 
 
 const Login = () => {
+    const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+
     const { login } = useAuthStore();
-
-
     const handleLogin = async () => {
         if (!email.trim() || !password) {
-            Alert.alert("Missing Field", "Please enter your email and password.");
+            Alert.alert(
+                "Missing Field",
+                "Please enter your email and password."
+            );
             return;
         }
 
         try {
             setLoading(true);
-            await login(email, password);
+
+            const { profile } = await login(
+                email.trim(),
+                password
+            );
+
+            if (profile?.role === "admin") {
+                router.replace("/(admin)");
+            } else {
+                router.replace("/(customer)");
+            }
 
         } catch (error) {
             Alert.alert("Login Failed", error.message);
@@ -38,6 +51,10 @@ const Login = () => {
             setLoading(false);
         }
     };
+
+
+
+
     if (loading) {
         return <Loader />
     }

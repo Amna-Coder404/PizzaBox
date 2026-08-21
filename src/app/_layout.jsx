@@ -1,33 +1,138 @@
 import { StripeProvider } from "@stripe/stripe-react-native";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { PaperProvider } from "react-native-paper";
-import { SafeAreaProvider, SafeAreaView, } from "react-native-safe-area-context";
+import {
+  SafeAreaProvider,
+  SafeAreaView,
+} from "react-native-safe-area-context";
 
 import Loading from "../../components/Loading";
-import { supabase } from "../../lib/supabase";
-import { checkSession } from "../../services/auth";
-import { getProfile } from "../../services/profile";
-
 import InternetBanner from "../../components/NetInfo/NetworkBanner";
-import useAuthStore from "../../store/authStore";
 
+import { supabase } from "../../lib/supabase";
+import { getProfile } from "../../services/profile";
+import useAuthStore from "../../store/authStore";
 
 const RootLayout = () => {
   const router = useRouter();
-  const segments = useSegments();
 
   const [loading, setLoading] = useState(true);
 
-  const { setSession, setProfile, } = useAuthStore();
+  const {
+    setSession,
+    setProfile,
+  } = useAuthStore();
 
   useEffect(() => {
-    checkAuth();
+    let mounted = true;
 
-    const { data: { subscription }, } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+    const initializeAuth = async () => {
+      try {
+        /*
+         * IMPORTANT:
+         * Get the persisted Supabase session directly.
+         * Supabase restores the session from AsyncStorage internally.
+         */
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
-        // User logged out
+        if (error) {
+          throw error;
+        }
+
+        if (!mounted) return;
+
+        // --------------------------------------------------
+        // NO SESSION
+        // --------------------------------------------------
+        if (!session) {
+          setSession(null);
+          setProfile(null);
+
+          if (mounted) {
+            router.replace("/(auth)");
+          }
+
+          return;
+        }
+
+        // --------------------------------------------------
+        // SESSION EXISTS
+        // --------------------------------------------------
+        setSession(session);
+
+        // Get user's profile
+        const profile = await getProfile(session.user.id);
+
+        if (!mounted) return;
+
+        // --------------------------------------------------
+        // SESSION EXISTS BUT PROFILE DOES NOT
+        // --------------------------------------------------
+        if (!profile) {
+          console.log(
+            "PROFILE NOT FOUND:",
+            session.user.id
+          );
+
+          await supabase.auth.signOut();
+
+          if (!mounted) return;
+
+          setSession(null);
+          setProfile(null);
+
+          router.replace("/(auth)");
+          return;
+        }
+
+        // --------------------------------------------------
+        // PROFILE EXISTS
+        // --------------------------------------------------
+        setProfile(profile);
+
+        // Navigate according to role
+        if (profile.role === "admin") {
+          router.replace("/(admin)");
+        } else {
+          router.replace("/(customer)");
+        }
+
+      } catch (error) {
+        console.log("AUTH INITIALIZATION ERROR:", error);
+
+        if (!mounted) return;
+
+        setSession(null);
+        setProfile(null);
+
+        router.replace("/(auth)");
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    /*
+     * Listen for future auth changes.
+     *
+     * IMPORTANT:
+     * We DO NOT perform the initial routing here.
+     * initializeAuth() already handles the initial session.
+     */
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!mounted) return;
+
+        // User explicitly logged out
         if (event === "SIGNED_OUT") {
           setSession(null);
           setProfile(null);
@@ -36,78 +141,29 @@ const RootLayout = () => {
           return;
         }
 
-        // Ignore signup event here.
-        // Signup itself creates the profile and updates Zustand.
-        if (event === "SIGNED_IN") {
-          return;
+        // Session was refreshed
+        if (
+          event === "TOKEN_REFRESHED" &&
+          session
+        ) {
+          setSession(session);
         }
 
-        // Handle token refresh
-        if (event === "TOKEN_REFRESHED" && session) {
+        // New login
+        if (
+          event === "SIGNED_IN" &&
+          session
+        ) {
           setSession(session);
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
-
-  const checkAuth = async () => {
-    try {
-      const session = await checkSession();
-
-      const currentGroup = segments[0];
-
-      // No logged-in user
-      if (!session) {
-        if (currentGroup !== "(auth)") {
-          router.replace("/(auth)");
-        }
-
-        return;
-      }
-
-      // Store session
-      setSession(session);
-
-      // Fetch profile
-      const profile = await getProfile(session.user.id);
-
-      if (!profile) {
-        console.log("PROFILE NOT FOUND:", session.user.id);
-        return;
-      }
-
-      setProfile(profile);
-
-      // Admin
-      if (profile.role === "admin") {
-        if (currentGroup !== "(admin)") {
-          router.replace("/(admin)");
-        }
-
-        return;
-      }
-
-      // Customer
-      const allowedCustomerRoutes = [
-        "(customer)",
-        "pizza",
-      ];
-
-      if (!allowedCustomerRoutes.includes(currentGroup)) {
-        router.replace("/(customer)");
-      }
-
-    } catch (error) {
-      console.log("AUTH ERROR:", error);
-
-      router.replace("/(auth)");
-
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return <Loading />;
@@ -132,6 +188,7 @@ const RootLayout = () => {
               <Stack.Screen name="(admin)" />
               <Stack.Screen name="pizza/[id]" />
             </Stack>
+
             <InternetBanner />
           </SafeAreaView>
         </SafeAreaProvider>

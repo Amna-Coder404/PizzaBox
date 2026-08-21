@@ -1,19 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 import {
     ActivityIndicator,
-    FlatList,
-    Modal,
-    RefreshControl,
-    Text,
-    TouchableOpacity,
-    View,
+    Alert,
+    FlatList, Modal, RefreshControl, Text, TouchableOpacity, View
 } from "react-native";
-
-import { useEffect, useState } from "react";
 import COLORS from "../../constants/color";
-import { getHiddenOrders } from "../../services/admin/orders";
+import { getHiddenOrders, permanentlyDeleteOrder } from "../../services/admin/orders";
+
 import styles from "../../styles/orderHistory.style";
-import OrderCard from "./OrderCard";
+import OrderHistoryCard from "./OrderHistoryCard";
 
 const OrderHistory = ({ visible, onClose }) => {
     const [orders, setOrders] = useState([]);
@@ -42,6 +38,53 @@ const OrderHistory = ({ visible, onClose }) => {
     const handleRefresh = () => {
         setRefreshing(true);
         fetchOrders();
+    };
+    const handlePermanentDelete = (order) => {
+        Alert.alert(
+            "Delete Order Permanently",
+            `Are you sure you want to permanently delete Order #${order.id}? This action cannot be undone.`,
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            setLoading(true);
+
+                            await permanentlyDeleteOrder(order.id);
+
+                            setOrders((currentOrders) =>
+                                currentOrders.filter(
+                                    (item) => item.id !== order.id
+                                )
+                            );
+
+                            Alert.alert(
+                                "Order Deleted",
+                                `Order #${order.id} has been permanently deleted.`
+                            );
+                        } catch (error) {
+                            console.log(
+                                "PERMANENT DELETE ORDER ERROR:",
+                                error
+                            );
+
+                            Alert.alert(
+                                "Delete Failed",
+                                error?.message ||
+                                "Unable to permanently delete this order."
+                            );
+                        } finally {
+                            setLoading(false);
+                        }
+                    },
+                },
+            ]
+        );
     };
 
     return (
@@ -92,9 +135,9 @@ const OrderHistory = ({ visible, onClose }) => {
                         data={orders}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) => (
-                            <OrderCard
+                            <OrderHistoryCard
                                 order={item}
-                                onStatusUpdated={fetchOrders}
+                                onDelete={handlePermanentDelete}
                             />
                         )}
                         showsVerticalScrollIndicator={false}
@@ -103,23 +146,6 @@ const OrderHistory = ({ visible, onClose }) => {
                                 refreshing={refreshing}
                                 onRefresh={handleRefresh}
                             />
-                        }
-                        ListEmptyComponent={
-                            <View style={styles.emptyContainer}>
-                                <Ionicons
-                                    name="pizza"
-                                    size={48}
-                                    color={COLORS.textMuted}
-                                />
-
-                                <Text style={styles.emptyTitle}>
-                                    No Order History
-                                </Text>
-
-                                <Text style={styles.emptyText}>
-                                    Hidden orders will appear here.
-                                </Text>
-                            </View>
                         }
                     />
                 )}

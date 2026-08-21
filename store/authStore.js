@@ -13,7 +13,6 @@ const useAuthStore = create((set) => ({
     profile: null,
     loading: true,
 
-    // Login
     login: async (email, password) => {
         set({ loading: true });
 
@@ -28,17 +27,18 @@ const useAuthStore = create((set) => ({
                 profile,
             });
 
-            return session;
+            return {
+                session,
+                profile,
+            };
 
         } catch (error) {
             throw error;
-
         } finally {
             set({ loading: false });
         }
     },
 
-    // Signup
     signup: async (
         name,
         email,
@@ -62,6 +62,9 @@ const useAuthStore = create((set) => ({
                 user,
                 profile,
             });
+
+            return { user, profile, session };
+
         } catch (error) {
             throw error;
 
@@ -69,7 +72,6 @@ const useAuthStore = create((set) => ({
             set({ loading: false });
         }
     },
-
     // Logout
     logout: async () => {
         await logoutUser();

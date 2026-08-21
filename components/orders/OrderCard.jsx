@@ -53,6 +53,7 @@ const OrderCard = ({ order, onStatusUpdated }) => {
             order.order_status === "cancelled"
         );
 
+
     const handleStatusChange = async (status) => {
         if (status === order.order_status) {
             setShowStatusModal(false);
@@ -104,6 +105,7 @@ const OrderCard = ({ order, onStatusUpdated }) => {
             ]
         );
     };
+
 
     return (
         <View style={[styles.card, isCancelled && styles.cancelledCard,]}>

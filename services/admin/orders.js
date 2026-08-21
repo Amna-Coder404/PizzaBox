@@ -196,3 +196,41 @@ export const getHiddenOrders = async () => {
 
     return ordersWithProfiles;
 };
+
+
+
+// Permanently Delete Order (from History)
+export const permanentlyDeleteOrder = async (orderId) => {
+
+
+    // Delete order items
+    const { data: deletedItems, error: itemsError } = await supabase
+        .from("order_items")
+        .delete()
+        .eq("order_id", orderId)
+        .select();
+
+
+    if (itemsError) {
+        throw itemsError;
+    }
+
+    // Delete order
+    const { data: deletedOrder, error: orderError } = await supabase
+        .from("orders")
+        .delete()
+        .eq("id", orderId)
+        .select();
+
+    if (orderError) {
+        throw orderError;
+    }
+
+    if (!deletedOrder || deletedOrder.length === 0) {
+        throw new Error(
+            "No order was deleted. The order may not exist or your RLS policy may be blocking DELETE."
+        );
+    }
+
+    return deletedOrder[0];
+};

@@ -24,24 +24,35 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const handleSignup = async () => {
-        if (!email || !password || !name) {
+        if (!email.trim() || !password || !name.trim()) {
             Alert.alert("Missing Field", "Please fill all fields");
             return;
         }
 
         try {
             setLoading(true);
-            await signup(name, email.trim(), password
+
+            await signup(
+                name.trim(),
+                email.trim(),
+                password
             );
-            Alert.alert("Success", "Account created successfully");
+
+            Alert.alert(
+                "Success",
+                "Account created successfully"
+            );
+
             router.replace("/(customer)");
 
         } catch (error) {
-            Alert.alert("Signup Failed", error.message);
+            Alert.alert(
+                "Signup Failed",
+                error.message
+            );
         } finally {
-            setLoading(true);
+            setLoading(false);
         }
-
     };
 
     if (loading) {
