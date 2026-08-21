@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabase";
 
-const DEFAULT_AVATAR = "https://xaccpurglkrikrymzikk.supabase.co/storage/v1/object/public/avatars/Default_pfp.jpg";
+const DEFAULT_AVATAR = "https://xaccpurglkrikrymzikk.supabase.co/storage/v1/object/public/avatars/person.png";
 
 // Create Profile
 export const createProfile = async (userId, name, email, role = "customer", address = ""

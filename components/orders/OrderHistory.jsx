@@ -1,10 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
     Alert,
-    FlatList, Modal, RefreshControl, Text, TouchableOpacity, View
+    FlatList,
+    Modal,
+    RefreshControl,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
+
+import Loading from "../../components/Loading";
+import NotFound from "../../components/NotFound";
 import COLORS from "../../constants/color";
 import { getHiddenOrders, permanentlyDeleteOrder } from "../../services/admin/orders";
 
@@ -19,9 +26,10 @@ const OrderHistory = ({ visible, onClose }) => {
     const fetchOrders = async () => {
         try {
             const data = await getHiddenOrders();
-            setOrders(data);
+            setOrders(data || []);
         } catch (error) {
             console.log("GET ORDER HISTORY ERROR:", error);
+            setOrders([]);
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -39,6 +47,7 @@ const OrderHistory = ({ visible, onClose }) => {
         setRefreshing(true);
         fetchOrders();
     };
+
     const handlePermanentDelete = (order) => {
         Alert.alert(
             "Delete Order Permanently",
@@ -98,7 +107,6 @@ const OrderHistory = ({ visible, onClose }) => {
 
                 {/* HEADER */}
                 <View style={styles.header}>
-
                     <View>
                         <Text style={styles.title}>
                             Order History
@@ -119,17 +127,17 @@ const OrderHistory = ({ visible, onClose }) => {
                             color={COLORS.text}
                         />
                     </TouchableOpacity>
-
                 </View>
 
-                {/* LOADING */}
+                {/* CONTENT */}
                 {loading ? (
-                    <View style={styles.loader}>
-                        <ActivityIndicator
-                            size="large"
-                            color={COLORS.primary}
-                        />
-                    </View>
+                    <Loading />
+                ) : orders.length === 0 ? (
+                    <NotFound
+                        icon="archive-outline"
+                        title="No Archived Orders"
+                        description="There are no permanently archived orders in your history."
+                    />
                 ) : (
                     <FlatList
                         data={orders}

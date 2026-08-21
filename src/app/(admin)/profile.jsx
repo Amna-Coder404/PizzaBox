@@ -1,10 +1,11 @@
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import EditProfileModal from "../../../components/EditProfileModal";
 import OrderHistory from "../../../components/orders/OrderHistory";
+import ProfileImagePreview from "../../../components/ProfileImagePreview";
 import COLORS from "../../../constants/color";
 import { getAdminOrderStats } from "../../../services/admin/orders";
 import useAuthStore from "../../../store/authStore";
@@ -36,51 +37,75 @@ const Profile = () => {
         }, [])
     );
 
+    const handleLogout = () => {
+        Alert.alert(
+            "Logout",
+            "Are you sure you want to logout?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Logout",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await logout();
+                        } catch (error) {
+                            console.log("LOGOUT ERROR:", error);
 
+                            Alert.alert(
+                                "Logout Failed",
+                                error?.message || "Unable to logout."
+                            );
+                        }
+                    },
+                },
+            ]
+        );
+    };
 
     return (
         <ScrollView style={styles.container}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}>
+            {/* PROFILE HEADER */}
+            <View style={styles.profileHeader}>
+                <View>
+                    <Text style={styles.profileHeaderTitle}>
+                        My Profile
+                    </Text>
+
+                    <Text style={styles.profileHeaderSubtitle}>
+                        Manage your restaurant account
+                    </Text>
+                </View>
+
+                <TouchableOpacity
+                    style={styles.editProfileButton}
+                    activeOpacity={0.8}
+                    onPress={() => setEditModalVisible(true)}
+                >
+                    <Ionicons
+                        name="pencil-outline"
+                        size={17}
+                        color={COLORS.primary}
+                    />
+                </TouchableOpacity>
+            </View>
+
 
             {/* PROFILE CARD */}
             <View style={styles.profileCard}>
-
-                {/* COVER Card Image*/}
-                <Image
-                    source={require("../../../assets/images/app-images/coverImage.png")}
-                    style={styles.coverImage}
-                />
-
-
                 <View style={styles.profileContent}>
 
                     {/* AVATAR */}
                     <View style={styles.avatarContainer}>
-
-                        <Image
-                            source={
-                                profile?.avatar_url
-                                    ? { uri: profile.avatar_url }
-                                    : require("../../../assets/images/app-images/owner-image.png")
-                            }
+                        <ProfileImagePreview
+                            uri={profile?.avatar_url}
                             style={styles.avatar}
                         />
-                        <TouchableOpacity style={styles.editButton} activeOpacity={0.8} >
-                            <Ionicons name="camera" size={14} color={COLORS.white} />
-                        </TouchableOpacity>
-
-
-                        <TouchableOpacity
-                            style={styles.editProfileButton}
-                            activeOpacity={0.8}
-                            onPress={() => setEditModalVisible(true)}  >
-                            <Ionicons name="create-outline" size={18} color={COLORS.white} />
-
-                            <Text style={styles.editProfileText}>
-                                Edit Profile
-                            </Text>
-                        </TouchableOpacity>
                     </View>
 
 
@@ -212,7 +237,7 @@ const Profile = () => {
 
 
             {/* LOGOUT */}
-            <TouchableOpacity style={styles.logoutCard} onPress={logout} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.logoutCard} onPress={handleLogout} activeOpacity={0.7}>
                 <View style={styles.logoutIconContainer}>
                     <Ionicons name="log-out-outline" size={22} color={COLORS.error} />
                 </View>

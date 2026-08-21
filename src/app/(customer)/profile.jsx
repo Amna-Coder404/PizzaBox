@@ -1,7 +1,7 @@
 
 import { Ionicons } from "@expo/vector-icons";
 
-import { Alert, Image, Linking, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Linking, Text, TouchableOpacity, View } from "react-native";
 import Aboutus from "../../../components/Aboutus";
 import AddressModal from "../../../components/pizza/AddressModal";
 import COLORS from "../../../constants/color";
@@ -13,6 +13,7 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator } from "react-native-paper";
 import EditProfileModal from "../../../components/EditProfileModal";
+import ProfileImagePreview from "../../../components/ProfileImagePreview";
 import { getMyOrders } from "../../../services/order";
 
 
@@ -158,6 +159,7 @@ const Profile = () => {
 
 
             {/* PROFILE CARD */}
+            {/* PROFILE CARD */}
             <View style={styles.profileCard}>
 
                 {!profile ? (
@@ -169,35 +171,29 @@ const Profile = () => {
                     </View>
                 ) : (
                     <>
+                        {/* EDIT PROFILE - TOP RIGHT */}
+                        <TouchableOpacity
+                            style={styles.editProfileButton}
+                            onPress={() => setEditModalVisible(true)}
+                            activeOpacity={0.8}
+                        >
+                            <Ionicons
+                                name="pencil-outline"
+                                size={19}
+                                color={COLORS.primary}
+                            />
+                        </TouchableOpacity>
+
                         {/* PROFILE IMAGE */}
                         <View style={styles.imageSection}>
-
-                            <Image
-                                source={{ uri: profile.avatar_url }}
+                            <ProfileImagePreview
+                                uri={profile?.avatar_url}
                                 style={styles.profileImage}
                             />
-
-                            <TouchableOpacity
-                                style={styles.editProfileButton}
-                                onPress={() => setEditModalVisible(true)}
-                                activeOpacity={0.8}
-                            >
-                                <Ionicons
-                                    name="create-outline"
-                                    size={16}
-                                    color={COLORS.primary}
-                                />
-
-                                <Text style={styles.editProfileText}>
-                                    Edit Profile
-                                </Text>
-                            </TouchableOpacity>
-
                         </View>
 
                         {/* PROFILE INFO */}
                         <View style={styles.profileInfo}>
-
                             <Text style={styles.profileName}>
                                 {profile.name}
                             </Text>
@@ -205,12 +201,12 @@ const Profile = () => {
                             <Text style={styles.profileEmail}>
                                 {profile.email}
                             </Text>
-
                         </View>
                     </>
                 )}
 
             </View>
+
             {/* DELIVERY ADDRESS */}
             <View style={styles.addressCard}>
 

@@ -238,4 +238,20 @@ export default StyleSheet.create({
         fontSize: 14,
         marginBottom: 18,
     },
+
+    cateContainer: {
+        flexDirection: "row",
+        gap: 108,
+        // justifyContent: "space-between"
+    },
+
+    noCategoryMessage: {
+        paddingHorizontal: 4,
+        paddingBottom: 8,
+    },
+
+    noCategoryText: {
+        fontSize: 13,
+        color: COLORS.muted,
+    },
 });

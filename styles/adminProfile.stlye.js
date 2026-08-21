@@ -12,30 +12,54 @@ export default StyleSheet.create({
         paddingTop: 15,
         paddingBottom: 30,
     },
+    profileHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
 
-    /* PROFILE CARD */
+        paddingHorizontal: 18,
+        paddingBottom: 18,
 
-    profileCard: {
-        backgroundColor: "#171717",
-        borderRadius: 22,
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: "#292929",
-        marginBottom: 24,
+        borderBottomWidth: 1,
+        borderBottomColor: "#292929",
     },
 
-    coverImage: {
-        width: "100%",
-        height: 125,
-        resizeMode: "cover",
+    profileHeaderTitle: {
+        color: COLORS.white,
+        fontSize: 18,
+        fontWeight: "700",
+    },
+
+    profileHeaderSubtitle: {
+        color: COLORS.muted,
+        fontSize: 12,
+        marginTop: 3,
+    },
+
+    editProfileButton: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(255, 77, 0, 0.10)",
+        borderWidth: 1,
+        borderColor: "rgba(255, 77, 0, 0.25)",
+    },
+    /* PROFILE CARD */
+    profileCard: {
+        borderRadius: 22,
+        borderWidth: 1,
+        marginBottom: 24,
+        overflow: "hidden",
+        paddingTop: 22,
     },
 
     profileContent: {
         flexDirection: "row",
         alignItems: "center",
         paddingHorizontal: 18,
-        paddingBottom: 20,
-        marginTop: -42,
+        paddingBottom: 22,
     },
 
     avatarContainer: {
@@ -43,32 +67,17 @@ export default StyleSheet.create({
     },
 
     avatar: {
-        width: 92,
-        height: 92,
-        borderRadius: 46,
-        borderWidth: 4,
-        borderColor: "#171717",
+        width: 88,
+        height: 88,
+        borderRadius: 44,
+        borderWidth: 2,
+        borderColor: COLORS.primary,
         backgroundColor: "#222222",
-    },
-
-    editButton: {
-        position: "absolute",
-        right: -2,
-        bottom: 2,
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        backgroundColor: COLORS.primary,
-        justifyContent: "center",
-        alignItems: "center",
-        borderWidth: 3,
-        borderColor: "#171717",
     },
 
     profileInfo: {
         flex: 1,
         marginLeft: 15,
-        paddingTop: 34,
     },
 
     nameRow: {
@@ -80,7 +89,7 @@ export default StyleSheet.create({
         color: COLORS.white,
         fontSize: 20,
         fontWeight: "700",
-        maxWidth: "75%",
+        maxWidth: "78%",
     },
 
     adminBadge: {
@@ -94,7 +103,7 @@ export default StyleSheet.create({
     },
 
     roleText: {
-        marginTop: 3,
+        marginTop: 4,
         color: COLORS.primary,
         fontSize: 13,
         fontWeight: "600",
@@ -103,9 +112,8 @@ export default StyleSheet.create({
     email: {
         marginTop: 5,
         color: COLORS.muted,
-        fontSize: 13,
+        fontSize: 12,
     },
-
 
     /* RESTAURANT INFO */
 
@@ -246,10 +254,10 @@ export default StyleSheet.create({
     , statsCard: {
         flexDirection: "row",
         backgroundColor: "#171717",
-        borderRadius: 18,
+
         borderWidth: 1,
         borderColor: "#292929",
-        marginBottom: 22,
+
         overflow: "hidden",
     },
 
@@ -278,22 +286,24 @@ export default StyleSheet.create({
         backgroundColor: "#292929",
         marginVertical: 15,
     },
-
     editProfileButton: {
-        marginTop: 14,
-        alignSelf: "flex-start",
-        flexDirection: "row",
+        position: "absolute",
+        top: 14,
+        right: 14,
+
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+
         alignItems: "center",
-        gap: 7,
-        paddingHorizontal: 14,
-        paddingVertical: 9,
-        borderRadius: 10,
-        backgroundColor: COLORS.primary,
+        justifyContent: "center",
+
+        backgroundColor: "rgba(255, 77, 0, 0.10)",
+
+        borderWidth: 1,
+        borderColor: "rgba(255, 77, 0, 0.25)",
+
+        zIndex: 10,
     },
 
-    editProfileText: {
-        color: COLORS.white,
-        fontSize: 13,
-        fontWeight: "600",
-    },
 });

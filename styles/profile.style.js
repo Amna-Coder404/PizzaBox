@@ -332,13 +332,20 @@ export default StyleSheet.create({
     },
 
     editProfileButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 5,
-        paddingVertical: 6,
-        paddingHorizontal: 8,
-    },
+        position: "absolute",
+        top: 14,
+        right: 14,
 
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+
+        alignItems: "center",
+        justifyContent: "center",
+
+        backgroundColor: COLORS.surface,
+        zIndex: 10,
+    },
     editProfileText: {
         color: COLORS.primary,
         fontSize: 13,

@@ -17,7 +17,11 @@ export default StyleSheet.create({
     },
     //Header
 
-
+    profileImage: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+    },
     header: {
         flexDirection: "row",
         justifyContent: "space-between",

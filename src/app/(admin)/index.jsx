@@ -1,12 +1,12 @@
-import { Ionicons } from '@expo/vector-icons'
 import { useEffect, useState } from 'react'
 import { FlatList, Image, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 import Loader from "../../../components/Loading"
 import NotFound from "../../../components/NotFound"
 import OrderCard, { FILTER_STATUS_OPTIONS } from '../../../components/orders/OrderCard'
-import COLORS from '../../../constants/color'
+import ProfileImagePreview from '../../../components/ProfileImagePreview'
 import { getAdminOrders } from '../../../services/admin/orders'
+import useAuthStore from '../../../store/authStore'
 import styles from "../../../styles/orders.styles"
 
 const Order = () => {
@@ -14,13 +14,10 @@ const Order = () => {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
 
-    const [showStatusFilter, setShowStatusFilter] = useState(false);
+    // Authenticated user's profile
+    const { profile } = useAuthStore();
     const [selectedStatus, setSelectedStatus] = useState(null);
 
-    const toggleStatusFilter = () => {
-        setShowStatusFilter(prev => !prev);
-        setSelectedStatus(null);
-    };
 
     const fetchOrders = async () => {
         try {
@@ -63,68 +60,68 @@ const Order = () => {
                     style={styles.logo}
                 />
 
-                <Ionicons
-                    name={showStatusFilter ? "close" : "options-outline"}
-                    color={COLORS.text}
-                    size={24}
-                    onPress={toggleStatusFilter}
+                {/* AUTH USER PROFILE */}
+                <ProfileImagePreview
+                    uri={profile?.avatar_url}
+                    style={styles.profileImage}
                 />
+
             </View>
 
             {/* STATUS FILTER */}
-            {showStatusFilter && (
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}
-                    style={styles.statusScroll}
-                    contentContainerStyle={styles.statusContainer}  >
 
-                    {/* ALL */}
-                    <TouchableOpacity
-                        onPress={() => setSelectedStatus(null)}
-                        style={[styles.statusChip, selectedStatus === null && styles.activeStatusChip,]} >
-                        <Text
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                style={styles.statusScroll}
+                contentContainerStyle={styles.statusContainer}  >
+
+                {/* ALL */}
+                <TouchableOpacity
+                    onPress={() => setSelectedStatus(null)}
+                    style={[styles.statusChip, selectedStatus === null && styles.activeStatusChip,]} >
+                    <Text
+                        style={[
+                            styles.statusText,
+                            selectedStatus === null &&
+                            styles.activeStatusText,
+                        ]}  >
+                        All ({orders.length})
+                    </Text>
+                </TouchableOpacity>
+
+                {/* STATUS OPTIONS */}
+                {FILTER_STATUS_OPTIONS.map((status) => {
+
+                    const isActive = selectedStatus === status.value;
+                    // TOTAL COUNT OF STATUS
+                    const statusCount = orders.filter(
+                        order => order.order_status === status.value
+                    ).length;
+
+                    return (
+                        <TouchableOpacity
+                            key={status.value}
+                            onPress={() => setSelectedStatus(status.value)}
                             style={[
-                                styles.statusText,
-                                selectedStatus === null &&
-                                styles.activeStatusText,
-                            ]}  >
-                            All ({orders.length})
-                        </Text>
-                    </TouchableOpacity>
-
-                    {/* STATUS OPTIONS */}
-                    {FILTER_STATUS_OPTIONS.map((status) => {
-
-                        const isActive = selectedStatus === status.value;
-                        // TOTAL COUNT OF STATUS
-                        const statusCount = orders.filter(
-                            order => order.order_status === status.value
-                        ).length;
-
-                        return (
-                            <TouchableOpacity
-                                key={status.value}
-                                onPress={() => setSelectedStatus(status.value)}
+                                styles.statusChip,
+                                isActive &&
+                                styles.activeStatusChip,
+                            ]}
+                        >
+                            <Text
                                 style={[
-                                    styles.statusChip,
+                                    styles.statusText,
                                     isActive &&
-                                    styles.activeStatusChip,
+                                    styles.activeStatusText,
                                 ]}
                             >
-                                <Text
-                                    style={[
-                                        styles.statusText,
-                                        isActive &&
-                                        styles.activeStatusText,
-                                    ]}
-                                >
-                                    {status.label} ({statusCount})
-                                </Text>
-                            </TouchableOpacity>
-                        );
-                    })}
+                                {status.label} ({statusCount})
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                })}
 
-                </ScrollView>
-            )}
+            </ScrollView>
+
 
             {/* ORDERS */}
             <FlatList

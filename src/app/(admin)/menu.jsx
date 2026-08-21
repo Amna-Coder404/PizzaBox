@@ -175,17 +175,28 @@ const Menu = () => {
 
                 </View>
 
-                {/* CATEGORIES */}
 
+                <View style={styles.cateContainer}>
+                    {/* CATEGORIES */}
+                    {categories.length === 0 && (
+                        <View style={styles.noCategoryMessage}>
+                            <Text style={styles.noCategoryText}>
+                                No categories yet.
+                            </Text>
+                            <Text style={styles.noCategoryText}>
+                                Please add a category first.
+                            </Text>
+                        </View>
+                    )}
 
-                <CategoryList
-                    categories={categories}
-                    onAdd={handleAddCategory}
-                    onEdit={handleEditCategory}
-                    onDelete={handleDeleteCategory}
-                    loading={categoryActionLoading}
-                />
-
+                    <CategoryList
+                        categories={categories}
+                        onAdd={handleAddCategory}
+                        onEdit={handleEditCategory}
+                        onDelete={handleDeleteCategory}
+                        loading={categoryActionLoading}
+                    />
+                </View>
 
 
                 {/* PIZZA LIST */}
