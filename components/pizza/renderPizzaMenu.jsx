@@ -17,7 +17,7 @@ const renderPizzaMenu = ({ item, onDelete, onEdit }) => {
 
                 <View>
 
-                    <Text style={styles.pizzaName}>
+                    <Text style={styles.pizzaName} numberOfLines={1}>
                         {item.name}
                     </Text>
                     <View style={styles.statusRow}>

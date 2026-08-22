@@ -240,9 +240,11 @@ export default StyleSheet.create({
     },
 
     cateContainer: {
+        width: "100%",
         flexDirection: "row",
-        gap: 108,
-        // justifyContent: "space-between"
+        gap: 50,
+        alignItems: "baseline",
+
     },
 
     noCategoryMessage: {

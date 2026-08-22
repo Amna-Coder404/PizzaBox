@@ -38,15 +38,6 @@ const PizzaDetail = () => {
 
     const { isOnline } = useNetWorkStatus();
 
-    const handleOrderPress = () => {
-        if (!isOnline) {
-            setShowOfflineModal(true);
-            return;
-        }
-
-        setShowPayment(true);
-    };
-
     useEffect(() => {
         if (id) {
             fetchPizzaById(id);
@@ -56,6 +47,10 @@ const PizzaDetail = () => {
 
 
     const getPrice = () => {
+        if (!selectedPizza) {
+            return 0;
+        }
+
         if (selectedSize === "medium") {
             return selectedPizza.medium_price;
         }
@@ -66,6 +61,31 @@ const PizzaDetail = () => {
 
         return selectedPizza.small_price;
     };
+
+    const totalPrice = getPrice() * quantity;
+    const deliveryFee = 200;
+    const finalTotal = totalPrice + deliveryFee;
+
+
+    const { handleDirectOrder, loading: directOrderLoading,
+    } = useDirectOrder({
+        selectedPizza, selectedSize, quantity, paymentMethod,
+        deliveryFee,
+        finalTotal,
+        getPrice,
+    });
+
+    const handleOrderPress = () => {
+        if (!isOnline) {
+            setShowOfflineModal(true);
+            return;
+        }
+
+        setShowPayment(true);
+    };
+
+
+
 
     const handleAddToCart = () => {
         addToCart({
@@ -82,20 +102,11 @@ const PizzaDetail = () => {
         router.push("/(customer)/cart");
     };
 
-    const totalPrice = getPrice() * quantity;
-    const deliveryFee = 200;
-    const finalTotal = totalPrice + deliveryFee;
 
-    const sizes = ["small", "medium", "large"];
-
-    const { handleDirectOrder, loading: directOrderLoading,
-    } = useDirectOrder({
-        selectedPizza, selectedSize, quantity, paymentMethod,
-        deliveryFee,
-        finalTotal,
-        getPrice,
-    });
-
+    if (loading || !selectedPizza) {
+        return <Loader />;
+    }
+    // payment screen
     if (showPayment) {
         return (
             <PizzaOrderPayment
@@ -106,9 +117,12 @@ const PizzaDetail = () => {
             />
         );
     }
-    if (loading || !selectedPizza) {
-        return <Loader />;
-    }
+    const sizes = ["small", "medium", "large"];
+
+
+
+
+
     return (
         <>
             <ScrollView style={styles.container}>

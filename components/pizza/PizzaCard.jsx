@@ -19,7 +19,11 @@ const PizzaCard = ({ pizza, onAddToCart }) => {
             {/* DETAILS */}
             <View style={styles.pizzaInfo}>
 
-                <Text style={styles.pizzaName}>
+                <Text
+                    style={styles.pizzaName}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                >
                     {pizza.name}
                 </Text>
 

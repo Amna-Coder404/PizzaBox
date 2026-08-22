@@ -29,21 +29,32 @@ const RootLayout = () => {
 
     const initializeAuth = async () => {
       try {
-        /*
-         * IMPORTANT:
-         * Get the persisted Supabase session directly.
-         * Supabase restores the session from AsyncStorage internally.
-         */
         const {
           data: { session },
           error,
         } = await supabase.auth.getSession();
 
-        if (error) {
-          throw error;
-        }
-
         if (!mounted) return;
+
+        /*
+         * IMPORTANT:
+         * If getSession fails because there is no internet,
+         * do NOT treat it as logout.
+         */
+        if (error) {
+          console.log(
+            "Could not check Supabase session:",
+            error.message
+          );
+
+          /*
+           * Supabase may already have restored the session
+           * locally. Do not destroy our auth state just
+           * because the network is unavailable.
+           */
+          setLoading(false);
+          return;
+        }
 
         // --------------------------------------------------
         // NO SESSION
@@ -52,9 +63,7 @@ const RootLayout = () => {
           setSession(null);
           setProfile(null);
 
-          if (mounted) {
-            router.replace("/(auth)");
-          }
+          router.replace("/(auth)");
 
           return;
         }
@@ -64,52 +73,74 @@ const RootLayout = () => {
         // --------------------------------------------------
         setSession(session);
 
-        // Get user's profile
-        const profile = await getProfile(session.user.id);
-
-        if (!mounted) return;
-
-        // --------------------------------------------------
-        // SESSION EXISTS BUT PROFILE DOES NOT
-        // --------------------------------------------------
-        if (!profile) {
-          console.log(
-            "PROFILE NOT FOUND:",
-            session.user.id
-          );
-
-          await supabase.auth.signOut();
+        /*
+         * Try to load profile.
+         *
+         * If this fails because we're offline, don't log out.
+         */
+        try {
+          const profile = await getProfile(session.user.id);
 
           if (!mounted) return;
 
-          setSession(null);
-          setProfile(null);
+          // --------------------------------------------------
+          // PROFILE DOES NOT EXIST
+          // --------------------------------------------------
+          if (!profile) {
+            console.log(
+              "PROFILE NOT FOUND:",
+              session.user.id
+            );
 
-          router.replace("/(auth)");
-          return;
+            /*
+             * IMPORTANT:
+             * Don't immediately sign out here.
+             *
+             * A failed profile request can happen because
+             * of network problems.
+             */
+            setLoading(false);
+            return;
+          }
+
+          // --------------------------------------------------
+          // PROFILE EXISTS
+          // --------------------------------------------------
+          setProfile(profile);
+
+          if (profile.role === "admin") {
+            router.replace("/(admin)");
+          } else {
+            router.replace("/(customer)");
+          }
+        } catch (profileError) {
+          console.log(
+            "PROFILE FETCH ERROR:",
+            profileError?.message || profileError
+          );
+
+          /*
+           * Keep the existing session.
+           * Do NOT redirect to login.
+           * Do NOT sign out.
+           */
         }
-
-        // --------------------------------------------------
-        // PROFILE EXISTS
-        // --------------------------------------------------
-        setProfile(profile);
-
-        // Navigate according to role
-        if (profile.role === "admin") {
-          router.replace("/(admin)");
-        } else {
-          router.replace("/(customer)");
-        }
-
       } catch (error) {
-        console.log("AUTH INITIALIZATION ERROR:", error);
+        console.log(
+          "AUTH INITIALIZATION ERROR:",
+          error?.message || error
+        );
 
-        if (!mounted) return;
-
-        setSession(null);
-        setProfile(null);
-
-        router.replace("/(auth)");
+        /*
+         * IMPORTANT:
+         * Network/auth initialization failure is NOT the
+         * same thing as SIGNED_OUT.
+         *
+         * Therefore:
+         * - don't clear session
+         * - don't clear profile
+         * - don't navigate to login
+         */
       } finally {
         if (mounted) {
           setLoading(false);
@@ -119,20 +150,18 @@ const RootLayout = () => {
 
     initializeAuth();
 
-    /*
-     * Listen for future auth changes.
-     *
-     * IMPORTANT:
-     * We DO NOT perform the initial routing here.
-     * initializeAuth() already handles the initial session.
-     */
+    // --------------------------------------------------
+    // AUTH STATE LISTENER
+    // --------------------------------------------------
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (!mounted) return;
 
-        // User explicitly logged out
+        // --------------------------------------------------
+        // REAL LOGOUT
+        // --------------------------------------------------
         if (event === "SIGNED_OUT") {
           setSession(null);
           setProfile(null);
@@ -141,15 +170,20 @@ const RootLayout = () => {
           return;
         }
 
-        // Session was refreshed
+        // --------------------------------------------------
+        // TOKEN REFRESH
+        // --------------------------------------------------
         if (
           event === "TOKEN_REFRESHED" &&
           session
         ) {
           setSession(session);
+          return;
         }
 
-        // New login
+        // --------------------------------------------------
+        // LOGIN
+        // --------------------------------------------------
         if (
           event === "SIGNED_IN" &&
           session

@@ -1,9 +1,15 @@
 import { create } from "zustand";
 
-import { getAvailablePizzas, getPizzaById } from "../../services/customer/pizza";
+import {
+    getAvailablePizzas,
+    getPizzaById,
+} from "../../services/customer/pizza";
+import useCartStore from "../cartStore";
+
 
 
 export const useCustomerPizzaStore = create((set) => ({
+
     pizzas: [],
     loading: false,
     selectedPizza: null,
@@ -14,21 +20,36 @@ export const useCustomerPizzaStore = create((set) => ({
 
         try {
             const data = await getAvailablePizzas();
-            set({ pizzas: data, loading: false });
+
+            // Update pizza list
+            set({
+                pizzas: data,
+                loading: false,
+            });
+
+            // Remove deleted pizzas from cart
+            useCartStore.getState().syncWithPizzas(data);
+
         } catch (error) {
             set({ loading: false });
         }
     },
 
-    // GET SINGLE PIZZA (that is for [id] I mean for pizza detail)
+    // GET SINGLE PIZZA
+    // Used for /pizza/[id]
     fetchPizzaById: async (id) => {
         set({ loading: true });
 
         try {
             const data = await getPizzaById(id);
-            set({ selectedPizza: data, loading: false })
 
-            return data
+            set({
+                selectedPizza: data,
+                loading: false,
+            });
+
+            return data;
+
         } catch (error) {
             set({ loading: false });
             throw error;
@@ -40,4 +61,5 @@ export const useCustomerPizzaStore = create((set) => ({
         set({
             selectedPizza: null,
         }),
-}))
+
+}));

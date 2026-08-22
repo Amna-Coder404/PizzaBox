@@ -131,15 +131,16 @@ export default StyleSheet.create({
     },
 
     pizzaInfo: {
-        gap: 12,
+        flex: 1,
+        minWidth: 0,
     },
-
     pizzaName: {
         color: COLORS.white,
-        fontSize: width < 380 ? 18 : 22,
+        fontSize: 16,
         fontWeight: "700",
+        flex: 1,
+        minWidth: 0,
     },
-
     statusRow: {
         flexDirection: "row",
         alignItems: "center",

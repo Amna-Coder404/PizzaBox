@@ -1,38 +1,59 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { FlatList, Image, ScrollView, Text, TouchableOpacity, View, } from "react-native";
+import {
+    FlatList,
+    Image,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 import Loader from "../../../components/Loading";
 import NotFound from "../../../components/NotFound";
 import PizzaCard from "../../../components/pizza/PizzaCard";
 import AppSearchBar from "../../../components/SearchBar";
+
 import COLORS from "../../../constants/color";
+import useNetWorkStatus from "../../../hooks/useNetworkStatus";
 import useSearch from "../../../hooks/useSearch";
+
 import { useCategoryStore } from "../../../store/admin/categoryStore";
 import { useCustomerPizzaStore } from "../../../store/customer/pizzaStore";
+
 import styles from "../../../styles/customerHome.stlye";
 
 const Home = () => {
-    const { pizzas, loading, fetchPizzas } = useCustomerPizzaStore();
-    const { categories, fetchCategories } = useCategoryStore();
+    const { isOnline } = useNetWorkStatus();
+
+    // PIZZA STORE
+    const { pizzas, loading, fetchPizzas, } = useCustomerPizzaStore();
+
+    // CATEGORY STORE
+    const { categories, fetchCategories, } = useCategoryStore();
 
     const [showSearch, setShowSearch] = useState(false);
     const [showCategoryFilter, setShowCategoryFilter] = useState(false);
 
-    // null means "All Categories"
+    // null = All Categories
     const [selectedCategory, setSelectedCategory] = useState(null);
 
-    const {
-        searchQuery,
-        setSearchQuery,
-        filteredData,
-    } = useSearch(pizzas, ["name"]);
+    const { searchQuery, setSearchQuery, filteredData, } = useSearch(pizzas, ["name"]);
+
+    // FETCH DATA
 
     useEffect(() => {
+        // Do NOT try to fetch while offline
+        if (!isOnline) return;
+
+        // When internet comes back,
+        // fetch fresh data again.
         fetchPizzas();
         fetchCategories();
-    }, []);
+    }, [isOnline]);
 
+
+    // SEARCH
     const toggleSearch = () => {
         setShowSearch((prev) => {
             const nextValue = !prev;
@@ -45,23 +66,40 @@ const Home = () => {
         });
     };
 
+    // CATEGORY FILTER
+
     const toggleCategoryFilter = () => {
         setShowCategoryFilter((prev) => !prev);
     };
 
-    // First search, then category filter
+    // FILTER PIZZAS
+
     const filteredPizzas =
         selectedCategory === null
             ? filteredData
             : filteredData.filter(
-                (pizza) => pizza.category_id === selectedCategory
+                (pizza) =>
+                    pizza.category_id === selectedCategory
             );
 
     const isFiltering =
         searchQuery.trim().length > 0 ||
         selectedCategory !== null;
 
-    if (loading && pizzas.length === 0) {
+    // INITIAL LOADING
+
+    /*
+     * Only show Loader when we are actually loading
+     * data and there is no previously loaded data.
+     *
+     * If internet is off and pizzas already exist,
+     * keep showing those pizzas.
+     */
+    if (
+        isOnline &&
+        loading &&
+        pizzas.length === 0
+    ) {
         return <Loader />;
     }
 
@@ -70,6 +108,7 @@ const Home = () => {
 
             {/* HEADER */}
             <View style={styles.header}>
+
                 <Image
                     source={require(
                         "../../../assets/images/app-images/logo-header.png"
@@ -79,26 +118,51 @@ const Home = () => {
 
                 <View style={styles.rightIcons}>
 
-                    {/* SEARCH BUTTON */}
-                    <Ionicons
-                        name={showSearch ? "close" : "search"}
-                        size={24}
-                        color={COLORS.text}
-                        onPress={toggleSearch}
-                    />
+                    {/* SEARCH */}
 
-                    {/* CATEGORY FILTER BUTTON */}
-                    <Ionicons
-                        name={showCategoryFilter ? "close" : "options-outline"}
-                        size={24}
-                        color={COLORS.text}
-                        onPress={toggleCategoryFilter}
-                    />
+                    <TouchableOpacity
+                        onPress={toggleSearch}
+                        disabled={!isOnline}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons
+                            name={
+                                showSearch
+                                    ? "close"
+                                    : "search"
+                            }
+                            size={24}
+                            color={
+                                isOnline
+                                    ? COLORS.text
+                                    : COLORS.muted
+                            }
+                        />
+                    </TouchableOpacity>
+
+                    {/* CATEGORY FILTER */}
+
+                    {
+                        pizzas.length > 0 && (
+                            <TouchableOpacity
+                                onPress={toggleCategoryFilter}
+                                disabled={!isOnline}
+                                activeOpacity={0.7}
+                            >
+                                <Ionicons
+                                    name={showCategoryFilter ? "close" : "options-outline"}
+                                    size={24}
+                                    color={isOnline ? COLORS.text : COLORS.muted}
+                                />
+                            </TouchableOpacity>
+                        )
+                    }
 
                 </View>
             </View>
 
             {/* SEARCH */}
+
             <AppSearchBar
                 visible={showSearch}
                 value={searchQuery}
@@ -107,30 +171,42 @@ const Home = () => {
             />
 
             {/* CATEGORY FILTER */}
-            {showCategoryFilter && (
+
+            {showCategoryFilter && isOnline && (
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     style={styles.categoryScroll}
-                    contentContainerStyle={styles.categoryContainer}
+                    contentContainerStyle={
+                        styles.categoryContainer
+                    }
                 >
+
                     {/* ALL */}
-                    <TouchableOpacity onPress={() => setSelectedCategory(null)}
+
+                    <TouchableOpacity
+                        onPress={() => setSelectedCategory(null)}
                         style={[
                             styles.categoryChip,
                             selectedCategory === null &&
                             styles.activeCategoryChip,
-                        ]}  >
-                        <Text style={[styles.categoryText, selectedCategory === null &&
-                            styles.activeCategoryText,
                         ]}
+                    >
+                        <Text
+                            style={[
+                                styles.categoryText,
+                                selectedCategory === null &&
+                                styles.activeCategoryText,
+                            ]}
                         >
                             All
                         </Text>
                     </TouchableOpacity>
 
                     {/* CATEGORIES */}
+
                     {categories.map((category) => {
+
                         const isActive = selectedCategory === category.id;
 
                         return (
@@ -142,21 +218,23 @@ const Home = () => {
                                     isActive &&
                                     styles.activeCategoryChip,
                                 ]} >
-                                <Text style={[
-                                    styles.categoryText,
-                                    isActive &&
-                                    styles.activeCategoryText,
-                                ]}
-                                >
+                                <Text
+                                    style={[
+                                        styles.categoryText,
+                                        isActive &&
+                                        styles.activeCategoryText,
+                                    ]}>
                                     {category.name}
                                 </Text>
                             </TouchableOpacity>
                         );
                     })}
+
                 </ScrollView>
             )}
 
-            {/* CONTENT */}
+            {/* PIZZA LIST */}
+
             <FlatList
                 data={filteredPizzas}
                 keyExtractor={(item) => item.id.toString()}
@@ -164,21 +242,15 @@ const Home = () => {
                     <PizzaCard pizza={item} />
                 )}
 
-                ListHeaderComponent={
-                    !isFiltering ? (
-                        <View style={styles.bannerContainer}>
-                            <Image
-                                source={require(
-                                    "../../../assets/images/banners/banner1.png"
-                                )}
-                                style={styles.bannerImage}
-                            />
-                        </View>
-                    ) : null
-                }
-
+                //   OFFLINE / EMPTY STATE
                 ListEmptyComponent={
-                    isFiltering ? (
+                    !isOnline ? (
+                        <NotFound
+                            icon="wifi-off"
+                            title="No Internet Connection"
+                            description="Connect to the internet to load pizzas."
+                        />
+                    ) : isFiltering ? (
                         <NotFound
                             icon="magnify"
                             title="No Pizzas Found"
@@ -197,12 +269,8 @@ const Home = () => {
                     )
                 }
 
-                contentContainerStyle={{
-                    paddingBottom: 20,
-                }}
-
+                contentContainerStyle={{ paddingBottom: 20, }}
                 showsVerticalScrollIndicator={false}
-
             />
 
         </View>

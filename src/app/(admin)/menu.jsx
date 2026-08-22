@@ -1,59 +1,131 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { Alert, FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+    Alert,
+    FlatList,
+    Image,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 import CategoryList from "../../../components/category/CategoryList";
 import CategoryModal from "../../../components/category/CategoryModal";
 import Loader from "../../../components/Loading";
+import NoInternetModal from "../../../components/NetInfo/NoInternetModal";
 import NotFound from "../../../components/NotFound";
 import PizzaModal from "../../../components/pizza/PizzaModal";
 import renderPizzaMenu from "../../../components/pizza/renderPizzaMenu";
 
 import useCategoryCrud from "../../../hooks/useCategoryCrud";
+import useNetWorkStatus from "../../../hooks/useNetworkStatus";
+
+import COLORS from "../../../constants/color";
 
 import { useCategoryStore } from "../../../store/admin/categoryStore";
 import { usePizzaStore } from "../../../store/admin/pizzaStore";
 
-import { Ionicons } from "@expo/vector-icons";
-import COLORS from "../../../constants/color";
 import styles from "../../../styles/menu.style";
 
 const Menu = () => {
-    //    PIZZA STORE
-    const { pizzas, fetchPizzas, removePizza, loading: pizzaLoading, } = usePizzaStore();
+    const { isOnline } = useNetWorkStatus();
 
-    //  CATEGORY STORE
-    const { categories, fetchCategories, loading: categoryLoading,
-    } = useCategoryStore();
+    // PIZZA STORE
+    const { pizzas, fetchPizzas, removePizza, } = usePizzaStore();
 
+    // CATEGORY STORE
+
+    const { categories, fetchCategories, } = useCategoryStore();
 
     // CATEGORY CRUD
     const { remove: deleteCategory, actionLoading: categoryActionLoading, } = useCategoryCrud();
 
+
     // MODALS
     const [showPizzaModal, setShowPizzaModal] = useState(false);
     const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [showNoInternetModal, setShowNoInternetModal] = useState(false);
 
     // MODES
     const [pizzaMode, setPizzaMode] = useState("create");
     const [categoryMode, setCategoryMode] = useState("create");
 
-
-    //    SELECTED ITEMS
+    // SELECTED ITEMS
     const [selectedPizza, setSelectedPizza] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
 
+    // INITIAL LOADING
+    const [initialLoading, setInitialLoading] = useState(true);
 
-    //    FETCH DATA
+    // FETCH DATA
     useEffect(() => {
-        fetchPizzas();
-        fetchCategories();
-    }, []);
+        let mounted = true;
+        const loadInitialData = async () => {
+            // If offline, don't try to fetch
+            if (!isOnline) {
+                if (mounted) {
+                    setInitialLoading(false);
+                }
 
+                return;
+            }
 
-    //    PIZZA ACTIONS
+            try {
+                await Promise.all([
+                    fetchPizzas(),
+                    fetchCategories(),
+                ]);
+            } catch (error) {
+                console.log(
+                    "MENU INITIAL LOAD ERROR:",
+                    error
+                );
+            } finally {
+                if (mounted) {
+                    setInitialLoading(false);
+                }
+            }
+        };
 
+        loadInitialData();
+
+        return () => {
+            mounted = false;
+        };
+    }, [isOnline]);
+
+    // ADD PIZZA
+
+    const handleAddPizza = () => {
+        if (!isOnline) {
+            setShowNoInternetModal(true);
+            return;
+        }
+
+        setPizzaMode("create");
+        setSelectedPizza(null);
+        setShowPizzaModal(true);
+    };
+
+    // ADD CATEGORY
+    const handleAddCategory = () => {
+        if (!isOnline) {
+            setShowNoInternetModal(true);
+            return;
+        }
+        setSelectedCategory(null);
+        setCategoryMode("create");
+        setShowCategoryModal(true);
+    };
+
+    // DELETE PIZZA
 
     const handleDeletePizza = (id) => {
+        if (!isOnline) {
+            setShowNoInternetModal(true);
+            return;
+        }
+
         Alert.alert(
             "Delete Pizza",
             "Are you sure you want to delete this pizza?",
@@ -62,6 +134,7 @@ const Menu = () => {
                     text: "Cancel",
                     style: "cancel",
                 },
+
                 {
                     text: "Delete",
                     style: "destructive",
@@ -82,29 +155,38 @@ const Menu = () => {
         );
     };
 
+    // EDIT PIZZA
 
     const handleEditPizza = (pizza) => {
+        if (!isOnline) {
+            setShowNoInternetModal(true);
+            return;
+        }
+
         setSelectedPizza(pizza);
         setPizzaMode("edit");
         setShowPizzaModal(true);
     };
 
-    // CATEGORY ACTIONS
-    const handleAddCategory = () => {
-        setSelectedCategory(null);
-        setCategoryMode("create");
-        setShowCategoryModal(true);
-    };
-
-
+    // EDIT CATEGORY
     const handleEditCategory = (category) => {
+        if (!isOnline) {
+            setShowNoInternetModal(true);
+            return;
+        }
+
         setSelectedCategory(category);
         setCategoryMode("edit");
         setShowCategoryModal(true);
     };
 
-
+    // DELETE CATEGORY
     const handleDeleteCategory = (id) => {
+        if (!isOnline) {
+            setShowNoInternetModal(true);
+            return;
+        }
+
         Alert.alert(
             "Delete Category",
             "Are you sure you want to delete this category?",
@@ -113,6 +195,7 @@ const Menu = () => {
                     text: "Cancel",
                     style: "cancel",
                 },
+
                 {
                     text: "Delete",
                     style: "destructive",
@@ -133,21 +216,18 @@ const Menu = () => {
         );
     };
 
-
-    if (
-        (pizzaLoading && pizzas.length === 0) ||
-        (categoryLoading && categories.length === 0)
-    ) {
+    // INITIAL LOADER ONLY
+    if (initialLoading) {
         return <Loader />;
     }
 
-
     return (
         <View style={styles.container}>
-
             <View style={styles.content}>
+
                 {/* HEADER */}
                 <View style={styles.header}>
+
                     <Image
                         source={require(
                             "../../../assets/images/app-images/logo-header.png"
@@ -155,36 +235,34 @@ const Menu = () => {
                         style={styles.logo}
                     />
 
+                    <TouchableOpacity
+                        style={styles.addCategoryCard}
+                        onPress={handleAddPizza} >
+                        <Ionicons name="add" size={20} color={COLORS.primary} />
 
-
-                    <TouchableOpacity style={styles.addCategoryCard} onPress={() => {
-                        setPizzaMode("create");
-                        setSelectedPizza(null);
-                        setShowPizzaModal(true);
-                    }}>
-                        <Ionicons
-                            name="add"
-                            size={20}
-                            color={COLORS.primary}
-                        />
-
-                        <Text style={styles.addCategoryText}>
+                        <Text style={styles.addCategoryText} >
                             Add Pizza
                         </Text>
                     </TouchableOpacity>
 
                 </View>
 
+                {/* CATEGORIES */}
 
                 <View style={styles.cateContainer}>
-                    {/* CATEGORIES */}
+
                     {categories.length === 0 && (
-                        <View style={styles.noCategoryMessage}>
-                            <Text style={styles.noCategoryText}>
-                                No categories yet.
+                        <View style={styles.noCategoryMessage}  >
+                            <Text style={styles.noCategoryText}  >
+                                {isOnline
+                                    ? "No categories yet."
+                                    : "No Internet Connection"}
                             </Text>
-                            <Text style={styles.noCategoryText}>
-                                Please add a category first.
+
+                            <Text style={styles.noCategoryText} >
+                                {isOnline
+                                    ? "Please add a category first."
+                                    : null}
                             </Text>
                         </View>
                     )}
@@ -196,8 +274,8 @@ const Menu = () => {
                         onDelete={handleDeleteCategory}
                         loading={categoryActionLoading}
                     />
-                </View>
 
+                </View>
 
                 {/* PIZZA LIST */}
 
@@ -213,21 +291,24 @@ const Menu = () => {
                             onEdit: handleEditPizza,
                         })
                     }
+
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={
-                        styles.listContent
-                    }
+                    contentContainerStyle={styles.listContent}
+
                     ListEmptyComponent={
                         <NotFound
-                            icon="pizza"
-                            title="No Pizzas Found"
-                            description="Your pizza menu is empty. Start adding pizzas from the admin panel."
+                            icon={isOnline ? "pizza" : "wifi-off"}
+                            title={isOnline ? "No Pizzas Found" : "No Internet Connection"}
+
+                            description={
+                                isOnline ? "Your pizza menu is empty. Start adding pizzas from the admin panel."
+                                    : "Connect to the internet to load your menu."
+                            }
                         />
                     }
                 />
 
             </View>
-
 
             {/* PIZZA MODAL */}
 
@@ -239,11 +320,19 @@ const Menu = () => {
             />
 
             {/* CATEGORY MODAL */}
+
             <CategoryModal
                 visible={showCategoryModal}
                 onClose={() => setShowCategoryModal(false)}
                 mode={categoryMode}
                 category={selectedCategory}
+            />
+
+            {/* NO INTERNET MODAL */}
+
+            <NoInternetModal
+                visible={showNoInternetModal}
+                onClose={() => setShowNoInternetModal(false)}
             />
 
         </View>

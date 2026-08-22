@@ -2,11 +2,30 @@ import { StyleSheet } from "react-native";
 import COLORS from "../constants/color";
 
 export default StyleSheet.create({
+
+    /* OVERLAY */
+
     overlay: {
         flex: 1,
         backgroundColor: "rgba(0, 0, 0, 0.75)",
         justifyContent: "flex-end",
     },
+
+    /* KEYBOARD */
+
+    keyboardContainer: {
+        width: "100%",
+        maxHeight: "90%",
+    },
+
+    /* SCROLL */
+
+    scrollContent: {
+        flexGrow: 1,
+        justifyContent: "flex-end",
+    },
+
+    /* MODAL */
 
     modalContainer: {
         backgroundColor: COLORS.surface,
@@ -112,15 +131,19 @@ export default StyleSheet.create({
         borderWidth: 1,
         borderColor: "#2A2A2A",
     },
-    errorText: {
-        color: COLORS.error,
-        fontSize: 13,
-        marginBottom: 12,
-    },
+
     input: {
         flex: 1,
         color: COLORS.white,
         fontSize: 15,
+    },
+
+    /* ERROR */
+
+    errorText: {
+        color: COLORS.error,
+        fontSize: 13,
+        marginBottom: 12,
     },
 
     /* BUTTONS */
