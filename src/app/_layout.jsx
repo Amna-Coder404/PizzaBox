@@ -3,8 +3,7 @@ import { Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { PaperProvider } from "react-native-paper";
 import {
-  SafeAreaProvider,
-  SafeAreaView,
+  SafeAreaProvider, SafeAreaView,
 } from "react-native-safe-area-context";
 
 import Loading from "../../components/Loading";
@@ -36,11 +35,9 @@ const RootLayout = () => {
 
         if (!mounted) return;
 
-        /*
-         * IMPORTANT:
-         * If getSession fails because there is no internet,
-         * do NOT treat it as logout.
-         */
+
+        //   do NOT treat it as logout (if there is no internet)
+
         if (error) {
           console.log(
             "Could not check Supabase session:",
@@ -56,9 +53,9 @@ const RootLayout = () => {
           return;
         }
 
-        // --------------------------------------------------
+
         // NO SESSION
-        // --------------------------------------------------
+
         if (!session) {
           setSession(null);
           setProfile(null);
@@ -68,9 +65,9 @@ const RootLayout = () => {
           return;
         }
 
-        // --------------------------------------------------
+
         // SESSION EXISTS
-        // --------------------------------------------------
+
         setSession(session);
 
         /*
@@ -83,9 +80,9 @@ const RootLayout = () => {
 
           if (!mounted) return;
 
-          // --------------------------------------------------
+
           // PROFILE DOES NOT EXIST
-          // --------------------------------------------------
+
           if (!profile) {
             console.log(
               "PROFILE NOT FOUND:",
@@ -103,15 +100,23 @@ const RootLayout = () => {
             return;
           }
 
-          // --------------------------------------------------
+
           // PROFILE EXISTS
-          // --------------------------------------------------
+
           setProfile(profile);
 
           if (profile.role === "admin") {
             router.replace("/(admin)");
           } else {
-            router.replace("/(customer)");
+            const hasLocation =
+              profile.latitude != null &&
+              profile.longitude != null;
+
+            if (hasLocation) {
+              router.replace("/(customer)");
+            } else {
+              router.replace("/location");
+            }
           }
         } catch (profileError) {
           console.log(
@@ -150,18 +155,16 @@ const RootLayout = () => {
 
     initializeAuth();
 
-    // --------------------------------------------------
     // AUTH STATE LISTENER
-    // --------------------------------------------------
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (!mounted) return;
 
-        // --------------------------------------------------
+
         // REAL LOGOUT
-        // --------------------------------------------------
+
         if (event === "SIGNED_OUT") {
           setSession(null);
           setProfile(null);
@@ -170,9 +173,8 @@ const RootLayout = () => {
           return;
         }
 
-        // --------------------------------------------------
+
         // TOKEN REFRESH
-        // --------------------------------------------------
         if (
           event === "TOKEN_REFRESHED" &&
           session
@@ -181,14 +183,49 @@ const RootLayout = () => {
           return;
         }
 
-        // --------------------------------------------------
         // LOGIN
-        // --------------------------------------------------
-        if (
-          event === "SIGNED_IN" &&
-          session
-        ) {
+        // LOGIN
+        if (event === "SIGNED_IN" && session) {
           setSession(session);
+
+          // Get the profile after signup/login
+          const handleSignedIn = async () => {
+            try {
+              const profile = await getProfile(session.user.id);
+
+              if (!profile) {
+                console.log("PROFILE NOT FOUND AFTER LOGIN");
+                return;
+              }
+
+              setProfile(profile);
+
+              // ADMIN does not need location permission
+              if (profile.role === "admin") {
+                router.replace("/(admin)");
+                return;
+              }
+
+              // CUSTOMER needs location
+              const hasLocation = profile.latitude != null && profile.longitude != null;
+
+              if (hasLocation) {
+                router.replace("/(customer)");
+              } else {
+                router.replace("/location");
+              }
+
+            } catch (error) {
+              console.log(
+                "SIGNED IN PROFILE ERROR:",
+                error?.message || error
+              );
+            }
+          };
+
+          handleSignedIn();
+
+          return;
         }
       }
     );

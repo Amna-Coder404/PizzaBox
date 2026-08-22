@@ -27,7 +27,7 @@ const PizzaDetail = () => {
     const { addToCart } = useCartStore();
     const { profile } = useAuthStore();
 
-    const { fetchPizzaById, selectedPizza, loading } = useCustomerPizzaStore();
+    const { fetchPizzaById, selectedPizza, loading, clearSelectedPizza } = useCustomerPizzaStore();
 
     const [selectedSize, setSelectedSize] = useState("small");
     const [quantity, setQuantity] = useState(1);
@@ -39,11 +39,11 @@ const PizzaDetail = () => {
     const { isOnline } = useNetWorkStatus();
 
     useEffect(() => {
-        if (id) {
-            fetchPizzaById(id);
-        }
-    }, [id]);
+        if (!id) return;
 
+        clearSelectedPizza();
+        fetchPizzaById(id);
+    }, [id]);
 
 
     const getPrice = () => {
@@ -88,6 +88,10 @@ const PizzaDetail = () => {
 
 
     const handleAddToCart = () => {
+        if (!selectedPizza) {
+            return;
+        }
+
         addToCart({
             cartId: `${selectedPizza.id}-${selectedSize}`,
             id: selectedPizza.id,
@@ -95,13 +99,12 @@ const PizzaDetail = () => {
             image_url: selectedPizza.image_url,
             size: selectedSize,
             price: getPrice(),
-            delivery_address: profile.address,
+            delivery_address: profile?.address || "",
             quantity,
         });
 
         router.push("/(customer)/cart");
     };
-
 
     if (loading || !selectedPizza) {
         return <Loader />;

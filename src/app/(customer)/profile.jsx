@@ -3,9 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { Alert, Linking, Text, TouchableOpacity, View } from "react-native";
 import Aboutus from "../../../components/Aboutus";
-import AddressModal from "../../../components/pizza/AddressModal";
 import COLORS from "../../../constants/color";
-import { updateProfile } from "../../../services/profile";
 import useAuthStore from '../../../store/authStore';
 import styles from "../../../styles/profile.style";
 
@@ -20,9 +18,6 @@ import { getMyOrders } from "../../../services/order";
 
 const Profile = () => {
     const { logout, profile, setProfile, } = useAuthStore();
-    const [visible, setVisible] = useState(false);
-    const [address, setAddress] = useState(profile?.address || "");
-    const [saving, setSaving] = useState(false);
 
     const [showAboutUs, setShowAboutUs] = useState(false);
     const [orderCount, setOrderCount] = useState(0);
@@ -53,48 +48,10 @@ const Profile = () => {
     }
 
 
-    const handleEditAddress = () => {
-        setAddress(profile?.address || "");
-        setVisible(true);
+    const handleChangeLocation = () => {
+        router.push("/location");
     };
 
-    const handleSaveAddress = async () => {
-        if (!address.trim()) {
-            Alert.alert(
-                "Address Required",
-                "Please enter your delivery address."
-            );
-            return;
-        }
-
-        try {
-            setSaving(true);
-
-            const updatedProfile = await updateProfile(
-                profile.id,
-                {
-                    address: address.trim(),
-                }
-            );
-
-            // Update Zustand profile
-            setProfile(updatedProfile);
-
-            // CLose modal
-            setVisible(false);
-            Alert.alert(
-                "Success",
-                "Delivery address updated successfully."
-            );
-        } catch (error) {
-            Alert.alert(
-                "Error",
-                error.message || "Failed to update address."
-            );
-        } finally {
-            setSaving(false);
-        }
-    }
     const handleLogout = () => {
         Alert.alert(
             "Logout",
@@ -159,7 +116,7 @@ const Profile = () => {
 
 
             {/* PROFILE CARD */}
-            {/* PROFILE CARD */}
+
             <View style={styles.profileCard}>
 
                 {!profile ? (
@@ -209,7 +166,6 @@ const Profile = () => {
 
             {/* DELIVERY ADDRESS */}
             <View style={styles.addressCard}>
-
                 <View style={styles.addressHeader}>
 
                     <View style={styles.addressTitleContainer}>
@@ -217,16 +173,30 @@ const Profile = () => {
                         <Text style={styles.addressTitle}>
                             Delivery Address
                         </Text>
+
                     </View>
 
-                    <TouchableOpacity style={styles.editButton} onPress={handleEditAddress}  >
+                    <View style={styles.addressActions}>
 
-                        <Ionicons name="pencil-outline" size={15} color={COLORS.primary} />
 
-                        <Text style={styles.editText}>
-                            Edit
-                        </Text>
-                    </TouchableOpacity>
+                        {/* CHANGE GPS LOCATION */}
+                        <TouchableOpacity
+                            style={styles.editButton}
+                            onPress={handleChangeLocation}
+                            activeOpacity={0.7}
+                        >
+                            <Ionicons
+                                name="location-outline"
+                                size={16}
+                                color={COLORS.primary}
+                            />
+
+                            <Text style={styles.editText}>
+                                Change
+                            </Text>
+                        </TouchableOpacity>
+
+                    </View>
 
                 </View>
 
@@ -342,24 +312,12 @@ const Profile = () => {
             </TouchableOpacity>
 
 
-            {/* ADDRESS MODAL */}
-            <AddressModal
-                visible={visible}
-                onClose={() => setVisible(false)}
-                onSave={handleSaveAddress}
-                saving={saving}
-                address={address}
-                onChangeAddress={setAddress}
-            />
-
-
             <EditProfileModal
                 visible={editModalVisible}
                 onClose={() => setEditModalVisible(false)}
                 profile={profile}
 
             />
-
         </View>
     )
 }

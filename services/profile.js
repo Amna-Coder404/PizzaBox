@@ -43,7 +43,28 @@ export const getProfile = async (userId) => {
 
     return data;
 };
+// Update customer location
+export const updateProfileLocation = async (
+    userId,
+    location
+) => {
+    const { data, error } = await supabase
+        .from("profiles")
+        .update({
+            address: location.address,
+            latitude: location.latitude,
+            longitude: location.longitude,
+        })
+        .eq("id", userId)
+        .select()
+        .single();
 
+    if (error) {
+        throw error;
+    }
+
+    return data;
+};
 // Update Profile
 export const updateProfile = async (userId, updates) => {
     const { data, error } = await supabase
