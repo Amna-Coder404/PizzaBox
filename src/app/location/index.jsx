@@ -5,12 +5,13 @@ import {
     ActivityIndicator, Text, TouchableOpacity, View
 } from "react-native";
 
-import COLORS from "../../../constants/color";
+
 import { getUserLocation } from "../../../services/location";
 import { updateProfileLocation } from "../../../services/profile";
 import useAuthStore from "../../../store/authStore";
 
 import styles from "../../../styles/location.style";
+import COLORS from "../../../constants/color";
 
 const Location = () => {
     const router = useRouter();

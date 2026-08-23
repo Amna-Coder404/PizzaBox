@@ -10,6 +10,7 @@ import { Link, useRouter } from "expo-router";
 import AppButton from "../../../components/AppButton";
 import Loader from "../../../components/Loading";
 import COLORS from "../../../constants/color";
+import useRouting from "../../../hooks/useRouting";
 import useAuthStore from "../../../store/authStore";
 
 
@@ -19,6 +20,9 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+
+
+    const { routeUser } = useRouting();
 
     const { login } = useAuthStore();
     const handleLogin = async () => {
@@ -33,25 +37,39 @@ const Login = () => {
         try {
             setLoading(true);
 
-            const { profile } = await login(
+
+            const result = await login(
                 email.trim(),
                 password
             );
 
-            if (profile?.role === "admin") {
-                router.replace("/(admin)");
-            } else {
-                router.replace("/(customer)");
+
+            if (!result?.session?.user?.id) {
+                throw new Error(
+                    "Login succeeded but no user session was returned."
+                );
             }
 
+            await routeUser(
+                result.session.user.id
+            );
+
         } catch (error) {
-            Alert.alert("Login Failed", error.message);
-            console.log("ERROR", error);
+            console.log(
+                "LOGIN ERROR:",
+                error?.message || error
+            );
+
+            Alert.alert(
+                "Login Failed",
+                error?.message ||
+                "Unable to login."
+            );
+
         } finally {
             setLoading(false);
         }
     };
-
 
 
 

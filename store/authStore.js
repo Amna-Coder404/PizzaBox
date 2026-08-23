@@ -48,7 +48,7 @@ const useAuthStore = create((set) => ({
         set({ loading: true });
 
         try {
-            const { user, profile } = await signUp(
+            const result = await signUp(
                 name,
                 email,
                 password,
@@ -59,15 +59,18 @@ const useAuthStore = create((set) => ({
 
             set({
                 session,
-                user,
-                profile,
+                user: result.user,
+                profile: result.profile,
             });
 
-            return { user, profile, session };
+            return {
+                session,
+                user: result.user,
+                profile: result.profile,
+            };
 
         } catch (error) {
             throw error;
-
         } finally {
             set({ loading: false });
         }

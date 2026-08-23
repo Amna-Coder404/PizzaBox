@@ -42,9 +42,9 @@ export const getAddressFromCoordinates = async (latitude, longitude) => {
         // address.district,
         // address.region,
         // address.country,
-
-        address.city,
         address.street || address.name,
+        address.city,
+
     ].filter(Boolean);
 
     return parts.join(", ");

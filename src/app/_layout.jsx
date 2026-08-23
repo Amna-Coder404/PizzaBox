@@ -3,14 +3,14 @@ import { Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { PaperProvider } from "react-native-paper";
 import {
-  SafeAreaProvider, SafeAreaView,
+  SafeAreaProvider,
+  SafeAreaView,
 } from "react-native-safe-area-context";
 
 import Loading from "../../components/Loading";
 import InternetBanner from "../../components/NetInfo/NetworkBanner";
 
 import { supabase } from "../../lib/supabase";
-import { getProfile } from "../../services/profile";
 import useAuthStore from "../../store/authStore";
 
 const RootLayout = () => {
@@ -18,16 +18,27 @@ const RootLayout = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const {
-    setSession,
-    setProfile,
-  } = useAuthStore();
+  const setSession = useAuthStore(
+    (state) => state.setSession
+  );
+
+  const setProfile = useAuthStore(
+    (state) => state.setProfile
+  );
 
   useEffect(() => {
     let mounted = true;
 
+    /*
+     * INITIAL AUTH CHECK
+     *
+     * This layout only checks authentication.
+     * It does NOT check GPS/location.
+     */
     const initializeAuth = async () => {
       try {
+        console.log("AUTH CHECK START");
+
         const {
           data: { session },
           error,
@@ -35,28 +46,12 @@ const RootLayout = () => {
 
         if (!mounted) return;
 
-
-        //   do NOT treat it as logout (if there is no internet)
-
         if (error) {
           console.log(
-            "Could not check Supabase session:",
+            "AUTH CHECK ERROR:",
             error.message
           );
 
-          /*
-           * Supabase may already have restored the session
-           * locally. Do not destroy our auth state just
-           * because the network is unavailable.
-           */
-          setLoading(false);
-          return;
-        }
-
-
-        // NO SESSION
-
-        if (!session) {
           setSession(null);
           setProfile(null);
 
@@ -65,87 +60,43 @@ const RootLayout = () => {
           return;
         }
 
+        /*
+         * No logged-in user
+         */
+        if (!session) {
+          console.log("NO SESSION");
 
-        // SESSION EXISTS
+          setSession(null);
+          setProfile(null);
+
+          router.replace("/(auth)");
+
+          return;
+        }
+
+        /*
+         * User is logged in
+         */
+        console.log(
+          "SESSION FOUND:",
+          session.user.id
+        );
 
         setSession(session);
 
-        /*
-         * Try to load profile.
-         *
-         * If this fails because we're offline, don't log out.
-         */
-        try {
-          const profile = await getProfile(session.user.id);
-
-          if (!mounted) return;
-
-
-          // PROFILE DOES NOT EXIST
-
-          if (!profile) {
-            console.log(
-              "PROFILE NOT FOUND:",
-              session.user.id
-            );
-
-            /*
-             * IMPORTANT:
-             * Don't immediately sign out here.
-             *
-             * A failed profile request can happen because
-             * of network problems.
-             */
-            setLoading(false);
-            return;
-          }
-
-
-          // PROFILE EXISTS
-
-          setProfile(profile);
-
-          if (profile.role === "admin") {
-            router.replace("/(admin)");
-          } else {
-            const hasLocation =
-              profile.latitude != null &&
-              profile.longitude != null;
-
-            if (hasLocation) {
-              router.replace("/(customer)");
-            } else {
-              router.replace("/location");
-            }
-          }
-        } catch (profileError) {
-          console.log(
-            "PROFILE FETCH ERROR:",
-            profileError?.message || profileError
-          );
-
-          /*
-           * Keep the existing session.
-           * Do NOT redirect to login.
-           * Do NOT sign out.
-           */
-        }
       } catch (error) {
         console.log(
           "AUTH INITIALIZATION ERROR:",
           error?.message || error
         );
 
-        /*
-         * IMPORTANT:
-         * Network/auth initialization failure is NOT the
-         * same thing as SIGNED_OUT.
-         *
-         * Therefore:
-         * - don't clear session
-         * - don't clear profile
-         * - don't navigate to login
-         */
+        if (!mounted) return;
+
+        setSession(null);
+        setProfile(null);
+
+        router.replace("/(auth)");
+
       } finally {
         if (mounted) {
           setLoading(false);
@@ -155,77 +106,55 @@ const RootLayout = () => {
 
     initializeAuth();
 
-    // AUTH STATE LISTENER
+    /*
+     * SUPABASE AUTH LISTENER
+     */
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (!mounted) return;
 
+        console.log(
+          "AUTH EVENT:",
+          event
+        );
 
-        // REAL LOGOUT
-
+        /*
+         * SIGNED OUT
+         */
         if (event === "SIGNED_OUT") {
           setSession(null);
           setProfile(null);
 
           router.replace("/(auth)");
+
           return;
         }
 
+        /*
+         * SIGNED IN
+         *
+         * We only save the session here.
+         *
+         * Login/Signup will decide where
+         * the user should go.
+         */
+        if (
+          event === "SIGNED_IN" &&
+          session
+        ) {
+          setSession(session);
+        }
 
-        // TOKEN REFRESH
+        /*
+         * TOKEN REFRESH
+         */
         if (
           event === "TOKEN_REFRESHED" &&
           session
         ) {
           setSession(session);
-          return;
-        }
-
-        // LOGIN
-        // LOGIN
-        if (event === "SIGNED_IN" && session) {
-          setSession(session);
-
-          // Get the profile after signup/login
-          const handleSignedIn = async () => {
-            try {
-              const profile = await getProfile(session.user.id);
-
-              if (!profile) {
-                console.log("PROFILE NOT FOUND AFTER LOGIN");
-                return;
-              }
-
-              setProfile(profile);
-
-              // ADMIN does not need location permission
-              if (profile.role === "admin") {
-                router.replace("/(admin)");
-                return;
-              }
-
-              // CUSTOMER needs location
-              const hasLocation = profile.latitude != null && profile.longitude != null;
-
-              if (hasLocation) {
-                router.replace("/(customer)");
-              } else {
-                router.replace("/location");
-              }
-
-            } catch (error) {
-              console.log(
-                "SIGNED IN PROFILE ERROR:",
-                error?.message || error
-              );
-            }
-          };
-
-          handleSignedIn();
-
-          return;
         }
       }
     );
@@ -236,6 +165,9 @@ const RootLayout = () => {
     };
   }, []);
 
+  /*
+   * Wait until authentication is checked.
+   */
   if (loading) {
     return <Loading />;
   }
@@ -243,21 +175,39 @@ const RootLayout = () => {
   return (
     <StripeProvider
       publishableKey={
-        process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        process.env
+          .EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY
       }
     >
       <PaperProvider>
         <SafeAreaProvider>
-          <SafeAreaView style={{ flex: 1 }}>
+          <SafeAreaView
+            style={{ flex: 1 }}
+          >
             <Stack
               screenOptions={{
                 headerShown: false,
               }}
             >
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(customer)" />
-              <Stack.Screen name="(admin)" />
-              <Stack.Screen name="pizza/[id]" />
+              <Stack.Screen
+                name="(auth)"
+              />
+
+              <Stack.Screen
+                name="(customer)"
+              />
+
+              <Stack.Screen
+                name="(admin)"
+              />
+
+              <Stack.Screen
+                name="location"
+              />
+
+              <Stack.Screen
+                name="pizza/[id]"
+              />
             </Stack>
 
             <InternetBanner />

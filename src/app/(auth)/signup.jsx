@@ -4,14 +4,14 @@ import {
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 
 import AppButton from "../../../components/AppButton";
 import COLORS from "../../../constants/color";
 import styles from "../../../styles/auth.style";
 
-
 import Loader from "../../../components/Loading";
+import useRouting from "../../../hooks/useRouting";
 import useAuthStore from "../../../store/authStore";
 
 
@@ -23,38 +23,55 @@ const Signup = () => {
     const { signup } = useAuthStore();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    const { routeUser } = useRouting();
+
     const handleSignup = async () => {
         if (!email.trim() || !password || !name.trim()) {
-            Alert.alert("Missing Field", "Please fill all fields");
+            Alert.alert(
+                "Missing Field",
+                "Please fill all fields"
+            );
             return;
         }
 
         try {
             setLoading(true);
 
-            await signup(
+
+            const result = await signup(
                 name.trim(),
                 email.trim(),
                 password
             );
 
-            Alert.alert(
-                "Success",
-                "Account created successfully"
-            );
 
-            router.replace("/(customer)");
+            if (!result?.user?.id) {
+                throw new Error(
+                    "Account was created but user information was not returned."
+                );
+            }
+
+            await routeUser(result.user.id);
+
+
 
         } catch (error) {
+            console.log(
+                "SIGNUP ERROR:",
+                error?.message || error
+            );
+
             Alert.alert(
                 "Signup Failed",
-                error.message
+                error?.message ||
+                "Unable to create account."
             );
+
         } finally {
             setLoading(false);
         }
     };
-
     if (loading) {
         return <Loader />
     }
