@@ -103,10 +103,13 @@ const useDirectOrder = ({ selectedPizza, selectedSize, quantity, paymentMethod, 
                 id: selectedPizza.id,
                 name: selectedPizza.name,
                 size: selectedSize,
+                image_url: selectedPizza.image_url,
                 quantity,
                 price: getPrice(),
-            };
 
+            };
+            console.log("SELECTED PIZZA------------->:", selectedPizza);
+            console.log("SELECTED PIZZA IMAGE----------->:", selectedPizza?.image_url);
             await createOrder(orderData, [orderItem]);
 
             Alert.alert(

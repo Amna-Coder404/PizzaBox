@@ -1,5 +1,5 @@
 import { StripeProvider } from "@stripe/stripe-react-native";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { PaperProvider } from "react-native-paper";
 import {
@@ -15,8 +15,13 @@ import useAuthStore from "../../store/authStore";
 
 const RootLayout = () => {
   const router = useRouter();
+  const segments = useSegments();
 
   const [loading, setLoading] = useState(true);
+
+  const initializeSession = useAuthStore(
+    (state) => state.initializeSession
+  );
 
   const setSession = useAuthStore(
     (state) => state.setSession
@@ -26,135 +31,152 @@ const RootLayout = () => {
     (state) => state.setProfile
   );
 
+
+  //  REDIRECT USER AFTER AUTH INITIALIZATION
+
+  const navigateUser = (profile) => {
+    if (!profile) {
+      console.log("NO PROFILE");
+
+      router.replace("/(auth)");
+
+      return;
+    }
+
+
+    //  * ADMIN
+    if (profile.role === "admin") {
+      router.replace("/(admin)");
+      return;
+    }
+
+
+    //  * CUSTOMER
+
+    if (profile.role === "customer") {
+      router.replace("/(customer)");
+      return;
+    }
+
+    router.replace("/(auth)");
+  };
+
   useEffect(() => {
     let mounted = true;
 
-    /*
-     * INITIAL AUTH CHECK
-     *
-     * This layout only checks authentication.
-     * It does NOT check GPS/location.
-     */
+    //   INITIAL AUTH CHECK
     const initializeAuth = async () => {
       try {
-        console.log("AUTH CHECK START");
-
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
-
+        const { data: { session }, error, } = await supabase.auth.getSession();
         if (!mounted) return;
+
+
+        //  * SUPABASE ERROR
 
         if (error) {
-          console.log(
-            "AUTH CHECK ERROR:",
-            error.message
-          );
-
           setSession(null);
           setProfile(null);
-
+          setLoading(false);
           router.replace("/(auth)");
-
           return;
         }
 
-        /*
-         * No logged-in user
-         */
+
+        //  * NO SESSION
+
         if (!session) {
-          console.log("NO SESSION");
-
           setSession(null);
           setProfile(null);
-
+          setLoading(false);
           router.replace("/(auth)");
 
           return;
         }
 
-        /*
-         * User is logged in
-         */
-        console.log(
-          "SESSION FOUND:",
-          session.user.id
-        );
 
-        setSession(session);
-
-      } catch (error) {
-        console.log(
-          "AUTH INITIALIZATION ERROR:",
-          error?.message || error
-        );
-
+        const result = await initializeSession(session);
         if (!mounted) return;
 
-        setSession(null);
-        setProfile(null);
+        //  * Authentication initialization finished.
 
-        router.replace("/(auth)");
+        setLoading(false);
 
-      } finally {
-        if (mounted) {
-          setLoading(false);
+        //   REDIRECT AUTHENTICATED USER
+
+        if (result?.profile) {
+          navigateUser(result.profile);
         }
+
+      } catch (error) {
+        if (!mounted) return;
+        setLoading(false);
+
       }
     };
 
     initializeAuth();
 
     /*
+
      * SUPABASE AUTH LISTENER
+
      */
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         if (!mounted) return;
 
-        console.log(
-          "AUTH EVENT:",
-          event
-        );
+
 
         /*
-         * SIGNED OUT
+    
+         * INITIAL SESSION
+    
          */
-        if (event === "SIGNED_OUT") {
-          setSession(null);
-          setProfile(null);
-
-          router.replace("/(auth)");
+        if (event === "INITIAL_SESSION") {
 
           return;
         }
 
-        /*
-         * SIGNED IN
-         *
-         * We only save the session here.
-         *
-         * Login/Signup will decide where
-         * the user should go.
-         */
-        if (
-          event === "SIGNED_IN" &&
-          session
-        ) {
+
+
+        //  * SIGNED IN
+
+        if (event === "SIGNED_IN" && session) {
+
           setSession(session);
+
+          return;
         }
 
-        /*
-         * TOKEN REFRESH
-         */
-        if (
-          event === "TOKEN_REFRESHED" &&
-          session
-        ) {
+        //  TOKEN REFRESH
+
+        if (event === "TOKEN_REFRESHED" && session) {
           setSession(session);
+          return;
+        }
+
+        // USER UPDATED
+
+        if (event === "USER_UPDATED" && session
+        ) {
+
+          setSession(session);
+
+          return;
+        }
+
+
+        //  * SIGNED OUT
+
+        if (event === "SIGNED_OUT") {
+
+          setSession(null);
+          setProfile(null);
+          router.replace("/(auth)");
+
+          return;
         }
       }
     );
@@ -165,12 +187,11 @@ const RootLayout = () => {
     };
   }, []);
 
-  /*
-   * Wait until authentication is checked.
-   */
+
   if (loading) {
     return <Loading />;
   }
+
 
   return (
     <StripeProvider
@@ -182,7 +203,9 @@ const RootLayout = () => {
       <PaperProvider>
         <SafeAreaProvider>
           <SafeAreaView
-            style={{ flex: 1 }}
+            style={{
+              flex: 1,
+            }}
           >
             <Stack
               screenOptions={{

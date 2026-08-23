@@ -1,53 +1,44 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { StyleSheet, Text, View, } from "react-native";
-import { SceneMap, TabBar, TabView, } from "react-native-tab-view";
+import { StyleSheet, Text, View } from "react-native";
+import {
+    TabBar,
+    TabView,
+} from "react-native-tab-view";
 
 import MyOrders from "../orders/MyOrders";
 import CartContent from "./CartContent";
 
 import COLORS from "../../constants/color";
 
+const CartPager = ({
+    initialPage = "cart",
+    paymentMethod,
+    setPaymentMethod,
+    onCheckout,
+}) => {
 
-
-const CartPager = ({ initialPage = "cart", paymentMethod, setPaymentMethod, onCheckout }) => {
-
+    // GET INITIAL TAB
     const getInitialIndex = () => {
         return initialPage === "orders" ? 1 : 0;
     };
 
-    const [index, setIndex] = useState(getInitialIndex());
+    const [index, setIndex] = useState(
+        getInitialIndex()
+    );
 
-
+    // CHANGE TAB WHEN SCREEN GETS FOCUS
     useFocusEffect(
         useCallback(() => {
-            setIndex(initialPage === "orders" ? 1 : 0);
+            setIndex(
+                initialPage === "orders"
+                    ? 1
+                    : 0
+            );
         }, [initialPage])
     );
 
-
-    //  * CART SCREEN
-    const CartRoute = () => (
-        <View style={styles.scene}>
-            <CartContent
-                paymentMethod={paymentMethod}
-                setPaymentMethod={setPaymentMethod}
-                onCheckout={onCheckout}
-            />
-        </View>
-    );
-
-
-    //  * MY ORDERS SCREEN
-
-    const OrdersRoute = () => (
-        <View style={styles.scene}>
-            <MyOrders />
-        </View>
-    );
-
-
-    //  * TAB ROUTES
+    // TAB ROUTES
     const [routes] = useState([
         {
             key: "cart",
@@ -59,41 +50,92 @@ const CartPager = ({ initialPage = "cart", paymentMethod, setPaymentMethod, onCh
         },
     ]);
 
+    // RENDER TAB SCENES
+    const renderScene = ({ route }) => {
 
-    //  * Scenes
+        switch (route.key) {
 
-    const renderScene = SceneMap({
-        cart: CartRoute,
-        orders: OrdersRoute,
-    });
+            case "cart":
+                return (
+                    <View style={styles.scene}>
+                        <CartContent
+                            paymentMethod={
+                                paymentMethod
+                            }
+                            setPaymentMethod={
+                                setPaymentMethod
+                            }
+                            onCheckout={
+                                onCheckout
+                            }
+                        />
+                    </View>
+                );
+
+            case "orders":
+                return (
+                    <View style={styles.scene}>
+                        <MyOrders />
+                    </View>
+                );
+
+            default:
+                return null;
+        }
+    };
 
     return (
         <View style={styles.container}>
 
             {/* HEADER */}
+
             <View style={styles.header}>
+
                 <Text style={styles.title}>
                     {index === 0
                         ? "My Cart"
                         : "My Orders"}
                 </Text>
+
             </View>
 
-            {/* SWIPEABLE TABS */}
-            <TabView navigationState={{ index, routes, }}
+
+            {/* TABS */}
+
+            <TabView
+                navigationState={{
+                    index,
+                    routes,
+                }}
                 renderScene={renderScene}
                 onIndexChange={setIndex}
                 swipeEnabled={true}
+
                 renderTabBar={(props) => (
                     <TabBar
                         {...props}
+
                         style={styles.tabBar}
-                        indicatorStyle={styles.indicator}
+
+                        indicatorStyle={
+                            styles.indicator
+                        }
+
                         activeColor="#FFFFFF"
-                        inactiveColor={COLORS.text}
+
+                        inactiveColor={
+                            COLORS.text
+                        }
+
                         pressColor="transparent"
-                        tabStyle={styles.tab}
-                        labelStyle={styles.tabLabel}
+
+                        tabStyle={
+                            styles.tab
+                        }
+
+                        labelStyle={
+                            styles.tabLabel
+                        }
                     />
                 )}
             />
@@ -102,10 +144,13 @@ const CartPager = ({ initialPage = "cart", paymentMethod, setPaymentMethod, onCh
     );
 };
 
+
 const styles = StyleSheet.create({
+
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor:
+            COLORS.background,
     },
 
     header: {
@@ -123,17 +168,24 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginBottom: 10,
 
-        backgroundColor: COLORS.surface,
+        backgroundColor:
+            COLORS.surface,
 
         borderRadius: 12,
+
         elevation: 0,
+
         shadowOpacity: 0,
     },
 
     indicator: {
-        backgroundColor: COLORS.primary,
+        backgroundColor:
+            COLORS.primary,
+
         height: "100%",
+
         borderRadius: 9,
+
         bottom: 0,
     },
 
@@ -144,13 +196,13 @@ const styles = StyleSheet.create({
     tabLabel: {
         fontSize: 14,
         fontWeight: "600",
-
         textTransform: "none",
     },
 
     scene: {
         flex: 1,
     },
+
 });
 
 export default CartPager;

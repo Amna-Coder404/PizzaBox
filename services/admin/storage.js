@@ -41,7 +41,6 @@ export const uploadPizzaImage = async (imageUri) => {
         .from("pizza-images")
         .getPublicUrl(fileName);
 
-    console.log("IMAGE URL:", publicData.publicUrl);
 
     return publicData.publicUrl;
 };

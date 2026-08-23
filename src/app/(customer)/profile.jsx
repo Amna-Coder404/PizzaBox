@@ -47,7 +47,6 @@ const Profile = () => {
         }
     }
 
-
     const handleChangeLocation = () => {
         router.push("/location");
     };

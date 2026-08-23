@@ -247,16 +247,15 @@ const OrderCard = ({ order, onStatusUpdated }) => {
 
             {/* PIZZA ITEMS */}
             <View style={styles.itemsContainer}>
-
                 {order.order_items?.map((item) => {
+
 
                     return (
                         <View key={item.id} style={styles.item}>
                             <Image
-                                source={{ uri: item.pizza_image_url }}
+                                source={{ uri: item.pizza_image_url || item.pizzas?.image_url }}
                                 style={styles.pizzaImage}
                             />
-
                             <View style={styles.itemInfo}>
 
                                 <Text style={styles.pizzaName}>

@@ -19,6 +19,8 @@ const ProfileImagePreview = ({
 
     const imageUri = uri || DEFAULT_AVATAR;
 
+    const cacheBustedUri = `${imageUri}?v=2`;
+
     return (
         <>
             {/* PROFILE IMAGE */}
@@ -27,7 +29,9 @@ const ProfileImagePreview = ({
                 onPress={() => setVisible(true)}
             >
                 <Image
-                    source={{ uri: imageUri }}
+                    source={{
+                        uri: cacheBustedUri,
+                    }}
                     style={style}
                 />
             </TouchableOpacity>
@@ -37,13 +41,17 @@ const ProfileImagePreview = ({
                 visible={visible}
                 transparent
                 animationType="fade"
-                onRequestClose={() => setVisible(false)}
+                onRequestClose={() =>
+                    setVisible(false)
+                }
             >
                 <View style={styles.overlay}>
 
                     <TouchableOpacity
                         style={styles.closeButton}
-                        onPress={() => setVisible(false)}
+                        onPress={() =>
+                            setVisible(false)
+                        }
                     >
                         <Ionicons
                             name="close"
@@ -54,10 +62,14 @@ const ProfileImagePreview = ({
 
                     <Pressable
                         style={styles.imageContainer}
-                        onPress={() => setVisible(false)}
+                        onPress={() =>
+                            setVisible(false)
+                        }
                     >
                         <Image
-                            source={{ uri: imageUri }}
+                            source={{
+                                uri: cacheBustedUri,
+                            }}
                             resizeMode="contain"
                             style={styles.largeImage}
                         />
@@ -72,7 +84,8 @@ const ProfileImagePreview = ({
 const styles = {
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.92)",
+        backgroundColor:
+            "rgba(0,0,0,0.92)",
         alignItems: "center",
         justifyContent: "center",
     },
@@ -100,7 +113,8 @@ const styles = {
         borderRadius: 21,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "rgba(255,255,255,0.12)",
+        backgroundColor:
+            "rgba(255,255,255,0.12)",
     },
 };
 
