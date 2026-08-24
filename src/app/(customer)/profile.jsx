@@ -15,7 +15,6 @@ import ProfileImagePreview from "../../../components/ProfileImagePreview";
 import { getMyOrders } from "../../../services/order";
 
 
-
 const Profile = () => {
     const { logout, profile, setProfile, } = useAuthStore();
 

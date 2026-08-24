@@ -11,6 +11,8 @@ import { TouchableOpacity } from "react-native";
 import COLORS from "../../constants/color";
 import { hideOrder, updateOrderStatus } from "../../services/admin/orders";
 import styles from "../../styles/orderCard.style";
+import ProfileImagePreview from "../ProfileImagePreview";
+
 
 
 const STATUS_OPTIONS = [
@@ -213,9 +215,11 @@ const OrderCard = ({ order, onStatusUpdated }) => {
 
             {/* CUSTOMER */}
             <View style={styles.customerRow}>
-
                 <View style={styles.iconBox}>
-                    <Image source={{ uri: order.profile?.avatar_url }} style={styles.avatorImage} />
+                    <ProfileImagePreview
+                        uri={order.profile?.avatar_url}
+                        style={styles.avatorImage}
+                    />
                 </View>
 
                 <View>
