@@ -45,7 +45,8 @@
         {
           "merchantIdentifier": "merchant.com.pizzabox"
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

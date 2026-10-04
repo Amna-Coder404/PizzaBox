@@ -117,7 +117,7 @@ Admins have a dedicated admin panel for managing the application:
 
 You can download and test the latest Android build of **PizzaBox** using the link below.
 
-👉 [Download PizzaBox APK](https://expo.dev/accounts/devamna/projects/PizzaBox/builds/c3b916a6-bbaf-47ac-9091-edfcdc06c8f0)
+👉 [Download PizzaBox APK](https://expo.dev/accounts/devamna/projects/PizzaBox/builds/688f43c8-0616-4a7c-a807-7e7f99578756)
 
 ## 📁 Environment Setup
 
